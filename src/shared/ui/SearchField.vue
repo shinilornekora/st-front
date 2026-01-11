@@ -46,10 +46,7 @@
 			
 			<button :class="$style.searchBtn" type="submit" aria-label="Найти">
 				<slot name="icon">
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<circle cx="11" cy="11" r="8"></circle>
-						<path d="m21 21-4.35-4.35"></path>
-					</svg>
+					<img src="../../assets/search.svg" alt="" :class="$style.searchIcon" />
 				</slot>
 			</button>
 		</form>
@@ -83,10 +80,7 @@
 							@click="selectSuggestion(suggestion)"
 						>
 							<span :class="$style.suggestionText">{{ suggestion }}</span>
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<circle cx="11" cy="11" r="8"></circle>
-								<path d="m21 21-4.35-4.35"></path>
-							</svg>
+							<img src="../../assets/search.svg" alt="" :class="$style.searchIcon" />
 						</button>
 					</div>
 				</div>
@@ -185,8 +179,9 @@
 		position: relative;
 		display: flex;
 		flex-direction: column;
+		max-width: 575px !important;
+		max-height: 40px;
 		gap: 12px;
-		width: 100%;
 	}
 	
 	.form {
@@ -199,6 +194,9 @@
 		padding: 8px 16px;
 		transition: border-color 0.2s, box-shadow 0.2s;
 		flex-wrap: wrap;
+		max-width: 575px !important;
+		max-height: 40px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	}
 	
 	.form:focus-within {
@@ -298,6 +296,11 @@
 		color: var(--color-accent);
 	}
 	
+	.searchIcon {
+		width: 16px;
+		height: 16px;
+	}
+	
 	/* Popup */
 	.popup {
 		position: absolute;
@@ -374,7 +377,9 @@
 		flex: 1;
 	}
 	
-	.suggestionItem svg {
+	.suggestionItem .searchIcon {
+		width: 18px;
+		height: 18px;
 		color: #9ca3af;
 		flex-shrink: 0;
 	}

@@ -8,24 +8,19 @@
 			<img :src="image" :alt="title" :class="$style.img" v-if="image" />
 		</div>
 		<div :class="$style.body">
-			<h3 :class="$style.title">{{ title }}</h3>
 			<div :class="$style.footer">
+				<h5 :class="$style.title">{{ title }}</h5>
 				<div :class="$style.priceWrapper">
 					<span :class="$style.price">{{ formatPrice(price) }}</span>
-					<s v-if="oldPrice" :class="$style.oldPrice">{{ formatPrice(oldPrice) }}</s>
 				</div>
-				<button
-					:class="$style.cartBtn"
-					@click="$emit('add-to-cart')"
-					aria-label="Добавить в корзину"
-				>
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M9 2L7 6H3l3 14h12l3-14h-4l-2-4H9z"/>
-						<circle cx="9" cy="20" r="1"/>
-						<circle cx="15" cy="20" r="1"/>
-					</svg>
-				</button>
 			</div>
+			<button
+				:class="$style.cartBtn"
+				@click="$emit('add-to-cart')"
+				aria-label="Добавить в корзину"
+			>
+				<img src="../../assets/shopping_cart.svg" alt="" :class="$style.cartIcon" />
+			</button>
 		</div>
 	</article>
 </template>
@@ -53,20 +48,14 @@
 	@import './theme.module.css';
 	
 	.card {
-		background: #fff;
-		border-radius: 16px;
-		overflow: hidden;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		background: transparent;
 		display: flex;
 		flex-direction: column;
-		transition: transform 0.2s, box-shadow 0.2s;
 		cursor: pointer;
 		height: 100%;
-	}
-	
-	.card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+		gap: 12px;
+		height: 378px;
+    	width: 234px;
 	}
 	
 	.card.list {
@@ -80,6 +69,14 @@
 		overflow: hidden;
 		background: #f3f4f6;
 		position: relative;
+		border-radius: 20px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		transition: transform 0.2s, box-shadow 0.2s;
+	}
+	
+	.card:hover .imageWrapper {
+		transform: translateY(-4px);
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 	}
 	
 	.card.list .imageWrapper {
@@ -100,70 +97,72 @@
 	}
 	
 	.body {
-		padding: 16px;
 		display: flex;
-		flex-direction: column;
-		gap: 12px;
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
 		flex: 1;
 	}
 	
 	.title {
-		font-size: 16px;
+		font-size: 22px;
 		font-weight: 600;
 		margin: 0;
 		color: #2c2c2c;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		display: -webkit-box;
-		-webkit-line-clamp: 2;
+		-webkit-line-clamp: 1;
 		-webkit-box-orient: vertical;
-		line-height: 1.4;
-		min-height: 2.8em;
+		line-height: 1.3;
+		text-align: left;
 	}
 	
 	.footer {
 		display: flex;
+		flex-direction: column;
 		justify-content: space-between;
-		align-items: center;
-		margin-top: auto;
 	}
 	
 	.priceWrapper {
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
+		gap: 2px;
 	}
 	
 	.price {
-		font-size: 18px;
-		font-weight: 700;
-		color: #2c2c2c;
-	}
-	
-	.oldPrice {
-		font-size: 14px;
-		color: #9ca3af;
-		text-decoration: line-through;
+		font-size: 16px;
+		font-weight: 600;
+		color: #333333;
 	}
 	
 	.cartBtn {
-		width: 40px;
-		height: 40px;
+		width: 36px;
+		height: 36px;
 		border-radius: 50%;
 		border: none;
-		background: var(--color-accent);
-		color: white;
+		background: transparent;
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		transition: all 0.2s;
 		flex-shrink: 0;
+		padding: 0;
+	}
+	
+	.cartIcon {
+		width: 24px;
+		height: 24px;
+		color: var(--color-accent);
 	}
 	
 	.cartBtn:hover {
-		background: var(--color-focus);
 		transform: scale(1.1);
+	}
+	
+	.cartBtn:hover .cartIcon {
+		filter: brightness(1.2);
 	}
 	
 	.cartBtn:active {
@@ -172,32 +171,30 @@
 	
 	/* Responsive */
 	@media (max-width: 768px) {
-		.body {
-			padding: 12px;
+		.card {
 			gap: 8px;
+		}
+		
+		.imageWrapper {
+			border-radius: 16px;
 		}
 		
 		.title {
 			font-size: 14px;
-			min-height: 2.6em;
 		}
 		
 		.price {
-			font-size: 16px;
-		}
-		
-		.oldPrice {
-			font-size: 13px;
+			font-size: 14px;
 		}
 		
 		.cartBtn {
-			width: 36px;
-			height: 36px;
+			width: 32px;
+			height: 32px;
 		}
 		
-		.cartBtn svg {
-			width: 18px;
-			height: 18px;
+		.cartIcon {
+			width: 20px;
+			height: 20px;
 		}
 	}
 </style>

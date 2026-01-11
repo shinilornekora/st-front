@@ -12,24 +12,14 @@
 					/>
 				</div>
 				<div :class="$style.headerIcons">
-					<button :class="$style.iconBtn" aria-label="Избранное">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<circle cx="12" cy="12" r="10"/>
-							<path d="M12 6v6l4 2"/>
-						</svg>
+					<button :class="$style.iconBtn" aria-label="Профиль">
+						<img src="../../assets/user_circle.svg" alt="" :class="$style.headerIcon" />
 					</button>
 					<button :class="$style.iconBtn" aria-label="Корзина">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path d="M9 2L7 6H3l3 14h12l3-14h-4l-2-4H9z"/>
-							<circle cx="9" cy="20" r="1"/>
-							<circle cx="15" cy="20" r="1"/>
-						</svg>
+						<img src="../../assets/dark_shopping_cart.svg" alt="" :class="$style.headerIcon" />
 					</button>
-					<button :class="$style.iconBtn" aria-label="Профиль">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<circle cx="12" cy="8" r="4"/>
-							<path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
-						</svg>
+					<button :class="$style.iconBtn" aria-label="Уведомления">
+						<img src="../../assets/notification_icon.svg" alt="" :class="$style.headerIcon" />
 					</button>
 				</div>
 			</div>
@@ -55,47 +45,18 @@
 			<div :class="$style.placeholderBox" v-for="i in 6" :key="i"></div>
 		</section>
 
-		<!-- Category Chips -->
-		<section :class="$style.categorySection">
-			<div :class="$style.categoryScroll">
-				<Chip
-					v-for="category in categories"
-					:key="category.id"
-					:label="category.name"
-					:selected="selectedCategory === category.id"
-					@click="selectCategory(category.id)"
-					:class="$style.categoryChip"
-				/>
-			</div>
-		</section>
-
 		<!-- Product Grid -->
 		<main :class="$style.main">
 			<div :class="$style.productGrid">
-				<div v-for="product in displayedProducts" :key="product.id" :class="$style.productCardWrapper">
-					<div :class="$style.productCard">
-						<img
-							:src="product.images && product.images.length > 0 ? product.images[0] : ''"
-							:alt="product.name"
-							:class="$style.productImage"
-						/>
-						<div :class="$style.productInfo">
-							<h3 :class="$style.productName">{{ product.name }}</h3>
-							<div :class="$style.productPrice">
-								<span :class="$style.currentPrice">{{ product.price }} ₽</span>
-								<span v-if="product.discount" :class="$style.oldPrice">{{ Math.round(product.price / (1 - product.discount / 100)) }} ₽</span>
-								<span v-if="product.discount" :class="$style.discountBadge">−{{ product.discount }}%</span>
-							</div>
-							<button :class="$style.addToCartBtn" @click="addToCart(product)">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-									<path d="M9 2L7 6H3l3 14h12l3-14h-4l-2-4H9z"/>
-									<circle cx="9" cy="20" r="1"/>
-									<circle cx="15" cy="20" r="1"/>
-								</svg>
-							</button>
-						</div>
-					</div>
-				</div>
+				<ProductCard
+					v-for="product in displayedProducts"
+					:key="product.id"
+					:image="product.images && product.images.length > 0 ? product.images[0] : ''"
+					:title="product.name"
+					:price="product.price"
+					:oldPrice="product.discount ? Math.round(product.price / (1 - product.discount / 100)) : undefined"
+					@add-to-cart="addToCart(product)"
+				/>
 			</div>
 
 			<!-- Pagination -->
@@ -148,7 +109,7 @@
 		<footer :class="$style.footer">
 			<div :class="$style.footerContent">
 				<div :class="$style.footerColumn">
-					<h2 :class="$style.footerLogo">Stivalli</h2>
+					<img src="../../assets/logo_white.svg" alt="Stivalli" :class="$style.footerLogo" />
 				</div>
 				<div :class="$style.footerColumn">
 					<h3 :class="$style.footerTitle">Каталог</h3>
@@ -352,25 +313,25 @@ onMounted(async () => {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	background: #f5f5f5;
+	background: #fff;
 }
 
 /* Header */
 .header {
 	background: white;
 	border-bottom: 1px solid #e5e5e5;
-	padding: 12px 0;
-	position: sticky;
-	top: 0;
-	z-index: 100;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+	padding: 27px 0;
+	position: sticky;
+	z-index: 100;
+	top: 0;
 }
 
 .headerContent {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 0 24px;
+	padding: 0 120px;
 }
 
 .logo {
@@ -401,8 +362,7 @@ onMounted(async () => {
 	border: none;
 	cursor: pointer;
 	padding: 8px;
-	color: #6b7280;
-	transition: color 0.2s;
+	transition: background 0.2s;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -410,8 +370,13 @@ onMounted(async () => {
 }
 
 .iconBtn:hover {
-	color: #2c2c2c;
 	background: #f3f4f6;
+}
+
+.headerIcon {
+	width: 24px;
+	height: 24px;
+	color: #6b7280;
 }
 
 /* Hero Section */
@@ -421,8 +386,8 @@ onMounted(async () => {
 }
 
 .heroCarousel {
-	width: 100%;	margin: 0 auto;
-	padding: 0 clamp(16px, 4vw, 32px);
+	margin: 0 auto;
+	padding: 0 120px;
 	display: flex;
 	gap: clamp(12px, 2vw, 16px);
 	align-items: center;
@@ -430,7 +395,8 @@ onMounted(async () => {
 
 .heroThumbnail {
 	flex: 0 0 clamp(120px, 15vw, 180px);
-	height: clamp(180px, 20vw, 250px);
+	height: 466px;
+	width: 187px;
 	overflow: hidden;
 	border-radius: 12px;
 }
@@ -443,7 +409,8 @@ onMounted(async () => {
 
 .heroMain {
 	flex: 1;
-	height: clamp(180px, 20vw, 250px);
+	height: 466px;
+	width: 187px;
 	overflow: hidden;
 	border-radius: 12px;
 	min-width: 0;
@@ -458,16 +425,16 @@ onMounted(async () => {
 /* Placeholder Section */
 .placeholderSection {
 	background: white;
-	width: 100%;
-	margin: 0 auto;
-	padding: 0 clamp(16px, 4vw, 32px) clamp(16px, 3vw, 24px);
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-	gap: clamp(12px, 2vw, 16px);
+	padding: 0 120px;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	gap: 18px;
 }
 
 .placeholderBox {
-	height: clamp(60px, 8vw, 80px);
+	height: 123px;
+	width: -webkit-fill-available;
 	background: #d1d5db;
 	border-radius: 8px;
 }
@@ -482,7 +449,7 @@ onMounted(async () => {
 .categoryScroll {
 	width: 100%;
 	margin: 0 auto;
-	padding: 0 clamp(16px, 4vw, 32px);
+	padding: 0 120px;
 	display: flex;
 	gap: clamp(8px, 1.5vw, 12px);
 	overflow-x: auto;
@@ -503,112 +470,17 @@ onMounted(async () => {
 	flex: 1;
 	width: 100%;
 	margin: 0 auto;
-	padding: clamp(24px, 4vw, 32px) clamp(16px, 4vw, 32px);
-	width: 100%;
+	padding: 0 120px;
+	padding-top: 23px;
 	box-sizing: border-box;
+	background: white;
 }
 
 .productGrid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
-	gap: clamp(16px, 2vw, 20px);
-	margin-bottom: clamp(32px, 5vw, 48px);
-}
-
-.productCardWrapper {
-	display: flex;
-	flex-direction: column;
-}
-
-.productCard {
-	background: white;
-	border-radius: 12px;
-	overflow: hidden;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-	display: flex;
-	flex-direction: column;
-	height: 100%;
-	transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.productCard:hover {
-	transform: translateY(-4px);
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-}
-
-.productImage {
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 35px;
 	width: 100%;
-	aspect-ratio: 1 / 1;
-	object-fit: cover;
-	background: #f3f4f6;
-}
-
-.productInfo {
-	padding: clamp(12px, 2vw, 16px);
-	display: flex;
-	flex-direction: column;
-	gap: clamp(6px, 1vw, 8px);
-	flex: 1;
-}
-
-.productName {
-	font-size: clamp(13px, 1.5vw, 14px);
-	font-weight: 500;
-	margin: 0;
-	color: #2c2c2c;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	display: -webkit-box;
-	-webkit-line-clamp: 2;
-	-webkit-box-orient: vertical;
-}
-
-.productPrice {
-	display: flex;
-	align-items: center;
-	gap: clamp(6px, 1vw, 8px);
-	flex-wrap: wrap;
-}
-
-.currentPrice {
-	font-size: clamp(15px, 2vw, 16px);
-	font-weight: 700;
-	color: #2e7d32;
-}
-
-.oldPrice {
-	font-size: clamp(12px, 1.5vw, 13px);
-	color: #9ca3af;
-	text-decoration: line-through;
-}
-
-.discountBadge {
-	font-size: clamp(11px, 1.3vw, 12px);
-	color: #d32f2f;
-	font-weight: 600;
-}
-
-.addToCartBtn {
-	background: #5fdbd1;
-	border: none;
-	border-radius: 8px;
-	padding: clamp(8px, 1.5vw, 10px);
-	cursor: pointer;
-	color: white;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	transition: background 0.2s, transform 0.1s;
-	margin-top: auto;
-}
-
-.addToCartBtn:hover {
-	background: #49a49d;
-	transform: scale(1.05);
-}
-
-.addToCartBtn:active {
-	transform: scale(0.98);
 }
 
 /* Pagination */
@@ -619,6 +491,7 @@ onMounted(async () => {
 	gap: 8px;
 	flex-wrap: wrap;
 	padding: 0 clamp(8px, 2vw, 16px);
+	margin-top: 32px;
 }
 
 .paginationBtn {
@@ -686,14 +559,14 @@ onMounted(async () => {
 .footer {
 	background: #2c2c2c;
 	color: white;
-	padding: clamp(32px, 5vw, 48px) 0 clamp(24px, 3vw, 32px);
-	margin-top: auto;
+	padding: 40px 120px;
+	padding-top: 40px;
+	margin-top: 84px;
 }
 
 .footerContent {
 	width: 100%;
 	margin: 0 auto;
-	padding: 0 clamp(16px, 4vw, 32px);
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
 	gap: clamp(24px, 4vw, 32px);
@@ -706,6 +579,8 @@ onMounted(async () => {
 }
 
 .footerLogo {
+	height: 35px;
+	width: 135px;
 	font-size: clamp(20px, 3vw, 24px);
 	font-weight: 700;
 	margin: 0;
