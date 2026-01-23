@@ -1,29 +1,7 @@
 <template>
 	<div :class="$style.page">
 		<!-- Header -->
-		<header :class="$style.header">
-			<div :class="$style.headerContent">
-				<img src="../../assets/logo_full.svg" alt="Stivalli" :class="$style.logo" />
-				<div :class="$style.searchWrapper">
-					<SearchField
-						v-model="searchQuery"
-						placeholder="Value"
-						:class="$style.search"
-					/>
-				</div>
-				<div :class="$style.headerIcons">
-					<button :class="$style.iconBtn" aria-label="Профиль">
-						<img src="../../assets/user_circle.svg" alt="" :class="$style.headerIcon" />
-					</button>
-					<button :class="$style.iconBtn" aria-label="Корзина">
-						<img src="../../assets/dark_shopping_cart.svg" alt="" :class="$style.headerIcon" />
-					</button>
-					<button :class="$style.iconBtn" aria-label="Уведомления">
-						<img src="../../assets/notification_icon.svg" alt="" :class="$style.headerIcon" />
-					</button>
-				</div>
-			</div>
-		</header>
+		<Header />
 
 		<!-- Hero Carousel with 3 images -->
 		<section :class="$style.heroSection">
@@ -107,35 +85,7 @@
 		</main>
 
 		<!-- Footer -->
-		<footer :class="$style.footer">
-			<div :class="$style.footerContent">
-				<div :class="$style.footerColumn">
-					<img src="../../assets/logo_white.svg" alt="Stivalli" :class="$style.footerLogo" />
-				</div>
-				<div :class="$style.footerColumn">
-					<h3 :class="$style.footerTitle">Каталог</h3>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Новинки</Link>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Женщинам</Link>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Мужчинам</Link>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Распродажа (Sale)</Link>
-				</div>
-				<div :class="$style.footerColumn">
-					<h3 :class="$style.footerTitle">Покупателям</h3>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Доставка и оплата</Link>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Обмен и возврат</Link>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Вопросы и ответы (FAQ)</Link>
-				</div>
-				<div :class="$style.footerColumn">
-					<h3 :class="$style.footerTitle">О компании</h3>
-					<Link href="#" variant="secondary" :class="$style.footerLink">О бренде Stivalli</Link>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Контакты</Link>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Партнерам (B2B)</Link>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Публичная оферта</Link>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Политика</Link>
-					<Link href="#" variant="secondary" :class="$style.footerLink">Конфиденциальности</Link>
-				</div>
-			</div>
-		</footer>
+		<Footer />
 	</div>
 </template>
 
@@ -146,6 +96,7 @@ import { useStore } from 'effector-vue/composition';
 import { $products, getProductsFx } from '../../entities/product/product.store';
 import { addItem } from '../../entities/cart/cart.store';
 import type { Product } from '../../entities/product/product.types';
+import { Header, Footer } from '../../widgets';
 import SearchField from '../../shared/ui/SearchField.vue';
 import IconButton from '../../shared/ui/IconButton.vue';
 import Carousel from '../../shared/ui/Carousel.vue';
@@ -322,75 +273,14 @@ onMounted(async () => {
 	display: flex;
 	flex-direction: column;
 	background: #fff;
-}
-
-/* Header */
-.header {
-	background: white;
-	border-bottom: 1px solid #e5e5e5;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	padding: 27px 0;
-	position: sticky;
-	z-index: 100;
-	top: 0;
-}
-
-.headerContent {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 0 120px;
-}
-
-.logo {
-	height: 35px;
-	width: 138px;
-	flex-shrink: 0;
-	object-fit: contain;
-}
-
-.searchWrapper {
-	flex: 1;
-	max-width: 600px;
-	min-width: 0;
-}
-
-.search {
-	width: 100%;
-}
-
-.headerIcons {
-	display: flex;
-	gap: clamp(8px, 1.5vw, 12px);
-	flex-shrink: 0;
-}
-
-.iconBtn {
-	background: transparent;
-	border: none;
-	cursor: pointer;
-	padding: 8px;
-	transition: background 0.2s;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 8px;
-}
-
-.iconBtn:hover {
-	background: #f3f4f6;
-}
-
-.headerIcon {
-	width: 24px;
-	height: 24px;
-	color: #6b7280;
+	padding-bottom: 46px; /* Space for mobile footer */
 }
 
 /* Hero Section */
 .heroSection {
 	background: white;
 	padding: clamp(16px, 3vw, 24px) 0;
+	overflow: hidden;
 }
 
 .heroCarousel {
@@ -402,7 +292,7 @@ onMounted(async () => {
 }
 
 .heroThumbnail {
-	flex: 0 0 clamp(120px, 15vw, 180px);
+	flex: 0 0 187px;
 	height: 466px;
 	width: 187px;
 	overflow: hidden;
@@ -418,7 +308,7 @@ onMounted(async () => {
 .heroMain {
 	flex: 1;
 	height: 466px;
-	width: 187px;
+	width: 852px;
 	overflow: hidden;
 	border-radius: 12px;
 	min-width: 0;
@@ -437,12 +327,20 @@ onMounted(async () => {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	overflow: scroll;
 	gap: 18px;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.placeholderSection::-webkit-scrollbar {
+	display: none;
 }
 
 .placeholderBox {
 	height: 123px;
 	width: -webkit-fill-available;
+	min-width: 196px;
 	background: #d1d5db;
 	border-radius: 8px;
 }
@@ -563,106 +461,57 @@ onMounted(async () => {
 	align-items: center;
 }
 
-/* Footer */
-.footer {
-	background: #2c2c2c;
-	color: white;
-	padding: 40px 120px;
-	padding-top: 40px;
-	margin-top: 84px;
-}
 
-.footerContent {
-	width: 100%;
-	margin: 0 auto;
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
-	gap: clamp(24px, 4vw, 32px);
-}
+@media (max-width: 1200px) {
+	.placeholderSection {
+		padding: 0 !important;
+	}
 
-.footerColumn {
-	display: flex;
-	flex-direction: column;
-	gap: clamp(10px, 1.5vw, 12px);
-}
-
-.footerLogo {
-	height: 35px;
-	width: 135px;
-	font-size: clamp(20px, 3vw, 24px);
-	font-weight: 700;
-	margin: 0;
-	color: white;
-}
-
-.footerTitle {
-	font-size: clamp(15px, 2vw, 16px);
-	font-weight: 600;
-	text-align: left;
-	margin: 0 0 clamp(6px, 1vw, 8px) 0;
-	color: white;
-}
-
-.footerLink {
-	color: #9ca3af;
-	text-align: left;
-	text-decoration: none;
-	font-size: clamp(13px, 1.5vw, 14px);
-	transition: color 0.2s;
-}
-
-.footerLink:hover {
-	color: white;
-}
-
-/* Responsive Breakpoints */
-@media (max-width: 1024px) {
+	.placeholderBox {
+		min-width: 107px;
+		max-height: 71px;
+	}
+	
+	.heroCarousel {
+		padding: 0;
+	}
+	
+	.heroThumbnail {
+		height: 241px;
+		width: 102px;
+		flex: 0 0 102px;
+		position: relative;
+	}
+	
 	.heroThumbnail:first-child {
-		display: none;
+		margin-left: -30px;
+	}
+
+	.heroThumbnail:last-child {
+		margin-right: -30px;
+	}
+	
+	.heroMain {
+		height: 241px;
+		width: 442px;
 	}
 }
 
 @media (max-width: 768px) {
-	.header {
-		padding: 8px 0;
-	}
-
-	.headerContent {
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-
-	.logo {
-		flex: 1;
-	}
-
-	.searchWrapper {
-		order: 3;
-		flex-basis: 100%;
-		max-width: none;
-	}
-
-	.headerIcons {
-		gap: 4px;
-	}
-
-	.iconBtn {
-		padding: 6px;
-	}
 
 	.heroCarousel {
-		flex-direction: column;
 		gap: 12px;
 	}
 	
 	.heroThumbnail {
-		width: 100%;
-		height: 150px;
+		max-width: 68px;
+		height: 234px;
+		position: relative;
 	}
 	
 	.heroMain {
 		width: 100%;
-		height: 200px;
+		height: 234px;
 	}
 	
 	.placeholderSection {
@@ -678,10 +527,6 @@ onMounted(async () => {
 		gap: 12px;
 	}
 
-	.footerContent {
-		grid-template-columns: repeat(2, 1fr);
-		gap: 20px;
-	}
 }
 
 @media (max-width: 480px) {
@@ -689,13 +534,11 @@ onMounted(async () => {
 		padding: 0 12px;
 	}
 
-	.heroSection,
 	.categorySection {
 		padding-left: 12px;
 		padding-right: 12px;
 	}
 
-	.heroCarousel,
 	.placeholderSection,
 	.categoryScroll {
 		padding-left: 12px;
@@ -706,12 +549,19 @@ onMounted(async () => {
 		padding: 16px 12px;
 	}
 
+	.heroThumbnail:first-child {
+		max-width: 68px;
+		height: 234px;
+	}
+	
 	.heroThumbnail:last-child {
-		display: none;
+		max-width: 68px;
+		height: 234px;
 	}
 
 	.heroMain {
-		height: 180px;
+		height: 234px;
+		min-width: 309px;
 	}
 
 	.placeholderSection {
@@ -724,14 +574,6 @@ onMounted(async () => {
 		gap: 8px;
 	}
 
-	.footerContent {
-		grid-template-columns: 1fr;
-		gap: 16px;
-	}
-
-	.footer {
-		padding: 24px 0 16px;
-	}
 }
 
 @media (max-width: 360px) {

@@ -405,6 +405,11 @@
 		.form {
 			padding: 6px 12px;
 		}
+
+		.searchContainer,
+		.form {
+			max-width: 100% !important;
+		}
 		
 		.input {
 			font-size: 14px;

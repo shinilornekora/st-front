@@ -1,8 +1,8 @@
 <template>
 	<header :class="$style.header">
 		<div :class="$style.headerContent">
-			<router-link to="/">
-				<img src="../assets/logo_full.svg" alt="Stivalli" :class="$style.logo" />
+			<router-link :class="$style.logo" to="/">
+				<img :src="logoSrc" alt="Stivalli" :class="$style.logo" />
 			</router-link>
 			<div :class="$style.searchWrapper">
 				<SearchField
@@ -27,10 +27,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import SearchField from '../shared/ui/SearchField.vue';
+import logoFull from '../assets/logo_full.svg';
+import logo from '../assets/logo.svg';
 
 const searchQuery = ref('');
+const screenWidth = ref(window.innerWidth);
+
+const logoSrc = computed(() => {
+	return screenWidth.value < 1200 ? logo : logoFull;
+});
+
+const updateScreenWidth = () => {
+	screenWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+	window.addEventListener('resize', updateScreenWidth);
+});
+
+onUnmounted(() => {
+	window.removeEventListener('resize', updateScreenWidth);
+});
 </script>
 
 <style module>
@@ -98,6 +117,12 @@ const searchQuery = ref('');
 	color: #6b7280;
 }
 
+@media (max-width: 1200px) {
+	.headerContent {
+		padding: 0 15px;
+	}
+}
+
 /* Responsive */
 @media (max-width: 768px) {
 	.header {
@@ -122,7 +147,7 @@ const searchQuery = ref('');
 	}
 
 	.headerIcons {
-		gap: 4px;
+		display: none;
 	}
 
 	.iconBtn {

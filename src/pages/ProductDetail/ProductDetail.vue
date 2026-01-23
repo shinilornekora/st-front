@@ -289,6 +289,7 @@ onMounted(() => {
 	display: flex;
 	flex-direction: column;
 	background: #fff;
+	padding-bottom: 46px; /* Space for mobile footer */
 }
 
 /* Breadcrumbs */
@@ -829,6 +830,16 @@ onMounted(() => {
 	.similarProducts {
 		grid-template-columns: repeat(2, 1fr);
 		gap: 16px;
+	}
+	
+	.mainImageWrapper {
+		width: 166px;
+		height: 198px;
+	}
+	
+	.thumbnail {
+		width: 50px;
+		height: 60px;
 	}
 }
 </style>

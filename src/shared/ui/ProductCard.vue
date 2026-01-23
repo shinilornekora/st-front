@@ -178,10 +178,15 @@
 	@media (max-width: 768px) {
 		.card {
 			gap: 8px;
+			height: 278px;
+			width: 180px;
 		}
 		
 		.imageWrapper {
 			border-radius: 16px;
+			width: 180px;
+			height: 278px;
+			aspect-ratio: auto;
 		}
 		
 		.title {
