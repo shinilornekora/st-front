@@ -151,6 +151,7 @@
 						:image="similarProduct.images[0]"
 						:title="similarProduct.name"
 						:price="similarProduct.price"
+						:recommendation="true"
 						@click="goToProduct(similarProduct.id)"
 						@add-to-cart="addSimilarToCart(similarProduct)"
 					/>
@@ -750,6 +751,14 @@ onMounted(() => {
     display: flex;
     margin-top: 24px;
     flex-direction: row;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.similarProducts::-webkit-scrollbar {
+	display: none;
 }
 
 /* Responsive */
@@ -801,8 +810,7 @@ onMounted(() => {
 	}
 
 	.characteristicsSection,
-	.additionalSection,
-	.similarSection {
+	.additionalSection {
 		padding: 24px;
 	}
 
@@ -828,8 +836,7 @@ onMounted(() => {
 	}
 
 	.similarProducts {
-		grid-template-columns: repeat(2, 1fr);
-		gap: 16px;
+		gap: 12px;
 	}
 	
 	.mainImageWrapper {
@@ -840,6 +847,10 @@ onMounted(() => {
 	.thumbnail {
 		width: 50px;
 		height: 60px;
+	}
+
+	.similarSection {
+		padding: 0;
 	}
 }
 </style>

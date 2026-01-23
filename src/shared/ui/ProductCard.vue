@@ -1,6 +1,6 @@
 <template>
 	<article
-		:class="[$style.card, $style[type]]"
+		:class="[$style.card, $style[type], recommendation ? $style.recommendation : '']"
 		tabindex="0"
 		aria-label="Карточка товара"
 		@click="handleCardClick"
@@ -37,6 +37,7 @@
 		rating?: number;
 		seller?: string;
 		type?: 'grid' | 'list';
+		recommendation?: boolean;
 	}>();
 	
 	const emit = defineEmits(['add-to-cart', 'click']);
@@ -184,8 +185,8 @@
 		
 		.imageWrapper {
 			border-radius: 16px;
-			width: 180px;
-			height: 278px;
+			width: 166px;
+			height: 198px;
 			aspect-ratio: auto;
 		}
 		
@@ -206,5 +207,45 @@
 			width: 20px;
 			height: 20px;
 		}
+	}
+	
+	/* Recommendation card style */
+	.card.recommendation {
+		height: auto;
+		width: 166px;
+		gap: 8px;
+	}
+	
+	.card.recommendation .imageWrapper {
+		width: 166px;
+		height: 198px;
+		border-radius: 8px;
+		aspect-ratio: auto;
+	}
+	
+	.card.recommendation .body {
+		display: flex;
+		flex-direction: row;
+		gap: 4px;
+	}
+	
+	.card.recommendation .title {
+		font-size: 14px;
+		line-height: 1.2;
+		-webkit-line-clamp: 2;
+	}
+	
+	.card.recommendation .price {
+		font-size: 14px;
+	}
+	
+	.card.recommendation .cartBtn {
+		width: 28px;
+		height: 28px;
+	}
+	
+	.card.recommendation .cartIcon {
+		width: 18px;
+		height: 18px;
 	}
 </style>

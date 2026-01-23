@@ -18,6 +18,7 @@
             :image="similarProduct.images[0]"
             :title="similarProduct.name"
             :price="similarProduct.price"
+            :recommendation="true"
             @click="goToProduct(similarProduct.id)"
             @add-to-cart="addSimilarToCart(similarProduct)"
           />
@@ -145,6 +146,7 @@ const goToProduct = (productId: number) => {
   margin-top: 24px;
   flex-direction: row;
   overflow-x: auto;
+  overflow-y: hidden;
   padding-bottom: 8px;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -156,20 +158,12 @@ const goToProduct = (productId: number) => {
 
 .similarProducts :deep(.productCard) {
   flex-shrink: 0;
-  width: 180px;
-  height: 278px;
-}
-
-.similarProducts :deep(.productCard img) {
-  width: 166px;
-  height: 198px;
 }
 
 @media (max-width: 768px) {
   .similarSection {
-    padding: 24px 16px;
+    padding: 0;
   }
-
   .similarProducts {
     gap: 12px;
   }
