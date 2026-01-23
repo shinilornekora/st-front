@@ -39,49 +39,14 @@
 			</div>
 
 			<!-- Pagination -->
-			<nav :class="$style.pagination" aria-label="Pagination">
-				<button
-					:class="[$style.paginationBtn, $style.paginationArrow]"
-					@click="goToPreviousPage"
-					:disabled="currentPage === 1"
-					aria-label="Previous page"
-				>
-					<img src="../../assets/arrow_left.svg" alt="" :class="$style.arrowIcon" />
-					Previous
-				</button>
-				
-				<button
-					v-for="page in paginationPages"
-					:key="page"
-					:class="[$style.paginationBtn, { [$style.active]: page === currentPage }]"
-					@click="goToPage(page)"
-					:aria-label="`Page ${page}`"
-					:aria-current="page === currentPage ? 'page' : undefined"
-				>
-					{{ page }}
-				</button>
-				
-				<span v-if="showEllipsis" :class="$style.ellipsis">...</span>
-				
-				<button
-					v-if="totalPages > 5 && currentPage < totalPages - 2"
-					:class="$style.paginationBtn"
-					@click="goToPage(totalPages)"
-					:aria-label="`Page ${totalPages}`"
-				>
-					{{ totalPages }}
-				</button>
-				
-				<button
-					:class="[$style.paginationBtn, $style.paginationArrow]"
-					@click="goToNextPage"
-					:disabled="currentPage === totalPages"
-					aria-label="Next page"
-				>
-					Next
-					<img src="../../assets/arrow_right.svg" alt="" :class="$style.arrowIcon" />
-				</button>
-			</nav>
+			<Pagination
+				:current-page="currentPage"
+				:total-pages="totalPages"
+				:max-visible-pages="5"
+				previous-text="Previous"
+				next-text="Next"
+				@page-change="handlePageChange"
+			/>
 		</main>
 
 		<!-- Footer -->
@@ -97,6 +62,7 @@ import { $products, getProductsFx } from '../../entities/product/product.store';
 import { addItem } from '../../entities/cart/cart.store';
 import type { Product } from '../../entities/product/product.types';
 import { Header, Footer } from '../../widgets';
+import { Pagination } from '../../shared/ui';
 import SearchField from '../../shared/ui/SearchField.vue';
 import IconButton from '../../shared/ui/IconButton.vue';
 import Carousel from '../../shared/ui/Carousel.vue';
@@ -168,37 +134,6 @@ const displayedProducts = computed(() => {
 	return filteredProducts.value.slice(start, end);
 });
 
-const paginationPages = computed(() => {
-	const pages: number[] = [];
-	const maxVisible = 3;
-	
-	if (totalPages.value <= 5) {
-		// Show all pages if 5 or fewer
-		for (let i = 1; i <= totalPages.value; i++) {
-			pages.push(i);
-		}
-	} else {
-		// Always show first page
-		pages.push(1);
-		
-		// Show pages around current page
-		if (currentPage.value > 2) {
-			pages.push(currentPage.value - 1);
-		}
-		if (currentPage.value !== 1 && currentPage.value !== totalPages.value) {
-			pages.push(currentPage.value);
-		}
-		if (currentPage.value < totalPages.value - 1) {
-			pages.push(currentPage.value + 1);
-		}
-	}
-	
-	return [...new Set(pages)].sort((a, b) => a - b);
-});
-
-const showEllipsis = computed(() => {
-	return totalPages.value > 5 && currentPage.value < totalPages.value - 2;
-});
 
 // Methods
 const selectCategory = (categoryId: string) => {
@@ -206,21 +141,9 @@ const selectCategory = (categoryId: string) => {
 	currentPage.value = 1;
 };
 
-const goToPage = (page: number) => {
+const handlePageChange = (page: number) => {
 	currentPage.value = page;
 	window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
-const goToPreviousPage = () => {
-	if (currentPage.value > 1) {
-		goToPage(currentPage.value - 1);
-	}
-};
-
-const goToNextPage = () => {
-	if (currentPage.value < totalPages.value) {
-		goToPage(currentPage.value + 1);
-	}
 };
 
 const goToProduct = (productId: number) => {
@@ -247,10 +170,10 @@ onMounted(async () => {
 	for (let i = 1; i <= 100; i++) {
 		mockProducts.push({
 			id: i,
-			name: 'Name',
+			name: `Product ${i}`,
 			slug: `product-${i}`,
 			description: 'Product description',
-			price: 100500,
+			price: 100500 + (i * 100),
 			discount: i % 3 === 0 ? 20 : undefined,
 			currency: '₽',
 			inStock: true,
@@ -394,77 +317,6 @@ onMounted(async () => {
 	width: 100%;
 }
 
-/* Pagination */
-.pagination {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	gap: 8px;
-	flex-wrap: wrap;
-	padding: 0 clamp(8px, 2vw, 16px);
-	margin-top: 32px;
-}
-
-.paginationBtn {
-	min-width: 40px;
-	height: 40px;
-	padding: 8px 12px;
-	border: none;
-	background: transparent;
-	color: #2c2c2c;
-	font-size: 14px;
-	font-weight: 500;
-	border-radius: 8px;
-	cursor: pointer;
-	transition: all 0.2s;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 6px;
-}
-
-.paginationBtn:hover:not(:disabled):not(.active) {
-	background: #f3f4f6;
-}
-
-.paginationBtn:disabled {
-	color: #d1d5db;
-	cursor: not-allowed;
-}
-
-.paginationBtn.active {
-	background: var(--color-main);
-	color: white;
-	font-weight: 600;
-}
-
-.paginationArrow {
-	color: #6b7280;
-	font-size: 14px;
-}
-
-.paginationArrow:hover:not(:disabled) {
-	color: #2c2c2c;
-	background: #f3f4f6;
-}
-
-.arrowIcon {
-	width: 16px;
-	height: 16px;
-	flex-shrink: 0;
-}
-
-.paginationBtn:disabled .arrowIcon {
-	opacity: 0.3;
-}
-
-.ellipsis {
-	padding: 0 8px;
-	color: #6b7280;
-	font-size: 14px;
-	display: flex;
-	align-items: center;
-}
 
 
 @media (max-width: 1200px) {

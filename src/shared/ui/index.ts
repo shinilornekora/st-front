@@ -44,4 +44,5 @@ export { default as ConfirmDialog } from './ConfirmDialog.vue';
 export { default as EmptyState } from './EmptyState.vue';
 export { default as FullscreenLoader } from './FullscreenLoader.vue';
 export { default as ErrorPage } from './ErrorPage.vue';
+export { default as Pagination } from './Pagination.vue';
 export { theme };
