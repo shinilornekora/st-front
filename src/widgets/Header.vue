@@ -12,15 +12,39 @@
 				/>
 			</div>
 			<div :class="$style.headerIcons">
-				<button :class="$style.iconBtn" aria-label="Профиль">
-					<img src="../assets/user_circle.svg" alt="" :class="$style.headerIcon" />
-				</button>
-				<button :class="$style.iconBtn" aria-label="Корзина">
-					<img src="../assets/dark_shopping_cart.svg" alt="" :class="$style.headerIcon" />
-				</button>
-				<button :class="$style.iconBtn" aria-label="Уведомления">
-					<img src="../assets/notification_icon.svg" alt="" :class="$style.headerIcon" />
-				</button>
+				<router-link
+					to="/profile"
+					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Profile') }]"
+					aria-label="Профиль"
+				>
+					<img
+						:src="isRouteActive('Profile') ? profileFilledIcon : userCircleIcon"
+						alt=""
+						:class="$style.headerIcon"
+					/>
+				</router-link>
+				<router-link
+					to="/cart"
+					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Cart') }]"
+					aria-label="Корзина"
+				>
+					<img
+						:src="isRouteActive('Cart') ? cartFilledIcon : darkShoppingCartIcon"
+						alt=""
+						:class="$style.headerIcon"
+					/>
+				</router-link>
+				<router-link
+					to="/notifications"
+					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Notifications') }]"
+					aria-label="Уведомления"
+				>
+					<img
+						:src="isRouteActive('Notifications') ? notificationFilledIcon : notificationIcon"
+						alt=""
+						:class="$style.headerIcon"
+					/>
+				</router-link>
 			</div>
 		</div>
 	</header>
@@ -28,16 +52,29 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useRoute } from 'vue-router';
 import SearchField from '../shared/ui/SearchField.vue';
 import logoFull from '../assets/logo_full.svg';
 import logo from '../assets/logo.svg';
+import userCircleIcon from '../assets/user_circle.svg';
+import profileFilledIcon from '../assets/profile_filled.svg';
+import darkShoppingCartIcon from '../assets/dark_shopping_cart.svg';
+import cartFilledIcon from '../assets/cart_filled.svg';
+import notificationIcon from '../assets/notification_icon.svg';
+import notificationFilledIcon from '../assets/notification_filled.svg';
 
+const route = useRoute();
 const searchQuery = ref('');
 const screenWidth = ref(window.innerWidth);
 
 const logoSrc = computed(() => {
 	return screenWidth.value < 1200 ? logo : logoFull;
 });
+
+// Check if a route is active
+const isRouteActive = (routeName: string) => {
+	return route.name === routeName;
+};
 
 const updateScreenWidth = () => {
 	screenWidth.value = window.innerWidth;
@@ -105,10 +142,20 @@ onUnmounted(() => {
 	align-items: center;
 	justify-content: center;
 	border-radius: 8px;
+	text-decoration: none;
+	color: inherit;
 }
 
 .iconBtn:hover {
 	background: #f3f4f6;
+}
+
+.iconBtn.active {
+	background: #f3f4f6;
+}
+
+.iconBtn.active .headerIcon {
+	color: var(--color-main);
 }
 
 .headerIcon {

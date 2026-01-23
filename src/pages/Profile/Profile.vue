@@ -30,7 +30,8 @@ import { Header, Footer } from '../../widgets';
 .main {
   flex: 1;
   padding: 24px 16px;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
 }
 
 h1 {

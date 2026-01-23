@@ -115,6 +115,7 @@ const goToProduct = (productId: number) => {
   width: 100%;
   margin-top: 0;
   margin-bottom: 48px;
+  align-self: center;
 }
 
 .cartIcon {
@@ -163,6 +164,13 @@ const goToProduct = (productId: number) => {
 
 .similarProducts :deep(.productCard) {
   flex-shrink: 0;
+}
+
+@media (min-width: 769px) {
+  .cartIcon {
+    width: 440px;
+    height: 440px;
+  }
 }
 
 @media (max-width: 768px) {
