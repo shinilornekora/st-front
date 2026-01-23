@@ -142,7 +142,7 @@
 
 			<!-- Similar Products Section -->
 			<section :class="$style.similarSection">
-				<h2 :class="$style.sectionTitle">Похожие товары:</h2>
+				<h2 :class="$style.sectionTitle">Вам может понравиться:</h2>
 				
 				<div :class="$style.similarProducts">
 					<ProductCard

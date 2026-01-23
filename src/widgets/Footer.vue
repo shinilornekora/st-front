@@ -33,29 +33,60 @@
 	<!-- Mobile Footer Menu -->
 	<footer :class="$style.mobileFooter" v-else>
 		<div :class="$style.mobileFooterContent">
-			<router-link to="/profile" :class="$style.mobileFooterBtn">
-				<img src="../assets/user_circle.svg" alt="Profile" :class="$style.mobileFooterIcon" />
+			<router-link to="/profile" :class="[$style.mobileFooterBtn, { [$style.active]: isRouteActive('Profile') }]">
+				<img
+					:src="isRouteActive('Profile') ? profileFilledIcon : userCircleIcon"
+					alt="Profile"
+					:class="$style.mobileFooterIcon"
+				/>
 			</router-link>
-			<router-link to="/menu" :class="$style.mobileFooterBtn">
-				<img src="../assets/hamburger.svg" alt="Menu" :class="$style.mobileFooterIcon" />
+			<router-link to="/menu" :class="[$style.mobileFooterBtn, { [$style.active]: isRouteActive('Menu') }]">
+				<img
+					:src="isRouteActive('Menu') ? hamburgerFilledIcon : hamburgerIcon"
+					alt="Menu"
+					:class="$style.mobileFooterIcon"
+				/>
 			</router-link>
-			<router-link to="/cart" :class="$style.mobileFooterBtn">
-				<img src="../assets/dark_shopping_cart.svg" alt="Cart" :class="$style.mobileFooterIcon" />
+			<router-link to="/cart" :class="[$style.mobileFooterBtn, { [$style.active]: isRouteActive('Cart') }]">
+				<img
+					:src="isRouteActive('Cart') ? cartFilledIcon : darkShoppingCartIcon"
+					alt="Cart"
+					:class="$style.mobileFooterIcon"
+				/>
 			</router-link>
-			<router-link to="/notifications" :class="$style.mobileFooterBtn">
-				<img src="../assets/notification_icon.svg" alt="Notifications" :class="$style.mobileFooterIcon" />
+			<router-link to="/notifications" :class="[$style.mobileFooterBtn, { [$style.active]: isRouteActive('Notifications') }]">
+				<img
+					:src="isRouteActive('Notifications') ? notificationFilledIcon : notificationIcon"
+					alt="Notifications"
+					:class="$style.mobileFooterIcon"
+				/>
 			</router-link>
 		</div>
 	</footer>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
+import userCircleIcon from '../assets/user_circle.svg';
+import profileFilledIcon from '../assets/profile_filled.svg';
+import hamburgerIcon from '../assets/hamburger.svg';
+import hamburgerFilledIcon from '../assets/hamburger_filled.svg';
+import darkShoppingCartIcon from '../assets/dark_shopping_cart.svg';
+import cartFilledIcon from '../assets/cart_filled.svg';
+import notificationIcon from '../assets/notification_icon.svg';
+import notificationFilledIcon from '../assets/notification_filled.svg';
 
+const route = useRoute();
 const isMobile = ref(window.innerWidth <= 768);
 
 const updateIsMobile = () => {
 	isMobile.value = window.innerWidth <= 768;
+};
+
+// Check if a route is active
+const isRouteActive = (routeName: string) => {
+	return route.name === routeName;
 };
 
 onMounted(() => {
@@ -184,15 +215,26 @@ onUnmounted(() => {
 	transition: background-color 0.2s;
 	min-width: 50px;
 	height: 100%;
+	outline: none; /* Remove focus outline */
 }
 
-.mobileFooterBtn:hover {
-	background-color: rgba(0, 0, 0, 0.05);
+.mobileFooterBtn:focus {
+	outline: none; /* Remove focus outline on focus */
+	box-shadow: none; /* Remove any box shadow on focus */
+}
+
+.mobileFooterBtn:active {
+	outline: none; /* Remove outline on active/click */
+	box-shadow: none; /* Remove any box shadow on active/click */
 }
 
 .mobileFooterIcon {
-	width: 20px;
-	height: 20px;
+	width: 24px;
+	height: 24px;
 	color: #6b7280;
+}
+
+.mobileFooterBtn.active .mobileFooterIcon {
+	color: var(--color-main);
 }
 </style>

@@ -146,7 +146,7 @@
 	/* Accent - Filled */
 	.btn--accent--filled {
 		background: var(--color-accent);
-		color: var(--color-primary);
+		color: #fff;
 		border-color: var(--color-accent);
 	}
 	.btn--accent--filled:hover:not(:disabled) {
