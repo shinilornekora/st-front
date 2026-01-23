@@ -151,6 +151,8 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Header, Footer } from '../../widgets';
 import { ProductCard, Recommendations } from '../../shared/ui';
+import { addItem } from '../../entities/cart/cart.store';
+import type { Product } from '../../entities/product/product.types';
 
 const route = useRoute();
 const router = useRouter();
@@ -288,13 +290,25 @@ const toggleAccordion = () => {
 };
 
 const addToCart = () => {
-	console.log('Add to cart:', product.value.id, quantity.value);
-	// TODO: Implement cart logic
+	addItem({
+		id: product.value.id,
+		product: product.value as Product,
+		quantity: quantity.value,
+		price: product.value.price,
+		discount: product.value.discount,
+		currency: product.value.currency,
+	});
 };
 
-const addSimilarToCart = (similarProduct: any) => {
-	console.log('Add similar to cart:', similarProduct.id);
-	// TODO: Implement cart logic
+const addSimilarToCart = (similarProduct: Product) => {
+	addItem({
+		id: similarProduct.id,
+		product: similarProduct,
+		quantity: 1,
+		price: similarProduct.price,
+		discount: similarProduct.discount,
+		currency: similarProduct.currency,
+	});
 };
 
 const goToProduct = (product: any) => {

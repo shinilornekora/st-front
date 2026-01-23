@@ -6,31 +6,70 @@
 	>
 		<img v-if="image" :src="image" :alt="title" :class="$style.img" />
 		<div :class="$style.info">
-			<h4 :class="$style.title">{{ title }}</h4>
+			<h4 :class="$style.title">{{ title || 'No title' }}</h4>
 			<slot name="variations" />
 			<div :class="$style.price">
-				{{ price }}₽ x {{ qty }} =
-				<b>{{ (price * qty).toFixed(2) }}₽</b>
+				{{ formatPrice(price || 0) }} x {{ qty || 0 }} =
+				<b>{{ formatPrice((price || 0) * (qty || 0)) }}</b>
 			</div>
 		</div>
-		<button
-			:class="$style.remove"
-			@click="$emit('remove')"
-			aria-label="Удалить из корзины"
-		>
-			×
-		</button>
+		<div :class="$style.controls">
+			<div :class="$style.quantityControl">
+				<button
+					:class="$style.quantityBtn"
+					@click="decreaseQuantity"
+					:disabled="qty <= 1"
+					aria-label="Уменьшить количество"
+				>
+					<img src="../../assets/minus_circle.svg" alt="Decrease quantity" :class="$style.quantityIcon" />
+				</button>
+				<span :class="$style.quantity">{{ qty || 0 }}</span>
+				<button
+					:class="$style.quantityBtn"
+					@click="increaseQuantity"
+					aria-label="Увеличить количество"
+				>
+					<img src="../../assets/plus_circle.svg" alt="Increase quantity" :class="$style.quantityIcon" />
+				</button>
+			</div>
+			<button
+				:class="$style.remove"
+				@click="$emit('remove')"
+				aria-label="Удалить из корзины"
+			>
+				×
+			</button>
+		</div>
 	</article>
 </template>
 <script setup lang="ts">
 	import theme from './theme.module.css';
-	defineProps<{
+	import { updateQty } from '../../entities/cart/cart.store';
+	
+	const props = defineProps<{
+		id: number;
 		image?: string;
 		title: string;
 		price: number;
 		qty: number;
 		type?: 'selected' | 'error' | 'disabled';
 	}>();
+	
+	defineEmits(['remove']);
+	
+	const formatPrice = (price: number) => {
+		return `${price.toLocaleString('ru-RU')} ₽`;
+	};
+	
+	const decreaseQuantity = () => {
+		if (props.qty > 1) {
+			updateQty({ id: props.id, quantity: props.qty - 1 });
+		}
+	};
+	
+	const increaseQuantity = () => {
+		updateQty({ id: props.id, quantity: props.qty + 1 });
+	};
 </script>
 <style module>
 	@import './theme.module.css';
@@ -69,9 +108,50 @@
 	.title {
 		font-weight: 500;
 		font-size: 15px;
+		color: #2c2c2c;
 	}
 	.price {
 		font-size: 14px;
+		color: #2c2c2c;
+	}
+	.controls {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+	}
+	.quantityControl {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.quantityBtn {
+		width: 24px;
+		height: 24px;
+		border-radius: 4px;
+		border: 1px solid #e5e7eb;
+		background: #fff;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 14px;
+		transition: all 0.2s;
+	}
+	.quantityBtn:hover:not(:disabled) {
+		background: #f3f4f6;
+		border-color: #d1d5db;
+	}
+	.quantityBtn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+	.quantity {
+		font-size: 14px;
+		font-weight: 500;
+		min-width: 20px;
+		text-align: center;
+		color: #2c2c2c;
 	}
 	.remove {
 		background: none;

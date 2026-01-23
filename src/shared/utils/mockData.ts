@@ -24,17 +24,27 @@ const brands = [
 
 // Image URLs for different product types (all shoe photos)
 const imageUrls = [
-  'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=800&fit=crop',
   'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=600&h=800&fit=crop',
   'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&h=800&fit=crop',
-  'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=600&h=800&fit=crop',
   'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&h=800&fit=crop',
   'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=600&h=800&fit=crop',
   'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&h=800&fit=crop',
   'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&h=800&fit=crop',
   'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=800&fit=crop',
-  'https://images.unsplash.com/photo-1608230709053-5e7c0e6d3b1e?w=600&h=800&fit=crop',
+  'https://img.freepik.com/free-psd/classic-white-leather-sneakers-stylish-footwear-fashionable-shoes_632498-46182.jpg?semt=ais_hybrid&w=740',
+  'https://img.freepik.com/premium-psd/psd-3d-heels-top-isolated-transparent-background_817178-4771.jpg?semt=ais_hybrid&w=740',
+  'https://img.freepik.com/premium-vector/collection-silhouette-illustrations-types-womens-high-heel-shoes-silhouette-vector_1014129-3467.jpg?semt=ais_hybrid&w=740',
+  'https://img.freepik.com/free-psd/elegant-brown-leather-oxford-shoes-stylish-footwear-choice_191095-86336.jpg?semt=ais_hybrid&w=740',
+  'https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=600&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=600&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=600&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=600&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=600&h=800&fit=crop',
+  'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=800&fit=crop',
 ];
+
 
 // Generate a random item from an array
 const randomItem = <T>(array: T[]): T => {

@@ -2,9 +2,44 @@
   <div :class="$style.page">
     <Header />
     <main :class="$style.main">
-      <div :class="$style.emptyCart">
+      <div v-if="cart.items.length === 0" :class="$style.emptyCart">
         <img src="../../assets/plain_cart_icon.svg" alt="Empty Cart" :class="$style.cartIcon" />
         <Button type="accent" @click="goToShop" :class="$style.customButton">Перейти к покупкам</Button>
+      </div>
+
+      <div v-else :class="$style.cartContainer">
+        <h1 :class="$style.cartTitle">Корзина</h1>
+        
+        <div :class="$style.cartContent">
+          <div :class="$style.cartItems">
+            <CartItem
+              v-for="item in cart.items"
+              :key="item.id"
+              :id="item.id"
+              :image="item.product.images && item.product.images.length > 0 ? item.product.images[0] : ''"
+              :title="item.product.name"
+              :price="item.price"
+              :qty="item.quantity"
+              @remove="removeFromCart(item.id)"
+            />
+          </div>
+          
+          <div :class="$style.cartSummary">
+            <div :class="$style.summaryItem">
+              <span>Товары ({{ cart.items.length }})</span>
+              <span>{{ formatPrice(cart.total) }}</span>
+            </div>
+            <div :class="$style.summaryItem">
+              <span>Доставка</span>
+              <span>Бесплатно</span>
+            </div>
+            <div :class="$style.summaryTotal">
+              <span>Итого</span>
+              <span>{{ formatPrice(cart.total) }}</span>
+            </div>
+            <Button type="accent" @click="checkout" :class="$style.checkoutBtn">Оформить заказ</Button>
+          </div>
+        </div>
       </div>
 
       <!-- Similar Products Section -->
@@ -30,15 +65,52 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'effector-vue/composition';
+import { $cart, removeItem } from '../../entities/cart/cart.store';
+import { addItem } from '../../entities/cart/cart.store';
+import type { Product } from '../../entities/product/product.types';
 import { Header, Footer } from '../../widgets';
 import Button from '../../shared/ui/Button.vue';
 import ProductCard from '../../shared/ui/ProductCard.vue';
+import CartItem from '../../shared/ui/CartItem.vue';
+import { generateProduct } from '../../shared/utils/mockData';
 
 const router = useRouter();
+const cart = useStore($cart);
+
+// Initialize cart with sample data for testing
+onMounted(() => {
+  if (cart.value.items.length === 0) {
+    // Add a sample product to the cart for testing
+    const sampleProduct = generateProduct(1);
+    addItem({
+      id: sampleProduct.id,
+      product: sampleProduct,
+      quantity: 2,
+      price: sampleProduct.price,
+      discount: sampleProduct.discount,
+      currency: sampleProduct.currency,
+    });
+  }
+});
 
 const goToShop = () => {
   router.push('/');
+};
+
+const removeFromCart = (itemId: number) => {
+  removeItem(itemId);
+};
+
+const checkout = () => {
+  // TODO: Implement checkout logic
+  console.log('Checkout');
+};
+
+const formatPrice = (price: number) => {
+  return `${price.toLocaleString('ru-RU')} ₽`;
 };
 
 // Mock similar products data
@@ -75,9 +147,15 @@ const similarProducts = [
   },
 ];
 
-const addSimilarToCart = (similarProduct: any) => {
-  console.log('Add similar to cart:', similarProduct.id);
-  // TODO: Implement cart logic
+const addSimilarToCart = (similarProduct: Product) => {
+  addItem({
+    id: similarProduct.id,
+    product: similarProduct,
+    quantity: 1,
+    price: similarProduct.price,
+    discount: similarProduct.discount,
+    currency: similarProduct.currency,
+  });
 };
 
 const goToProduct = (productId: number) => {
@@ -130,12 +208,73 @@ const goToProduct = (productId: number) => {
   height: 54px;
 }
 
+/* Cart Container */
+.cartContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cartTitle {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 32px;
+  color: #2c2c2c;
+}
+
+.cartContent {
+  display: flex;
+  gap: 32px;
+  flex: 1;
+}
+
+.cartItems {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cartSummary {
+  width: 320px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  height: fit-content;
+  position: sticky;
+  top: 24px;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #2c2c2c;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.checkoutBtn {
+  width: 100%;
+  height: 48px;
+}
+
 /* Similar Products */
 .similarSection {
   background: white;
   padding: 32px;
   border-radius: 16px;
-  margin-top: auto;
+  margin-top: 48px;
 }
 
 .sectionTitle {
@@ -173,10 +312,28 @@ const goToProduct = (productId: number) => {
   }
 }
 
+@media (max-width: 1024px) {
+  .cartContent {
+    flex-direction: column;
+  }
+  
+  .cartSummary {
+    width: 100%;
+    position: static;
+  }
+}
+
 @media (max-width: 768px) {
+  .cartTitle {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+  
   .similarSection {
     padding: 0;
+    margin-top: 32px;
   }
+  
   .similarProducts {
     gap: 12px;
   }
