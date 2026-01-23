@@ -211,7 +211,6 @@ onUnmounted(() => {
 	z-index: 1000;
 	height: 46px;
 	width: 100%;
-	max-width: 393px;
 	margin: 0 auto;
 }
 
@@ -268,7 +267,7 @@ onUnmounted(() => {
 	color: var(--color-main);
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
 	.footer {
 		padding: 24px 16px;
 	}

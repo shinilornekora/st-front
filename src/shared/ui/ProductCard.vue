@@ -176,6 +176,20 @@
 		transform: scale(0.95);
 	}
 	
+	@media (min-width: 480px and max-width: 1200px) {
+		.imageWrapper,
+		.img {
+			width: 18vw;
+			height: 20vw;
+			aspect-ratio: auto;
+		}
+
+		.card {
+			width: 214px;
+			height: 369px;
+		}
+	}
+
 	/* Responsive */
 	@media (max-width: 768px) {
 		.card {
@@ -183,12 +197,11 @@
 			height: 278px;
 			width: 180px;
 		}
-		
-		.imageWrapper {
-			border-radius: 16px;
+
+		.imageWrapper
+		.img {
 			width: 166px;
-			height: 198px;
-			aspect-ratio: auto;
+			height: 196px;
 		}
 		
 		.title {

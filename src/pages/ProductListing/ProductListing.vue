@@ -309,10 +309,17 @@ onMounted(async () => {
 }
 
 
-
 @media (max-width: 1200px) {
 	.placeholderSection {
 		padding: 0 !important;
+	}
+	
+	.productGrid {
+		grid-template-columns: repeat(auto-fill, minmax(20vw, 1fr));
+	}
+
+	.main {
+		padding: 20px 20px 48px;
 	}
 
 	.placeholderBox {
