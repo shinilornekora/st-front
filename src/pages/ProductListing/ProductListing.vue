@@ -25,7 +25,7 @@
 
 		<!-- Product Grid -->
 		<main :class="$style.main">
-			<div :class="$style.productGrid">
+			<div ref="productGrid" :class="$style.productGrid">
 				<ProductCard
 					v-for="product in displayedProducts"
 					:key="product.id"
@@ -45,6 +45,7 @@
 				:max-visible-pages="5"
 				previous-text="Previous"
 				next-text="Next"
+				:scroll-to-top="false"
 				@page-change="handlePageChange"
 			/>
 		</main>
@@ -141,9 +142,14 @@ const selectCategory = (categoryId: string) => {
 	currentPage.value = 1;
 };
 
+const productGrid = ref<HTMLElement | null>(null);
+
 const handlePageChange = (page: number) => {
 	currentPage.value = page;
-	window.scrollTo({ top: 0, behavior: 'smooth' });
+	// Scroll to the product grid instead of the top of the page
+	if (productGrid.value) {
+		productGrid.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}
 };
 
 const goToProduct = (productId: number) => {
@@ -165,24 +171,9 @@ const addToCart = (product: Product) => {
 onMounted(async () => {
 	await getProductsFx();
 	
-	// Generate mock products for demo
-	const mockProducts: Product[] = [];
-	for (let i = 1; i <= 100; i++) {
-		mockProducts.push({
-			id: i,
-			name: `Product ${i}`,
-			slug: `product-${i}`,
-			description: 'Product description',
-			price: 100500 + (i * 100),
-			discount: i % 3 === 0 ? 20 : undefined,
-			currency: '₽',
-			inStock: true,
-			category: [{ id: 'all', name: 'All' }],
-			tags: [],
-			images: ['https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=300&h=300&fit=crop'],
-			seller: { id: 1, name: 'Seller' },
-		});
-	}
+	// Generate realistic mock products
+	const { generateProducts } = await import('../../shared/utils/mockData');
+	const mockProducts = generateProducts(100);
 	
 	// Set mock products
 	const { setProducts } = await import('../../entities/product/product.store');

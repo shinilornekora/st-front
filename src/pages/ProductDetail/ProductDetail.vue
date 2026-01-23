@@ -77,18 +77,11 @@
 
 					<div :class="$style.quantityBlock">
 						<button :class="$style.quantityBtn" @click="decreaseQuantity" :disabled="quantity <= 1">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<circle cx="12" cy="12" r="10"></circle>
-								<line x1="8" y1="12" x2="16" y2="12"></line>
-							</svg>
+							<img src="../../assets/minus_circle.svg" alt="Decrease quantity" :class="$style.quantityIcon" />
 						</button>
 						<input type="number" v-model.number="quantity" :class="$style.quantityInput" min="1" />
 						<button :class="$style.quantityBtn" @click="increaseQuantity">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<circle cx="12" cy="12" r="10"></circle>
-								<line x1="12" y1="8" x2="12" y2="16"></line>
-								<line x1="8" y1="12" x2="16" y2="12"></line>
-							</svg>
+							<img src="../../assets/plus_circle.svg" alt="Increase quantity" :class="$style.quantityIcon" />
 						</button>
 					</div>
 
@@ -179,6 +172,13 @@ const product = ref({
 		'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=600&h=800&fit=crop',
 		'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&h=800&fit=crop',
 	],
+	slug: '',
+	description: '',
+	currency: '₽',
+	inStock: true,
+	category: [],
+	tags: [],
+	seller: { id: 1, name: 'Seller' },
 });
 
 const characteristics = ref([
@@ -205,30 +205,65 @@ const similarProducts = ref([
 		name: 'Name',
 		price: 100500,
 		images: ['https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&h=400&fit=crop'],
+		slug: '',
+		description: '',
+		currency: '₽',
+		inStock: true,
+		category: [],
+		tags: [],
+		seller: { id: 1, name: 'Seller' },
 	},
 	{
 		id: 3,
 		name: 'Name',
 		price: 100500,
 		images: ['https://images.unsplash.com/photo-1560343090-f0409e92791a?w=300&h=400&fit=crop'],
+		slug: '',
+		description: '',
+		currency: '₽',
+		inStock: true,
+		category: [],
+		tags: [],
+		seller: { id: 1, name: 'Seller' },
 	},
 	{
 		id: 4,
 		name: 'Name',
 		price: 100500,
 		images: ['https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=300&h=400&fit=crop'],
+		slug: '',
+		description: '',
+		currency: '₽',
+		inStock: true,
+		category: [],
+		tags: [],
+		seller: { id: 1, name: 'Seller' },
 	},
 	{
 		id: 5,
 		name: 'Name',
 		price: 100500,
 		images: ['https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&h=400&fit=crop'],
+		slug: '',
+		description: '',
+		currency: '₽',
+		inStock: true,
+		category: [],
+		tags: [],
+		seller: { id: 1, name: 'Seller' },
 	},
 	{
 		id: 6,
 		name: 'Name',
 		price: 100500,
 		images: ['https://images.unsplash.com/photo-1560343090-f0409e92791a?w=300&h=400&fit=crop'],
+		slug: '',
+		description: '',
+		currency: '₽',
+		inStock: true,
+		category: [],
+		tags: [],
+		seller: { id: 1, name: 'Seller' },
 	},
 ]);
 
@@ -266,9 +301,35 @@ const goToProduct = (product: any) => {
 	router.push(`/product/${product.id}`);
 };
 
-onMounted(() => {
-	// TODO: Load product data based on route.params.id
-	console.log('Product ID:', route.params.id);
+onMounted(async () => {
+	// Scroll to top when page loads
+	window.scrollTo({ top: 0, behavior: 'instant' });
+	
+	// Load product data based on route.params.id
+	const productId = parseInt(route.params.id as string, 10);
+	if (!isNaN(productId)) {
+		const { getProductById, getSimilarProducts, generateCharacteristics, generateAdditionalInfo } = await import('../../shared/utils/mockData');
+		
+		const productData = getProductById(productId);
+		if (productData) {
+			product.value = {
+				...productData,
+				article: `ART-${productId.toString().padStart(6, '0')}`,
+				oldPrice: productData.discount ? Math.round(productData.price / (1 - productData.discount / 100)) : undefined,
+			};
+			
+			// Generate characteristics based on product data
+			const material = productData.tags.find(tag => tag.name.includes('кожа') || tag.name.includes('замша') || tag.name.includes('нубук'))?.name || 'натуральная кожа';
+			const color = productData.tags.find(tag => ['черный', 'коричневый', 'бежевый', 'белый', 'синий', 'красный', 'серый', 'зеленый', 'бордовый'].includes(tag.name))?.name || 'черный';
+			const brand = productData.seller.name;
+			
+			characteristics.value = generateCharacteristics(material, color, brand);
+			additionalInfo.value = generateAdditionalInfo();
+			
+			// Generate similar products
+			similarProducts.value = getSimilarProducts(productId);
+		}
+	}
 });
 </script>
 
@@ -576,6 +637,11 @@ onMounted(() => {
 	cursor: not-allowed;
 }
 
+.quantityIcon {
+	width: 20px;
+	height: 20px;
+}
+
 .quantityInput {
 	width: 50px;
 	height: 36px;
@@ -608,6 +674,7 @@ onMounted(() => {
 	font-weight: 600;
 	cursor: pointer;
 	transition: background 0.2s;
+	margin-top: 24px;
 }
 
 .addToCartBtn:hover {
@@ -626,12 +693,12 @@ onMounted(() => {
 	font-weight: 600;
 	color: #2c2c2c;
 	text-align: left;
-	margin: 0;
+	margin: 12px 0 0 0;
 }
 
 .sectionSubtitle {
 	font-size: 14px;
-	color: #6b7280;
+	color: #333333;
 	margin: 0 0 24px 0;
 }
 
@@ -661,7 +728,6 @@ onMounted(() => {
 /* Additional Info Section */
 .additionalSection {
 	background: white;
-	border-radius: 16px;
 	margin-bottom: 24px;
 	overflow: hidden;
 }
@@ -675,6 +741,8 @@ onMounted(() => {
 	justify-content: space-between;
 	align-items: center;
 	transition: background 0.2s;
+	padding: 0;
+	margin-top: 16px;
 }
 
 .accordionHeader:hover {
@@ -691,7 +759,7 @@ onMounted(() => {
 }
 
 .accordionContent {
-	padding: 0 32px 32px;
+	padding: 20px 0 0 0;
 }
 
 .additionalTable {
