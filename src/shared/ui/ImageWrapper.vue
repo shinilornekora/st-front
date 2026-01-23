@@ -1,6 +1,7 @@
 <template>
 	<figure
-		:class="[$style.wrapper, $style[ratio], $style[type]]"
+		:class="[$style.wrapper, $style[type]]"
+		:data-ratio="ratio"
 		role="figure"
 	>
 		<img
@@ -43,14 +44,13 @@
 		display: inline-block;
 		position: relative;
 		overflow: hidden;
-		background: var(--color-hover);
 	}
-	.wrapper['1x1'] {
+	.wrapper[data-ratio="1x1"] {
 		aspect-ratio: 1/1;
 		width: 120px;
 		height: 120px;
 	}
-	.wrapper['3x4'] {
+	.wrapper[data-ratio="3x4"] {
 		aspect-ratio: 3/4;
 		width: 90px;
 		height: 120px;

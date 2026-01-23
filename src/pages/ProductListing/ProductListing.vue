@@ -273,7 +273,12 @@ onMounted(async () => {
 	display: flex;
 	flex-direction: column;
 	background: #fff;
-	padding-bottom: 46px; /* Space for mobile footer */
+}
+
+@media (max-width: 480px) {
+	.page {
+		padding-bottom: 46px; /* Space for mobile footer */
+	}
 }
 
 /* Hero Section */

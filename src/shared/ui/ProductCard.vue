@@ -230,7 +230,7 @@
 	}
 	
 	.card.recommendation .title {
-		font-size: 14px;
+		font-size: 20px;
 		line-height: 1.2;
 		-webkit-line-clamp: 2;
 	}

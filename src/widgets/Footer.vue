@@ -2,30 +2,32 @@
 	<!-- Desktop Footer -->
 	<footer :class="$style.footer" v-if="!isMobile">
 		<div :class="$style.footerContent">
-			<div :class="$style.footerColumn">
+			<div :class="$style.logoColumn">
 				<img src="../assets/logo_white.svg" alt="Stivalli" :class="$style.footerLogo" />
 			</div>
-			<div :class="$style.footerColumn">
-				<h3 :class="$style.footerTitle">Каталог</h3>
-				<a href="#" :class="$style.footerLink">Новинки</a>
-				<a href="#" :class="$style.footerLink">Женщинам</a>
-				<a href="#" :class="$style.footerLink">Мужчинам</a>
-				<a href="#" :class="$style.footerLink">Распродажа (Sale)</a>
-			</div>
-			<div :class="$style.footerColumn">
-				<h3 :class="$style.footerTitle">Покупателям</h3>
-				<a href="#" :class="$style.footerLink">Доставка и оплата</a>
-				<a href="#" :class="$style.footerLink">Обмен и возврат</a>
-				<a href="#" :class="$style.footerLink">Вопросы и ответы (FAQ)</a>
-			</div>
-			<div :class="$style.footerColumn">
-				<h3 :class="$style.footerTitle">О компании</h3>
-				<a href="#" :class="$style.footerLink">О бренде Stivalli</a>
-				<a href="#" :class="$style.footerLink">Контакты</a>
-				<a href="#" :class="$style.footerLink">Партнерам (B2B)</a>
-				<a href="#" :class="$style.footerLink">Публичная оферта</a>
-				<a href="#" :class="$style.footerLink">Политика</a>
-				<a href="#" :class="$style.footerLink">Конфиденциальности</a>
+			<div :class="$style.textColumns">
+				<div :class="$style.footerColumn">
+					<h3 :class="$style.footerTitle">Каталог</h3>
+					<a href="#" :class="$style.footerLink">Новинки</a>
+					<a href="#" :class="$style.footerLink">Женщинам</a>
+					<a href="#" :class="$style.footerLink">Мужчинам</a>
+					<a href="#" :class="$style.footerLink">Распродажа (Sale)</a>
+				</div>
+				<div :class="$style.footerColumn">
+					<h3 :class="$style.footerTitle">Покупателям</h3>
+					<a href="#" :class="$style.footerLink">Доставка и оплата</a>
+					<a href="#" :class="$style.footerLink">Обмен и возврат</a>
+					<a href="#" :class="$style.footerLink">Вопросы и ответы (FAQ)</a>
+				</div>
+				<div :class="$style.footerColumn">
+					<h3 :class="$style.footerTitle">О компании</h3>
+					<a href="#" :class="$style.footerLink">О бренде Stivalli</a>
+					<a href="#" :class="$style.footerLink">Контакты</a>
+					<a href="#" :class="$style.footerLink">Партнерам (B2B)</a>
+					<a href="#" :class="$style.footerLink">Публичная оферта</a>
+					<a href="#" :class="$style.footerLink">Политика</a>
+					<a href="#" :class="$style.footerLink">Конфиденциальности</a>
+				</div>
 			</div>
 		</div>
 	</footer>
@@ -110,8 +112,18 @@ onUnmounted(() => {
 	width: 100%;
 	margin: 0 auto;
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
-	gap: 32px;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 12vw;
+}
+
+.logoColumn {
+	display: flex;
+	justify-content: flex-start;
+	align-items: flex-start;
+}
+
+.textColumns {
+	display: contents;
 }
 
 .footerColumn {
@@ -147,6 +159,28 @@ onUnmounted(() => {
 }
 
 /* Responsive */
+@media (max-width: 1200px) {
+	.footer {
+		padding: 40px 60px;
+	}
+
+	.footerContent {
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
+	}
+
+	.logoColumn {
+		margin-bottom: 16px;
+	}
+
+	.textColumns {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 32px;
+	}
+}
+
 @media (max-width: 768px) {
 	.footer {
 		padding: 32px 16px;
@@ -154,25 +188,21 @@ onUnmounted(() => {
 	}
 
 	.footerContent {
+		display: grid;
 		grid-template-columns: repeat(2, 1fr);
 		gap: 20px;
 	}
-}
 
-@media (max-width: 480px) {
-	.footer {
-		padding: 24px 16px;
-	}
-
-	.footerContent {
-		grid-template-columns: 1fr;
-		gap: 16px;
+	.textColumns {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 20px;
 	}
 }
 
 /* Mobile Footer Menu */
 .mobileFooter {
 	position: fixed;
+	display: none;
 	bottom: 0;
 	left: 0;
 	right: 0;
@@ -236,5 +266,20 @@ onUnmounted(() => {
 
 .mobileFooterBtn.active .mobileFooterIcon {
 	color: var(--color-main);
+}
+
+@media (max-width: 480px) {
+	.footer {
+		padding: 24px 16px;
+	}
+
+	.footerContent {
+		grid-template-columns: 1fr;
+		gap: 16px;
+	}
+
+	.mobileFooter {
+		display: block;
+	}
 }
 </style>

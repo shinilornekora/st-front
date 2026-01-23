@@ -31,6 +31,7 @@ export { default as Skeleton } from './Skeleton.vue';
 export { default as Spinner } from './Spinner.vue';
 export { default as Card } from './Card.vue';
 export { default as ProductCard } from './ProductCard.vue';
+export { default as Recommendations } from './Recommendations.vue';
 export { default as CartItem } from './CartItem.vue';
 export { default as SearchField } from './SearchField.vue';
 export { default as FilterBlock } from './FilterBlock.vue';

@@ -141,22 +141,12 @@
 			</div>
 
 			<!-- Similar Products Section -->
-			<section :class="$style.similarSection">
-				<h2 :class="$style.sectionTitle">Вам может понравиться:</h2>
-				
-				<div :class="$style.similarProducts">
-					<ProductCard
-						v-for="similarProduct in similarProducts"
-						:key="similarProduct.id"
-						:image="similarProduct.images[0]"
-						:title="similarProduct.name"
-						:price="similarProduct.price"
-						:recommendation="true"
-						@click="goToProduct(similarProduct.id)"
-						@add-to-cart="addSimilarToCart(similarProduct)"
-					/>
-				</div>
-			</section>
+			<Recommendations
+				title="Вам может понравиться:"
+				:products="similarProducts"
+				@product-click="goToProduct"
+				@add-to-cart="addSimilarToCart"
+			/>
 		</main>
 
 		<Footer />
@@ -167,7 +157,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Header, Footer } from '../../widgets';
-import ProductCard from '../../shared/ui/ProductCard.vue';
+import { ProductCard, Recommendations } from '../../shared/ui';
 
 const route = useRoute();
 const router = useRouter();
@@ -272,8 +262,8 @@ const addSimilarToCart = (similarProduct: any) => {
 	// TODO: Implement cart logic
 };
 
-const goToProduct = (productId: number) => {
-	router.push(`/product/${productId}`);
+const goToProduct = (product: any) => {
+	router.push(`/product/${product.id}`);
 };
 
 onMounted(() => {
@@ -290,7 +280,12 @@ onMounted(() => {
 	display: flex;
 	flex-direction: column;
 	background: #fff;
-	padding-bottom: 46px; /* Space for mobile footer */
+}
+
+@media (max-width: 480px) {
+	.page {
+		padding-bottom: 46px; /* Space for mobile footer */
+	}
 }
 
 /* Breadcrumbs */
@@ -739,27 +734,6 @@ onMounted(() => {
 	max-height: 0;
 }
 
-/* Similar Products */
-.similarSection {
-	background: white;
-	padding: 32px;
-	border-radius: 16px;
-}
-
-.similarProducts {
-    gap: 35px;
-    display: flex;
-    margin-top: 24px;
-    flex-direction: row;
-	overflow-x: auto;
-	overflow-y: hidden;
-	scrollbar-width: none;
-	-ms-overflow-style: none;
-}
-
-.similarProducts::-webkit-scrollbar {
-	display: none;
-}
 
 /* Responsive */
 @media (max-width: 1024px) {
@@ -835,9 +809,6 @@ onMounted(() => {
 		gap: 8px;
 	}
 
-	.similarProducts {
-		gap: 12px;
-	}
 	
 	.mainImageWrapper {
 		width: 166px;
@@ -849,8 +820,5 @@ onMounted(() => {
 		height: 60px;
 	}
 
-	.similarSection {
-		padding: 0;
-	}
 }
 </style>

@@ -52,7 +52,7 @@
 	.input {
 		display: none;
 	}
-	span {
+	.uploader span {
 		font-size: 15px;
 		color: var(--color-primary);
 		cursor: pointer;
