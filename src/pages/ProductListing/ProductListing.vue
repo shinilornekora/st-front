@@ -55,6 +55,7 @@
 					:title="product.name"
 					:price="product.price"
 					:oldPrice="product.discount ? Math.round(product.price / (1 - product.discount / 100)) : undefined"
+					@click="goToProduct(product.id)"
 					@add-to-cart="addToCart(product)"
 				/>
 			</div>
@@ -140,6 +141,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
 import { $products, getProductsFx } from '../../entities/product/product.store';
 import { addItem } from '../../entities/cart/cart.store';
@@ -151,6 +153,8 @@ import Chip from '../../shared/ui/Chip.vue';
 import ProductCard from '../../shared/ui/ProductCard.vue';
 import Button from '../../shared/ui/Button.vue';
 import Link from '../../shared/ui/Link.vue';
+
+const router = useRouter();
 
 // State
 const searchQuery = ref('');
@@ -266,6 +270,10 @@ const goToNextPage = () => {
 	if (currentPage.value < totalPages.value) {
 		goToPage(currentPage.value + 1);
 	}
+};
+
+const goToProduct = (productId: number) => {
+	router.push(`/product/${productId}`);
 };
 
 const addToCart = (product: Product) => {

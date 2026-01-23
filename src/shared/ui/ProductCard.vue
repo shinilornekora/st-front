@@ -3,6 +3,7 @@
 		:class="[$style.card, $style[type]]"
 		tabindex="0"
 		aria-label="Карточка товара"
+		@click="handleCardClick"
 	>
 		<div :class="$style.imageWrapper">
 			<img :src="image" :alt="title" :class="$style.img" v-if="image" />
@@ -16,7 +17,7 @@
 			</div>
 			<button
 				:class="$style.cartBtn"
-				@click="$emit('add-to-cart')"
+				@click.stop="$emit('add-to-cart')"
 				aria-label="Добавить в корзину"
 			>
 				<img src="../../assets/shopping_cart.svg" alt="" :class="$style.cartIcon" />
@@ -38,10 +39,14 @@
 		type?: 'grid' | 'list';
 	}>();
 	
-	const emit = defineEmits(['add-to-cart']);
+	const emit = defineEmits(['add-to-cart', 'click']);
 	
 	const formatPrice = (price: number) => {
 		return `${price.toLocaleString('ru-RU')} ₽`;
+	};
+	
+	const handleCardClick = () => {
+		emit('click');
 	};
 </script>
 <style module>
@@ -69,7 +74,7 @@
 		overflow: hidden;
 		background: #f3f4f6;
 		position: relative;
-		border-radius: 20px;
+		border-radius: 8px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 		transition: transform 0.2s, box-shadow 0.2s;
 	}
