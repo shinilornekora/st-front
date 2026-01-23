@@ -42,7 +42,7 @@
 			<Pagination
 				:current-page="currentPage"
 				:total-pages="totalPages"
-				:max-visible-pages="5"
+				:max-visible-pages="7"
 				previous-text="Previous"
 				next-text="Next"
 				:scroll-to-top="false"
@@ -171,9 +171,9 @@ const addToCart = (product: Product) => {
 onMounted(async () => {
 	await getProductsFx();
 	
-	// Generate realistic mock products
+	// Generate realistic mock products (more products to test pagination)
 	const { generateProducts } = await import('../../shared/utils/mockData');
-	const mockProducts = generateProducts(100);
+	const mockProducts = generateProducts(250); // Generate 250 products = 13 pages
 	
 	// Set mock products
 	const { setProducts } = await import('../../entities/product/product.store');
