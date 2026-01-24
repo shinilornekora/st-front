@@ -53,12 +53,14 @@
           <ProductCard
             v-for="similarProduct in similarProducts"
             :key="similarProduct.id"
+            :id="similarProduct.id"
             :image="similarProduct.images[0]"
             :title="similarProduct.name"
             :price="similarProduct.price"
             :recommendation="true"
             @click="goToProduct(similarProduct.id)"
             @add-to-cart="addSimilarToCart(similarProduct)"
+            @favourite="addToFavourites(similarProduct)"
           />
         </div>
       </section>
@@ -122,7 +124,10 @@ const updateQuantity = (payload: { id: number; quantity: number }) => {
 
 const addToFavourites = (item: any) => {
   // TODO: Implement add to favourites logic
-  console.log('Added to favourites:', item.product.name);
+  // Handle both cart items (with product property) and recommendation products (direct)
+  const productName = item.product ? item.product.name : item.name;
+  const productId = item.product ? item.product.id : item.id;
+  console.log('Added to favourites:', productName, 'ID:', productId);
 };
 
 const shareProduct = (item: any) => {

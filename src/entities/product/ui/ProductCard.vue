@@ -59,7 +59,7 @@
 		recommendation?: boolean;
 	}>();
 	
-	const emit = defineEmits(['add-to-cart', 'click']);
+	const emit = defineEmits(['add-to-cart', 'click', 'favourite']);
 	
 	const isFavorite = ref(false);
 	
@@ -88,6 +88,9 @@
 			// In a real app, this would make an API call
 			isFavorite.value = !isFavorite.value;
 		}
+		
+		// Emit the favourite event
+		emit('favourite', { id: props.id, isFavorite: isFavorite.value });
 	};
 	
 	const formatPrice = (price: number) => {

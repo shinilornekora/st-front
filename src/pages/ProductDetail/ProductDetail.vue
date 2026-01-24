@@ -6,7 +6,7 @@
 		<div :class="$style.breadcrumbs">
 			<router-link to="/" :class="$style.breadcrumbLink">Главная страница</router-link>
 			<span :class="$style.breadcrumbSeparator">›</span>
-			<span :class="$style.breadcrumbCurrent">Stivalli</span>
+			<span :class="$style.breadcrumbCurrent">{{ product.name || 'Товар' }}</span>
 		</div>
 
 		<!-- Main Content -->
@@ -15,10 +15,16 @@
 				<!-- Left Column: Image Gallery -->
 				<div :class="$style.imageGallery">
 					<div :class="$style.mainImageContainer">
-						<button :class="$style.favoriteBtn" aria-label="Добавить в избранное">
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-							</svg>
+						<button
+							:class="[$style.favoriteBtn, isFavorite ? $style.favoriteBtnActive : '']"
+							aria-label="Добавить в избранное"
+							@click="toggleFavoriteStatus"
+						>
+							<img
+								:src="isFavorite ? darkHeartIcon : heartIcon"
+								alt="Heart icon"
+								:class="[$style.heartIcon, isFavorite ? $style.heartIconActive : '']"
+							/>
 						</button>
 						<div :class="$style.leatherBadge">
 							<svg width="40" height="40" viewBox="0 0 100 100" fill="none">
@@ -147,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Header, Footer } from '@widgets/index';
 import { ProductCard, recommendations } from '@entities/product/ui';
@@ -155,6 +161,10 @@ const { Recommendations } = recommendations;
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
 import { getSimilarProducts } from '@shared/lib/mockData';
+import { isUserAuthenticated } from '@shared/utils/auth';
+import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
+import heartIcon from '@assets/heart_icon.svg';
+import darkHeartIcon from '@assets/dark_heart_icon.svg';
 
 const route = useRoute();
 const router = useRouter();
@@ -162,6 +172,7 @@ const router = useRouter();
 const quantity = ref(1);
 const currentImageIndex = ref(0);
 const isAccordionOpen = ref(0);
+const isFavorite = ref(false);
 const product = ref<Product>({
   id: 0,
   name: '',
@@ -258,6 +269,36 @@ onMounted(async () => {
 		}
 	}
 });
+
+// Check if product is favorite on mount and when product changes
+const checkFavoriteStatus = () => {
+	if (product.value.id && !isUserAuthenticated()) {
+		isFavorite.value = isProductFavorite(product.value.id);
+	}
+};
+
+// Watch for product changes
+watch(() => product.value.id, () => {
+	checkFavoriteStatus();
+});
+
+// Initial check
+checkFavoriteStatus();
+
+const toggleFavoriteStatus = () => {
+	if (!product.value.id) return;
+	
+	if (!isUserAuthenticated()) {
+		// Use localStorage for non-authenticated users
+		isFavorite.value = toggleFavorite(product.value.id);
+	} else {
+		// For authenticated users, just toggle the UI state
+		// In a real app, this would make an API call
+		isFavorite.value = !isFavorite.value;
+	}
+	
+	console.log('Product favorite status changed:', product.value.name, isFavorite.value);
+};
 </script>
 
 <style module>
@@ -348,7 +389,7 @@ onMounted(async () => {
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
-	background: white;
+	background: rgba(255, 255, 255, 0.1);
 	border: none;
 	cursor: pointer;
 	display: flex;
@@ -357,12 +398,26 @@ onMounted(async () => {
 	color: #9ca3af;
 	transition: all 0.2s;
 	z-index: 2;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .favoriteBtn:hover {
 	color: var(--color-accent);
 	transform: scale(1.1);
+}
+
+.favoriteBtnActive {
+	background: rgba(255, 255, 255, 0.95);
+}
+
+.heartIcon {
+	width: 24px;
+	height: 24px;
+	transition: all 0.2s;
+}
+
+.heartIconActive {
+	width: 32px;
+	height: 32px;
 }
 
 .leatherBadge {
