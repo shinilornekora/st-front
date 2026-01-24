@@ -142,7 +142,7 @@ onUnmounted(() => {
 }
 
 .lightHeader {
-	background: transparent;
+	background: white;
 	border-bottom: none;
 	box-shadow: none;
 	padding: 16px 0;
@@ -168,9 +168,10 @@ onUnmounted(() => {
 }
 
 .lightHeader .logo {
+	width: min-content;
 	margin-right: auto;
 	position: absolute;
-	left: 0;
+	left: 20px;
 }
 
 .searchWrapper {

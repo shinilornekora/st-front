@@ -3,9 +3,6 @@
 		<div :class="$style.tooltip">
 			<div :class="$style.tooltipHeader">
 				<h4>Активные фильтры</h4>
-				<button :class="$style.clearAllBtn" type="button" @click="clearAllFilters">
-					Очистить все
-				</button>
 			</div>
 			<div :class="$style.filtersList">
 				<div
@@ -26,6 +23,11 @@
 						</svg>
 					</button>
 				</div>
+			</div>
+			<div :class="$style.tooltipFooter">
+				<button :class="$style.clearAllBtn" type="button" @click="clearAllFilters">
+					Очистить все
+				</button>
 			</div>
 		</div>
 	</div>
@@ -93,7 +95,7 @@ onUnmounted(() => {
 
 .tooltipHeader {
 	display: flex;
-	justify-content: space-between;
+	justify-content: flex-start;
 	align-items: center;
 	margin-bottom: 12px;
 }
@@ -141,6 +143,7 @@ onUnmounted(() => {
 	flex: 1;
 	/* Remove text truncation to allow full text display in tooltip */
 	word-wrap: break-word;
+	text-align: left;
 	white-space: normal;
 }
 
@@ -166,5 +169,13 @@ onUnmounted(() => {
 .removeBtn svg {
 	width: 12px;
 	height: 12px;
+}
+
+.tooltipFooter {
+	display: flex;
+	justify-content: center;
+	margin-top: 16px;
+	padding-top: 12px;
+	border-top: 1px solid #e5e7eb;
 }
 </style>

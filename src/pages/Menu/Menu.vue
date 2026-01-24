@@ -146,7 +146,6 @@ import { Header, Footer } from '@widgets/index';
 .menuItems {
   background: #fff;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .menuItem {
@@ -183,7 +182,7 @@ import { Header, Footer } from '@widgets/index';
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .menuHeader {
-    padding: 20px 16px;
+    padding: 4px 16px;
   }
   
   .menuTitle {
@@ -196,7 +195,7 @@ import { Header, Footer } from '@widgets/index';
   }
   
   .menuItem {
-    padding: 14px 16px;
+    padding: 2px 16px;
   }
   
   .itemText {

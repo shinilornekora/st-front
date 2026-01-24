@@ -238,6 +238,7 @@ const handlePageChange = (page: number) => {
 	currentPage.value = page;
 	// Scroll to the product grid instead of the top of the page
 	if (productGrid.value) {
+		// + Header height... maybe.
 		productGrid.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
 	}
 };

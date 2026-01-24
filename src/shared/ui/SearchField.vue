@@ -440,7 +440,7 @@
 		background: white;
 		border: 2px solid #e5e7eb;
 		border-radius: 24px;
-		padding: 8px 16px;
+		padding: 0px 16px;
 		transition: border-color 0.2s, box-shadow 0.2s;
 		flex-wrap: nowrap;
 		max-width: 575px !important;
@@ -557,7 +557,7 @@
 	/* Popup */
 	.popup {
 		position: absolute;
-		top: calc(100% + 8px);
+		top: calc(100% + 22px);
 		left: 0;
 		right: 0;
 		background: white;
@@ -659,7 +659,7 @@
 	/* Responsive */
 	@media (max-width: 768px) {
 		.form {
-			padding: 6px 12px;
+			padding: 0px 12px;
 		}
 
 		.searchContainer,
