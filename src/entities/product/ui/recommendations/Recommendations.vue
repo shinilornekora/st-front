@@ -6,6 +6,7 @@
 			<ProductCard
 				v-for="product in products"
 				:key="product.id"
+				:id="product.id"
 				:image="product.images && product.images.length > 0 ? product.images[0] : ''"
 				:title="product.name"
 				:price="product.price"

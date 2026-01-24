@@ -7,6 +7,19 @@
 	>
 		<div :class="$style.imageWrapper">
 			<img :src="image" :alt="title" :class="$style.img" v-if="image" />
+			<div :class="$style.heartContainer">
+				<button
+					:class="$style.heartBtn"
+					@click.stop="toggleHeart"
+					aria-label="Toggle favorite"
+				>
+					<img
+						:src="isFavorite ? darkHeartIcon : heartIcon"
+						alt="Heart icon"
+						:class="[$style.heartIcon, isFavorite ? $style.active : '']"
+					/>
+				</button>
+			</div>
 		</div>
 		<div :class="$style.body">
 			<div :class="$style.footer">
@@ -26,9 +39,15 @@
 	</article>
 </template>
 <script setup lang="ts">
+	import { ref, onMounted, watch } from 'vue';
 	import theme from '@shared/ui/theme.module.css';
+	import heartIcon from '@assets/heart_icon.svg';
+	import darkHeartIcon from '@assets/dark_heart_icon.svg';
+	import { isUserAuthenticated } from '@shared/utils/auth';
+	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
 	
 	const props = defineProps<{
+		id?: number;
 		image?: string;
 		title: string;
 		price: number;
@@ -41,6 +60,35 @@
 	}>();
 	
 	const emit = defineEmits(['add-to-cart', 'click']);
+	
+	const isFavorite = ref(false);
+	
+	// Check if product is favorite on mount
+	onMounted(() => {
+		if (props.id && !isUserAuthenticated()) {
+			isFavorite.value = isProductFavorite(props.id);
+		}
+	});
+	
+	// Watch for id changes
+	watch(() => props.id, (newId) => {
+		if (newId && !isUserAuthenticated()) {
+			isFavorite.value = isProductFavorite(newId);
+		}
+	});
+	
+	const toggleHeart = () => {
+		if (!props.id) return;
+		
+		if (!isUserAuthenticated()) {
+			// Use localStorage for non-authenticated users
+			isFavorite.value = toggleFavorite(props.id);
+		} else {
+			// For authenticated users, just toggle the UI state
+			// In a real app, this would make an API call
+			isFavorite.value = !isFavorite.value;
+		}
+	};
 	
 	const formatPrice = (price: number) => {
 		return `${price.toLocaleString('ru-RU')} ₽`;
@@ -78,6 +126,48 @@
 		border-radius: 8px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 		transition: transform 0.2s, box-shadow 0.2s;
+	}
+	
+	.heartContainer {
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		z-index: 1;
+	}
+	
+	.heartBtn {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		border: none;
+		background: rgba(255, 255, 255, 0.2);
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s;
+		padding: 0;
+		backdrop-filter: blur(4px);
+	}
+	
+	.heartBtn:hover {
+		background: rgba(255, 255, 255, 0.95);
+		transform: scale(1.1);
+	}
+	
+	.heartBtn:active {
+		transform: scale(0.95);
+	}
+	
+	.heartIcon {
+		width: 18px;
+		height: 16px;
+		transition: all 0.2s;
+	}
+	
+	.heartIcon.active {
+		width: 32px;
+		height: 32px;
 	}
 	
 	.card:hover .imageWrapper {

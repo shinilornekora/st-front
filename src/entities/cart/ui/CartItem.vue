@@ -7,7 +7,7 @@
 		<img v-if="image" :src="image" :alt="title" :class="$style.img" />
 		<div :class="$style.info">
 			<div :class="$style.topBlock">
-				<h4 :class="$style.title">{{ title || 'No title' }}</h4>
+				<h4 :class="$style.title" @click="goToProduct" role="button" tabindex="0" @keydown.enter="goToProduct">{{ title || 'No title' }}</h4>
 				<div v-if="article" :class="$style.article">Артикул: {{ article }}</div>
 			</div>
 			<div :class="bottomBlock">
@@ -17,8 +17,12 @@
 					<b>{{ formatPrice((price || 0) * (qty || 0)) }}</b>
 				</div>
 				<div :class="$style.actions">
-					<button :class="$style.actionBtn" @click="$emit('favourite')" aria-label="Добавить в избранное">
-						<img src="@assets/favourite.svg" alt="Favourite" :class="$style.actionIcon" />
+					<button :class="$style.actionBtn" @click="toggleHeart" aria-label="Добавить в избранное">
+						<img
+							:src="isFavorite ? filledHeartIcon : heartIcon"
+							alt="Heart icon"
+							:class="$style.actionIcon"
+						/>
 					</button>
 					<button :class="$style.actionBtn" @click="$emit('share')" aria-label="Поделиться">
 						<img src="@assets/share.svg" alt="Share" :class="$style.actionIcon" />
@@ -56,7 +60,12 @@
 	</article>
 </template>
 <script setup lang="ts">
+	import { ref, onMounted, watch } from 'vue';
 	import theme from '@shared/ui/theme.module.css';
+	import heartIcon from '@assets/favourite.svg';
+	import filledHeartIcon from '@assets/filled_heart.svg';
+	import { isUserAuthenticated } from '@shared/utils/auth';
+	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
 	
 	const props = defineProps<{
 		id: number;
@@ -68,7 +77,35 @@
 		type?: 'selected' | 'error' | 'disabled';
 	}>();
 	
-	const emit = defineEmits(['remove', 'update-quantity', 'favourite', 'share']);
+	const emit = defineEmits(['remove', 'update-quantity', 'favourite', 'share', 'product-click']);
+	
+	const isFavorite = ref(false);
+	
+	// Check if product is favorite on mount
+	onMounted(() => {
+		if (!isUserAuthenticated()) {
+			isFavorite.value = isProductFavorite(props.id);
+		}
+	});
+	
+	// Watch for id changes
+	watch(() => props.id, (newId) => {
+		if (newId && !isUserAuthenticated()) {
+			isFavorite.value = isProductFavorite(newId);
+		}
+	});
+	
+	const toggleHeart = () => {
+		if (!isUserAuthenticated()) {
+			// Use localStorage for non-authenticated users
+			isFavorite.value = toggleFavorite(props.id);
+		} else {
+			// For authenticated users, just toggle the UI state
+			// In a real app, this would make an API call
+			isFavorite.value = !isFavorite.value;
+		}
+		emit('favourite');
+	};
 	
 	const formatPrice = (price: number) => {
 		return `${price.toLocaleString('ru-RU')} ₽`;
@@ -82,6 +119,10 @@
 	
 	const increaseQuantity = () => {
 		emit('update-quantity', { id: props.id, quantity: props.qty + 1 });
+	};
+	
+	const goToProduct = () => {
+		emit('product-click', props.id);
 	};
 </script>
 <style module>
@@ -126,6 +167,11 @@
 		font-size: 20px;
 		color: #333333;
 		margin: 0;
+		cursor: pointer;
+		transition: color 0.2s;
+	}
+	.title:hover {
+		color: var(--color-accent);
 	}
 	.article {
 		font-size: 12px;
@@ -212,5 +258,6 @@
 	.actionIcon {
 		width: 28px;
 		height: 28px;
+		transition: all 0.2s;
 	}
 </style>

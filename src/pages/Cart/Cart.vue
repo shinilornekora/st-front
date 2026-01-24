@@ -23,6 +23,7 @@
               @update-quantity="updateQuantity"
               @favourite="addToFavourites(item)"
               @share="shareProduct(item)"
+              @product-click="goToProduct"
             />
           </div>
           
