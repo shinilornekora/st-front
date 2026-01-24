@@ -60,17 +60,17 @@
 import { ref, computed, onMounted, onUnmounted, watch, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
-import { $cart } from '../entities/cart/cart.store';
-import SearchField from '../shared/ui/SearchField.vue';
-import logoFull from '../assets/logo_full.svg';
-import logo from '../assets/logo.svg';
-import userCircleIcon from '../assets/user_circle.svg';
-import profileFilledIcon from '../assets/profile_filled.svg';
-import darkShoppingCartIcon from '../assets/dark_shopping_cart.svg';
-import cartFilledIcon from '../assets/cart_filled.svg';
-import notificationIcon from '../assets/notification_icon.svg';
-import notificationFilledIcon from '../assets/notification_filled.svg';
-import crossIcon from '../assets/cross.svg';
+import { $cart } from '@entities/cart/cart.store';
+import SearchField from '@shared/ui/SearchField.vue';
+import logoFull from '@assets/logo_full.svg';
+import logo from '@assets/logo.svg';
+import userCircleIcon from '@assets/user_circle.svg';
+import profileFilledIcon from '@assets/profile_filled.svg';
+import darkShoppingCartIcon from '@assets/dark_shopping_cart.svg';
+import cartFilledIcon from '@assets/cart_filled.svg';
+import notificationIcon from '@assets/notification_icon.svg';
+import notificationFilledIcon from '@assets/notification_filled.svg';
+import crossIcon from '@assets/cross.svg';
 
 // Define props
 interface Props {
@@ -235,7 +235,7 @@ onUnmounted(() => {
 	}
 
 	.lightHeader {
-		padding: 12px 0;
+		padding: 24px 0;
 	}
 
 	.headerContent {

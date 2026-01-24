@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
 import { fn } from 'storybook/test';
 // Импортируем именно from shared/ui/Button.vue, а не локальный stories/Button.vue
-import Button from '../shared/ui/Button.vue';
-import '../shared/ui/theme.module.css';
+import Button from '@shared/ui/Button.vue';
+import '@shared/ui/theme.module.css';
 
 const meta = {
 	title: 'Shared/Button',

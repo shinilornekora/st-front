@@ -1,6 +1,6 @@
 import { createStore, createEvent, createEffect } from 'effector';
 import type { Cart, CartItem } from './cart.types';
-import { isUserAuthenticated } from '../../shared/utils/auth';
+import { isUserAuthenticated } from '@shared/utils/auth';
 
 // Helper functions for localStorage
 const saveCartToLocalStorage = (cart: Cart) => {

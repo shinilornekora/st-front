@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import IconButton from '../shared/ui/IconButton.vue';
-import '../shared/ui/theme.module.css';
+import IconButton from '@shared/ui/IconButton.vue';
+import '@shared/ui/theme.module.css';
 const meta = {
 	title: 'Shared/IconButton',
 	component: IconButton,

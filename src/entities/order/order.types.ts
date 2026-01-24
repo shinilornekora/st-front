@@ -1,4 +1,4 @@
-import type { CartItem } from '../cart/cart.types';
+import type { CartItem } from '@entities/cart/cart.types';
 export type OrderStatus = 'PAID' | 'PENDING' | 'CANCELLED' | 'REFUNDED';
 export interface Order {
 	id: number;

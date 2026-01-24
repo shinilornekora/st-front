@@ -3,7 +3,7 @@
 	<footer :class="$style.footer" v-if="!isMobile">
 		<div :class="$style.footerContent">
 			<div :class="$style.logoColumn">
-				<img src="../assets/logo_white.svg" alt="Stivalli" :class="$style.footerLogo" />
+				<img src="@assets/logo_white.svg" alt="Stivalli" :class="$style.footerLogo" />
 			</div>
 			<div :class="$style.textColumns">
 				<div :class="$style.footerColumn">
@@ -70,14 +70,14 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import userCircleIcon from '../assets/user_circle.svg';
-import profileFilledIcon from '../assets/profile_filled.svg';
-import hamburgerIcon from '../assets/hamburger.svg';
-import hamburgerFilledIcon from '../assets/hamburger_filled.svg';
-import darkShoppingCartIcon from '../assets/dark_shopping_cart.svg';
-import cartFilledIcon from '../assets/cart_filled.svg';
-import notificationIcon from '../assets/notification_icon.svg';
-import notificationFilledIcon from '../assets/notification_filled.svg';
+import userCircleIcon from '@assets/user_circle.svg';
+import profileFilledIcon from '@assets/profile_filled.svg';
+import hamburgerIcon from '@assets/hamburger.svg';
+import hamburgerFilledIcon from '@assets/hamburger_filled.svg';
+import darkShoppingCartIcon from '@assets/dark_shopping_cart.svg';
+import cartFilledIcon from '@assets/cart_filled.svg';
+import notificationIcon from '@assets/notification_icon.svg';
+import notificationFilledIcon from '@assets/notification_filled.svg';
 
 const route = useRoute();
 const isMobile = ref(window.innerWidth <= 768);

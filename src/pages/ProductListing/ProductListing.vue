@@ -59,18 +59,18 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
-import { $products, getProductsFx } from '../../entities/product/product.store';
-import { addItem } from '../../entities/cart/cart.store';
-import type { Product } from '../../entities/product/product.types';
-import { Header, Footer } from '../../widgets';
-import { Pagination } from '../../shared/ui';
-import SearchField from '../../shared/ui/SearchField.vue';
-import IconButton from '../../shared/ui/IconButton.vue';
-import Carousel from '../../shared/ui/Carousel.vue';
-import Chip from '../../shared/ui/Chip.vue';
-import ProductCard from '../../shared/ui/ProductCard.vue';
-import Button from '../../shared/ui/Button.vue';
-import Link from '../../shared/ui/Link.vue';
+import { $products, getProductsFx } from '@entities/product/product.store';
+import { addItem } from '@entities/cart/cart.store';
+import type { Product } from '@entities/product/product.types';
+import { Header, Footer } from '@widgets';
+import { Pagination } from '@shared/ui';
+import SearchField from '@shared/ui/SearchField.vue';
+import IconButton from '@shared/ui/IconButton.vue';
+import Carousel from '@shared/ui/Carousel.vue';
+import Chip from '@shared/ui/Chip.vue';
+import ProductCard from '@shared/ui/ProductCard.vue';
+import Button from '@shared/ui/Button.vue';
+import Link from '@shared/ui/Link.vue';
 
 const router = useRouter();
 

@@ -46,7 +46,7 @@
 			
 			<button :class="$style.searchBtn" type="submit" aria-label="Найти">
 				<slot name="icon">
-					<img src="../../assets/search.svg" alt="" :class="$style.searchIcon" />
+					<img src="@assets/search.svg" alt="" :class="$style.searchIcon" />
 				</slot>
 			</button>
 		</form>
@@ -80,7 +80,7 @@
 							@click="selectSuggestion(suggestion)"
 						>
 							<span :class="$style.suggestionText">{{ suggestion }}</span>
-							<img src="../../assets/search.svg" alt="" :class="$style.searchIcon" />
+							<img src="@assets/search.svg" alt="" :class="$style.searchIcon" />
 						</button>
 					</div>
 				</div>

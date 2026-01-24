@@ -6,7 +6,7 @@
 			:disabled="currentPage === 1"
 			aria-label="Previous page"
 		>
-			<img src="../../assets/arrow_left.svg" alt="" :class="$style.arrowIcon" />
+			<img src="@assets/arrow_left.svg" alt="" :class="$style.arrowIcon" />
 			{{ previousText }}
 		</button>
 		
@@ -56,7 +56,7 @@
 			aria-label="Next page"
 		>
 			{{ nextText }}
-			<img src="../../assets/arrow_right.svg" alt="" :class="$style.arrowIcon" />
+			<img src="@assets/arrow_right.svg" alt="" :class="$style.arrowIcon" />
 		</button>
 	</nav>
 </template>

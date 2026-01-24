@@ -43,7 +43,7 @@
 	</article>
 </template>
 <script setup lang="ts">
-	import theme from './theme.module.css';
+	import theme from '@shared/ui/theme.module.css';
 	
 	const props = defineProps<{
 		id: number;
@@ -71,7 +71,7 @@
 	};
 </script>
 <style module>
-	@import './theme.module.css';
+	@import '@shared/ui/theme.module.css';
 	.item {
 		display: flex;
 		align-items: center;

@@ -77,11 +77,11 @@
 
 					<div :class="$style.quantityBlock">
 						<button :class="$style.quantityBtn" @click="decreaseQuantity" :disabled="quantity <= 1">
-							<img src="../../assets/minus_circle.svg" alt="Decrease quantity" :class="$style.quantityIcon" />
+							<img src="@assets/minus_circle.svg" alt="Decrease quantity" :class="$style.quantityIcon" />
 						</button>
 						<input type="number" v-model.number="quantity" :class="$style.quantityInput" min="1" />
 						<button :class="$style.quantityBtn" @click="increaseQuantity">
-							<img src="../../assets/plus_circle.svg" alt="Increase quantity" :class="$style.quantityIcon" />
+							<img src="@assets/plus_circle.svg" alt="Increase quantity" :class="$style.quantityIcon" />
 						</button>
 					</div>
 
@@ -149,11 +149,11 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Header, Footer } from '../../widgets';
-import { ProductCard, Recommendations } from '../../shared/ui';
-import { addItem } from '../../entities/cart/cart.store';
-import type { Product } from '../../entities/product/product.types';
-import { getSimilarProducts } from '../../shared/utils/mockData';
+import { Header, Footer } from '@widgets';
+import { ProductCard, Recommendations } from '@shared/ui';
+import { addItem } from '@entities/cart/cart.store';
+import type { Product } from '@entities/product/product.types';
+import { getSimilarProducts } from '@shared/utils/mockData';
 
 const route = useRoute();
 const router = useRouter();
@@ -261,7 +261,7 @@ onMounted(async () => {
 </script>
 
 <style module>
-@import '../../shared/ui/theme.module.css';
+@import '@shared/ui/theme.module.css';
 
 .page {
 	min-height: 100vh;

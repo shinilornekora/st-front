@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import Input from '../shared/ui/Input.vue';
-import '../shared/ui/theme.module.css';
+import Input from '@shared/ui/Input.vue';
+import '@shared/ui/theme.module.css';
 const meta = {
 	title: 'Shared/Input',
 	component: Input,

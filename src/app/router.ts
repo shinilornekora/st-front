@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import ProductListing from '../pages/ProductListing/ProductListing.vue';
-import ProductDetail from '../pages/ProductDetail/ProductDetail.vue';
-import Profile from '../pages/Profile/Profile.vue';
-import Menu from '../pages/Menu/Menu.vue';
-import Cart from '../pages/Cart/Cart.vue';
-import Notifications from '../pages/Notifications/Notifications.vue';
+import ProductListing from '@pages/ProductListing/ProductListing.vue';
+import ProductDetail from '@pages/ProductDetail/ProductDetail.vue';
+import Profile from '@pages/Profile/Profile.vue';
+import Menu from '@pages/Menu/Menu.vue';
+import Cart from '@pages/Cart/Cart.vue';
+import Notifications from '@pages/Notifications/Notifications.vue';
 
 const routes = [
 	{

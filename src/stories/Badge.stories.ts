@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/vue3-vite';
-import Badge from '../shared/ui/Badge.vue';
-import '../shared/ui/theme.module.css';
+import Badge from '@shared/ui/Badge.vue';
+import '@shared/ui/theme.module.css';
 const meta = {
 	title: 'Shared/Badge',
 	component: Badge,

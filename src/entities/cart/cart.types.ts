@@ -1,4 +1,4 @@
-import type { Product } from '../product/product.types';
+import type { Product } from '@entities/product/product.types';
 export interface CartItem {
 	id: number;
 	product: Product;

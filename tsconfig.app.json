@@ -3,6 +3,17 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@assets/*": ["src/assets/*"],
+      "@components/*": ["src/shared/ui/*"],
+      "@pages/*": ["src/pages/*"],
+      "@entities/*": ["src/entities/*"],
+      "@features/*": ["src/features/*"],
+      "@widgets/*": ["src/widgets/*"],
+      "@shared/*": ["src/shared/*"],
+      "@app/*": ["src/app/*"]
+    },
 
     /* Linting */
     "strict": true,

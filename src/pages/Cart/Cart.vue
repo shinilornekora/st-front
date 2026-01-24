@@ -3,7 +3,7 @@
     <Header />
     <main :class="$style.main">
       <div v-if="cartItemsCount === 0" :class="$style.emptyCart">
-        <img src="../../assets/plain_cart_icon.svg" alt="Empty Cart" :class="$style.cartIcon" />
+        <img src="@assets/plain_cart_icon.svg" alt="Empty Cart" :class="$style.cartIcon" />
         <Button type="accent" @click="goToShop" :class="$style.customButton">Перейти к покупкам</Button>
       </div>
 
@@ -67,14 +67,14 @@
 import { computed, onMounted, ref, watch, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
-import { $cart, removeItem, updateQty } from '../../entities/cart/cart.store';
-import { addItem } from '../../entities/cart/cart.store';
-import type { Product } from '../../entities/product/product.types';
-import { Header, Footer } from '../../widgets';
-import Button from '../../shared/ui/Button.vue';
-import ProductCard from '../../shared/ui/ProductCard.vue';
-import CartItem from '../../shared/ui/CartItem.vue';
-import { generateProducts, getSimilarProducts } from '../../shared/utils/mockData';
+import { $cart, removeItem, updateQty } from '@entities/cart/cart.store';
+import { addItem } from '@entities/cart/cart.store';
+import type { Product } from '@entities/product/product.types';
+import { Header, Footer } from '@widgets';
+import Button from '@shared/ui/Button.vue';
+import ProductCard from '@shared/ui/ProductCard.vue';
+import CartItem from '@shared/ui/CartItem.vue';
+import { generateProducts, getSimilarProducts } from '@shared/utils/mockData';
 
 const router = useRouter();
 const cart = useStore($cart);

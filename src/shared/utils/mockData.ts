@@ -1,4 +1,4 @@
-import type { Product } from '../../entities/product/product.types';
+import type { Product } from '@entities/product/product.types';
 
 // Product name templates
 const productTypes = [
