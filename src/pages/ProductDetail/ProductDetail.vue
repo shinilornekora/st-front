@@ -738,6 +738,7 @@ const copyCurrentUrl = async () => {
 .characteristicsTable {
 	display: flex;
 	flex-direction: column;
+	gap: 12px;
 }
 
 .characteristicRow {
@@ -872,8 +873,27 @@ const copyCurrentUrl = async () => {
 		padding-right: 16px;
 	}
 
+	.mainImageContainer {
+		padding: 0;
+	}
+
+	.mainImageWrapper {
+		width: 100% !important;
+		height: 100% !important;
+	}
+
+	.accordionHeader:hover {
+		background: none;
+	}
+
+	.favoriteBtn {
+		top: 12px;
+		left: 12px;
+	}
+
 	.productContainer {
-		padding: 24px;
+		padding: 24px 0 24px 0;
+		margin-bottom: 0;
 	}
 
 	.productTitle {
@@ -886,7 +906,13 @@ const copyCurrentUrl = async () => {
 
 	.characteristicsSection,
 	.additionalSection {
-		padding: 24px;
+		padding: 24px 0 24px 0;
+	}
+
+	.characteristicsRow {
+		display: flex;
+		flex-direction: row;
+		gap: 0;
 	}
 
 	.leatherBadge {
@@ -903,13 +929,10 @@ const copyCurrentUrl = async () => {
 	.leatherText {
 		font-size: 8px;
 	}
-	
-	.characteristicRow,
-	.additionalRow {
-		grid-template-columns: 1fr;
-		gap: 8px;
-	}
 
+	.sectionTitle {
+		font-size: 18px;
+	}
 	
 	.mainImageWrapper {
 		width: 166px;
@@ -921,6 +944,9 @@ const copyCurrentUrl = async () => {
 		height: 60px;
 	}
 
+	.additionalTable {
+		gap: 12px;
+	}
 }
 
 /* Status Line */

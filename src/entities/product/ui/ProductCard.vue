@@ -292,9 +292,9 @@
 			width: 180px;
 		}
 
-		.imageWrapper
+		.imageWrapper,
 		.img {
-			width: 166px;
+			width: 100%;
 			height: 196px;
 		}
 		

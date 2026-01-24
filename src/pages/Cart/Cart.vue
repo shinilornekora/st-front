@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.page">
-    <Header />
+    <Header :hide-search="true"/>
     <main :class="$style.main">
       <div v-if="cartItemsCount === 0" :class="$style.emptyCart">
         <img src="@assets/plain_cart_icon.svg" alt="Empty Cart" :class="$style.cartIcon" />
@@ -73,7 +73,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, watchEffect } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
 import { $cart, removeItem, updateQty } from '@entities/cart/cart.store';
@@ -84,7 +84,7 @@ import { StatusLine } from '@shared/ui';
 import Button from '@shared/ui/Button.vue';
 import ProductCard from '@entities/product/ui/ProductCard.vue';
 import CartItem from '@entities/cart/ui/CartItem.vue';
-import { generateProducts, getSimilarProducts } from '@shared/lib/mockData';
+import { generateProducts } from '@shared/lib/mockData';
 
 const router = useRouter();
 const cart = useStore($cart);
@@ -353,7 +353,7 @@ const goToProduct = (productId: number) => {
   }
   
   .cartSummary {
-    width: 100%;
+    width: auto;
     position: static;
   }
 }
@@ -364,6 +364,10 @@ const goToProduct = (productId: number) => {
     margin-bottom: 24px;
   }
   
+  .cartSummary {
+    width: auto;
+  }
+
   .similarSection {
     padding: 0;
     margin-top: 32px;

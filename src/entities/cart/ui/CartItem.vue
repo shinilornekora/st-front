@@ -275,4 +275,49 @@
 	.actionBtnClicked {
 		transform: scale(0.9);
 	}
+
+	@media(max-width: 1024px) {
+		.controls {
+			align-self: flex-start;
+			margin-top: 8px;
+		}
+
+		.info {
+			gap: 35px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.img {
+			width: 50px;
+			height: 50px;
+			align-self: flex-start;
+		}
+
+		.title {
+			font-size: 14px;
+		}
+
+		.article {
+			font-size: 10px;
+		}
+
+		.price {
+			font-size: 12px;
+		}
+
+		.actionIcon {
+			width: 24px;
+			height: 24px;
+		}
+
+		.controls {
+			align-self: flex-start;
+			margin-top: 12px;
+		}
+
+		.item {
+			gap: 17px;
+		}
+	}
 </style>

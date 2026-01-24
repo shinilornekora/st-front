@@ -9,7 +9,7 @@ export const getProductsFx = createEffect<void, Product[]>(async () => {
 	// Import mock data generator
 	const { generateProducts } = await import('@shared/lib/mockData');
 	// Generate 50 products for better performance
-	return generateProducts(50);
+	return generateProducts(250);
 });
 
 export const $products = createStore<Product[]>([])
