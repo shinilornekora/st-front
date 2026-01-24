@@ -247,6 +247,7 @@
 		font-size: 20px;
 		line-height: 1.2;
 		-webkit-line-clamp: 2;
+		padding-right: 10px;
 	}
 	
 	.card.recommendation .price {

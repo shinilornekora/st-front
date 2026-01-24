@@ -11,7 +11,7 @@
 				:price="product.price"
 				:oldPrice="product.oldPrice"
 				:recommendation="true"
-				@click="$emit('product-click', product)"
+				@click="handleProductClick(product)"
 				@add-to-cart="$emit('add-to-cart', product)"
 			/>
 		</div>
@@ -34,10 +34,14 @@ defineProps<{
 	products: Product[];
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
 	'product-click': [product: Product];
 	'add-to-cart': [product: Product];
 }>();
+
+const handleProductClick = (product: Product) => {
+	emit('product-click', product);
+};
 </script>
 
 <style module>

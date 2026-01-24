@@ -153,121 +153,32 @@ import { Header, Footer } from '../../widgets';
 import { ProductCard, Recommendations } from '../../shared/ui';
 import { addItem } from '../../entities/cart/cart.store';
 import type { Product } from '../../entities/product/product.types';
+import { getSimilarProducts } from '../../shared/utils/mockData';
 
 const route = useRoute();
 const router = useRouter();
 
 const quantity = ref(1);
 const currentImageIndex = ref(0);
-const isAccordionOpen = ref(false);
-
-// Mock product data
-const product = ref({
-	id: 1,
-	name: 'Сандалии женские',
-	price: 100500,
-	oldPrice: 150500,
-	discount: 33,
-	article: '123456678',
-	images: [
-		'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&h=800&fit=crop',
-		'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=600&h=800&fit=crop',
-		'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600&h=800&fit=crop',
-	],
-	slug: '',
-	description: '',
-	currency: '₽',
-	inStock: true,
-	category: [],
-	tags: [],
-	seller: { id: 1, name: 'Seller' },
+const isAccordionOpen = ref(0);
+const product = ref<Product>({
+  id: 0,
+  name: '',
+  slug: '',
+  description: '',
+  price: 0,
+  currency: '₽',
+  inStock: true,
+  category: [],
+  tags: [],
+  images: [],
+  seller: { id: 0, name: '' },
 });
 
-const characteristics = ref([
-	{ label: 'Цвет', value: 'белый' },
-	{ label: 'Состав', value: 'натуральная кожа 100%' },
-	{ label: 'Пол', value: 'Женский' },
-	{ label: 'Производитель', value: 'Stivalli' },
-	{ label: 'Телефонный контакт', value: '+7 123 456 67 89' },
-	{ label: 'Электронный адрес', value: 'Stivalli@mail.ru' },
-]);
+const characteristics = ref<Array<{label: string, value: string}>>([]);
+const additionalInfo = ref<Array<{label: string, value: string}>>([]);
+const similarProducts = ref<Product[]>([]);
 
-const additionalInfo = ref([
-	{ label: 'Материал подошвы обуви', value: 'ТЭП (термоэластопласт)' },
-	{ label: 'Материал стельки', value: 'натуральная кожа' },
-	{ label: 'Материал подкладки обуви', value: 'натуральная кожа' },
-	{ label: 'Полнота обуви (EUR', value: 'F (6)' },
-	{ label: 'Вид застежки', value: 'пряжка' },
-	{ label: 'Комплектация', value: 'Сандалии 1 пара в коробке' },
-]);
-
-const similarProducts = ref([
-	{
-		id: 2,
-		name: 'Name',
-		price: 100500,
-		images: ['https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&h=400&fit=crop'],
-		slug: '',
-		description: '',
-		currency: '₽',
-		inStock: true,
-		category: [],
-		tags: [],
-		seller: { id: 1, name: 'Seller' },
-	},
-	{
-		id: 3,
-		name: 'Name',
-		price: 100500,
-		images: ['https://images.unsplash.com/photo-1560343090-f0409e92791a?w=300&h=400&fit=crop'],
-		slug: '',
-		description: '',
-		currency: '₽',
-		inStock: true,
-		category: [],
-		tags: [],
-		seller: { id: 1, name: 'Seller' },
-	},
-	{
-		id: 4,
-		name: 'Name',
-		price: 100500,
-		images: ['https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=300&h=400&fit=crop'],
-		slug: '',
-		description: '',
-		currency: '₽',
-		inStock: true,
-		category: [],
-		tags: [],
-		seller: { id: 1, name: 'Seller' },
-	},
-	{
-		id: 5,
-		name: 'Name',
-		price: 100500,
-		images: ['https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&h=400&fit=crop'],
-		slug: '',
-		description: '',
-		currency: '₽',
-		inStock: true,
-		category: [],
-		tags: [],
-		seller: { id: 1, name: 'Seller' },
-	},
-	{
-		id: 6,
-		name: 'Name',
-		price: 100500,
-		images: ['https://images.unsplash.com/photo-1560343090-f0409e92791a?w=300&h=400&fit=crop'],
-		slug: '',
-		description: '',
-		currency: '₽',
-		inStock: true,
-		category: [],
-		tags: [],
-		seller: { id: 1, name: 'Seller' },
-	},
-]);
 
 const currentImage = computed(() => product.value.images[currentImageIndex.value]);
 
@@ -312,7 +223,8 @@ const addSimilarToCart = (similarProduct: Product) => {
 };
 
 const goToProduct = (product: any) => {
-	router.push(`/product/${product.id}`);
+	// Use replace instead of push to ensure navigation happens even if we're on the same route
+	router.replace(`/product/${product.id}`);
 };
 
 onMounted(async () => {
@@ -322,14 +234,13 @@ onMounted(async () => {
 	// Load product data based on route.params.id
 	const productId = parseInt(route.params.id as string, 10);
 	if (!isNaN(productId)) {
-		const { getProductById, getSimilarProducts, generateCharacteristics, generateAdditionalInfo } = await import('../../shared/utils/mockData');
+		const { getProductById } = await import('../../shared/utils/mockData');
 		
 		const productData = getProductById(productId);
 		if (productData) {
 			product.value = {
 				...productData,
 				article: `ART-${productId.toString().padStart(6, '0')}`,
-				oldPrice: productData.discount ? Math.round(productData.price / (1 - productData.discount / 100)) : undefined,
 			};
 			
 			// Generate characteristics based on product data
@@ -337,8 +248,10 @@ onMounted(async () => {
 			const color = productData.tags.find(tag => ['черный', 'коричневый', 'бежевый', 'белый', 'синий', 'красный', 'серый', 'зеленый', 'бордовый'].includes(tag.name))?.name || 'черный';
 			const brand = productData.seller.name;
 			
-			characteristics.value = generateCharacteristics(material, color, brand);
-			additionalInfo.value = generateAdditionalInfo();
+			// Import and generate characteristics
+			const { mockData } = await import('../../shared/utils/mockData');
+			characteristics.value = mockData.generateCharacteristics(material, color, brand);
+			additionalInfo.value = mockData.generateAdditionalInfo();
 			
 			// Generate similar products
 			similarProducts.value = getSimilarProducts(productId);

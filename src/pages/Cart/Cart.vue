@@ -7,9 +7,7 @@
         <Button type="accent" @click="goToShop" :class="$style.customButton">Перейти к покупкам</Button>
       </div>
 
-      <div v-else :class="$style.cartContainer">
-        <h1 :class="$style.cartTitle">Корзина</h1>
-        
+      <div v-else :class="$style.cartContainer">        
         <div :class="$style.cartContent">
           <div :class="$style.cartItems">
             <CartItem
@@ -65,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
 import { $cart, removeItem } from '../../entities/cart/cart.store';
@@ -75,25 +73,23 @@ import { Header, Footer } from '../../widgets';
 import Button from '../../shared/ui/Button.vue';
 import ProductCard from '../../shared/ui/ProductCard.vue';
 import CartItem from '../../shared/ui/CartItem.vue';
-import { generateProduct } from '../../shared/utils/mockData';
+import { generateProducts, getSimilarProducts } from '../../shared/utils/mockData';
 
 const router = useRouter();
 const cart = useStore($cart);
 
-// Initialize cart with sample data for testing
+// Similar products state
+const similarProducts = ref<Product[]>([]);
+
+// Load similar products on mount
 onMounted(() => {
-  if (cart.value.items.length === 0) {
-    // Add a sample product to the cart for testing
-    const sampleProduct = generateProduct(1);
-    addItem({
-      id: sampleProduct.id,
-      product: sampleProduct,
-      quantity: 2,
-      price: sampleProduct.price,
-      discount: sampleProduct.discount,
-      currency: sampleProduct.currency,
-    });
-  }
+  // Get a random selection of products that aren't already in the cart
+  const allProducts = generateProducts(10);
+  const cartItemIds = cart.value.items.map(item => item.id);
+  
+  // Filter out products already in cart and take 5 random ones
+  const availableProducts = allProducts.filter(product => !cartItemIds.includes(product.id));
+  similarProducts.value = availableProducts.slice(0, 5);
 });
 
 const goToShop = () => {
@@ -112,40 +108,6 @@ const checkout = () => {
 const formatPrice = (price: number) => {
   return `${price.toLocaleString('ru-RU')} ₽`;
 };
-
-// Mock similar products data
-const similarProducts = [
-  {
-    id: 2,
-    name: 'Name',
-    price: 100500,
-    images: ['https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&h=400&fit=crop'],
-  },
-  {
-    id: 3,
-    name: 'Name',
-    price: 100500,
-    images: ['https://images.unsplash.com/photo-1560343090-f0409e92791a?w=300&h=400&fit=crop'],
-  },
-  {
-    id: 4,
-    name: 'Name',
-    price: 100500,
-    images: ['https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=300&h=400&fit=crop'],
-  },
-  {
-    id: 5,
-    name: 'Name',
-    price: 100500,
-    images: ['https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&h=400&fit=crop'],
-  },
-  {
-    id: 6,
-    name: 'Name',
-    price: 100500,
-    images: ['https://images.unsplash.com/photo-1560343090-f0409e92791a?w=300&h=400&fit=crop'],
-  },
-];
 
 const addSimilarToCart = (similarProduct: Product) => {
   addItem({

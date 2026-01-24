@@ -150,10 +150,6 @@ onUnmounted(() => {
 	background: #f3f4f6;
 }
 
-.iconBtn.active {
-	background: #f3f4f6;
-}
-
 .iconBtn.active .headerIcon {
 	color: var(--color-main);
 }
