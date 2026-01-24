@@ -14,9 +14,6 @@
 					{{ size }}
 				</button>
 			</div>
-			<div :class="$style.tooltipActions">
-				<button :class="$style.applyBtn" type="button" @click="applyFilter">Применить</button>
-			</div>
 		</div>
 
 		<!-- Quantity Filter Tooltip -->
@@ -33,9 +30,6 @@
 					{{ option.label }}
 				</button>
 			</div>
-			<div :class="$style.tooltipActions">
-				<button :class="$style.applyBtn" type="button" @click="applyFilter">Применить</button>
-			</div>
 		</div>
 
 		<!-- Price Filter Tooltip -->
@@ -44,14 +38,14 @@
 			<div :class="$style.priceInputs">
 				<div :class="$style.priceInput">
 					<label>От</label>
-					<input v-model="priceRange.min" type="number" placeholder="0" />
+					<input v-model="priceRange.min" type="number" placeholder="0" @input="updatePriceFilter" />
 				</div>
 				<div :class="$style.priceInput">
 					<label>До</label>
-					<input v-model="priceRange.max" type="number" placeholder="50000" />
+					<input v-model="priceRange.max" type="number" placeholder="50000" @input="updatePriceFilter" />
 				</div>
 			</div>
-			<div :class="$style.tooltipActions">
+			<div :class="$style.priceActions">
 				<button :class="$style.applyBtn" type="button" @click="applyPriceFilter">Применить</button>
 			</div>
 		</div>
@@ -70,9 +64,6 @@
 					{{ option.label }}
 				</button>
 			</div>
-			<div :class="$style.tooltipActions">
-				<button :class="$style.applyBtn" type="button" @click="applyFilter">Применить</button>
-			</div>
 		</div>
 
 		<!-- Color Filter Tooltip -->
@@ -88,9 +79,6 @@
 				>
 					{{ color.label }}
 				</button>
-			</div>
-			<div :class="$style.tooltipActions">
-				<button :class="$style.applyBtn" type="button" @click="applyFilter">Применить</button>
 			</div>
 		</div>
 	</Tooltip>
@@ -153,16 +141,20 @@ const toggleValue = (value: string) => {
 	} else {
 		selectedValues.value.push(value);
 	}
-};
-
-const applyFilter = () => {
+	
+	// Apply filter immediately when value changes
 	if (selectedValues.value.length > 0) {
 		emit('apply', {
 			type: props.filterType,
 			values: [...selectedValues.value],
 		});
+	} else {
+		// If no values selected, remove the filter
+		emit('apply', {
+			type: props.filterType,
+			values: [],
+		});
 	}
-	emit('close');
 };
 
 const applyPriceFilter = () => {
@@ -171,8 +163,22 @@ const applyPriceFilter = () => {
 			type: props.filterType,
 			values: [priceRange.min, priceRange.max],
 		});
+	} else {
+		// If no price range, remove the filter
+		emit('apply', {
+			type: props.filterType,
+			values: [],
+		});
 	}
 	emit('close');
+};
+
+// Watch for price changes and apply immediately
+const updatePriceFilter = () => {
+	// Debounce price filter updates
+	setTimeout(() => {
+		applyPriceFilter();
+	}, 500);
 };
 </script>
 
@@ -339,8 +345,8 @@ const applyPriceFilter = () => {
 	font-weight: bold;
 }
 
-/* Common */
-.tooltipActions {
+/* Price filter actions (only price filter needs apply button) */
+.priceActions {
 	display: flex;
 	justify-content: flex-end;
 }

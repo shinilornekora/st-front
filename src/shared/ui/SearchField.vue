@@ -1,6 +1,7 @@
 <template>
 	<div :class="$style.searchContainer" ref="containerRef">
 		<form
+			ref="formRef"
 			:class="[$style.form, $style[type]]"
 			@submit.prevent="handleSubmit"
 			role="search"
@@ -15,20 +16,33 @@
 			/>
 			
 			<!-- Active filters as chips inside search -->
-			<div v-if="activeFilters.length > 0" :class="$style.filterChips">
-				<button
-					v-for="filter in activeFilters"
-					:key="filter.id"
-					:class="$style.filterChip"
-					type="button"
-					@click="removeFilter(filter.id)"
+			<div v-if="activeFilters.length > 0" ref="filterChipsRef" :class="$style.filterChips">
+				<!-- Show all filters if they fit, otherwise show compressed view -->
+				<template v-if="!shouldCompressFilters">
+					<button
+						v-for="filter in activeFilters"
+						:key="filter.id"
+						:class="$style.filterChip"
+						type="button"
+						@click="removeFilter(filter.id)"
+					>
+						{{ filter.label }}
+						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<line x1="18" y1="6" x2="6" y2="18"></line>
+							<line x1="6" y1="6" x2="18" y2="18"></line>
+						</svg>
+					</button>
+				</template>
+				<!-- Compressed view with ellipsis -->
+				<div
+					v-else
+					:class="$style.compressedFilters"
+					@mouseenter="handleFiltersMouseEnter"
+					@mouseleave="handleFiltersMouseLeave"
 				>
-					{{ filter.label }}
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<line x1="18" y1="6" x2="6" y2="18"></line>
-						<line x1="6" y1="6" x2="18" y2="18"></line>
-					</svg>
-				</button>
+					<span :class="$style.filterCount">{{ activeFilters.length }} фильтров</span>
+					<div :class="$style.ellipsis">...</div>
+				</div>
 			</div>
 			
 			<button
@@ -98,11 +112,26 @@
 				</div>
 			</div>
 		</Transition>
+
+		<!-- Filters tooltip for compressed view -->
+		<div
+			:class="$style.filtersTooltipContainer"
+			@mouseenter="handleTooltipMouseEnter"
+			@mouseleave="handleTooltipMouseLeave"
+		>
+			<FiltersTooltip
+				v-if="showFiltersTooltip && shouldCompressFilters"
+				:filters="activeFilters"
+				@remove-filter="removeFilter"
+				@clear-all="clearAllFilters"
+			/>
+		</div>
 	</div>
 </template>
 <script setup lang="ts">
-	import { ref, computed, onMounted, onUnmounted } from 'vue';
+	import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 	import FilterTooltip from './FilterTooltip.vue';
+	import FiltersTooltip from './FiltersTooltip.vue';
 	import theme from './theme.module.css';
 	
 	interface Filter {
@@ -114,12 +143,14 @@
 		values: string[];
 	}
 	
-	const props = defineProps<{
+	const props = withDefaults(defineProps<{
 		placeholder?: string;
 		type?: 'main' | 'accent';
 		hideFilters?: boolean;
 		modelValue?: string;
-	}>();
+	}>(), {
+		type: 'main',
+	});
 	
 	const emit = defineEmits(['submit', 'update:modelValue', 'filterChange']);
 	
@@ -132,6 +163,12 @@
 	const activeTooltip = ref<string | null>(null);
 	const containerRef = ref<HTMLElement | null>(null);
 	const filterLabelRefs = ref<HTMLElement[]>([]);
+	const showFiltersTooltip = ref(false);
+	const filtersTooltipTimeout = ref<NodeJS.Timeout | null>(null);
+	const shouldCompressFilters = ref(false);
+	const formRef = ref<HTMLElement | null>(null);
+	const filterChipsRef = ref<HTMLElement | null>(null);
+	const resizeObserver = ref<ResizeObserver | null>(null);
 	
 	// All available filters
 	const allFilters = ref<Filter[]>([
@@ -152,7 +189,8 @@
 	const selectSuggestion = (suggestion: string) => {
 		value.value = suggestion;
 		showPopup.value = false;
-		handleSubmit();
+		// Immediately trigger search with the selected suggestion
+		emit('submit', { query: suggestion, filters: activeFilters.value });
 	};
 	
 	const handleSubmit = () => {
@@ -177,19 +215,33 @@
 		// Remove existing filter of the same type if it exists
 		activeFilters.value = activeFilters.value.filter(f => f.id !== filterData.type);
 		
-		// Add the new filter
-		const filter = allFilters.value.find(f => f.id === filterData.type);
-		if (filter) {
-			const label = getFilterLabel(filterData.type, filterData.values);
-			activeFilters.value.push({
-				...filter,
-				values: filterData.values,
-				label
-			});
+		// Add the new filter only if it has values
+		if (filterData.values.length > 0) {
+			const filter = allFilters.value.find(f => f.id === filterData.type);
+			if (filter) {
+				const label = getFilterLabel(filterData.type, filterData.values);
+				activeFilters.value.push({
+					...filter,
+					values: filterData.values,
+					label
+				});
+			}
 		}
 		
 		emit('filterChange', activeFilters.value);
-		closeTooltip();
+		
+		// Once compressed, keep compressed - don't try to expand again
+		// This prevents visual glitches when adding filters to compressed state
+		if (shouldCompressFilters.value || activeFilters.value.length > 2) {
+			shouldCompressFilters.value = true;
+		} else {
+			// Only check compression if we're not already compressed
+			nextTick(() => {
+				checkFiltersCompression();
+			});
+		}
+		
+		// Don't close tooltip for immediate feedback - let user continue selecting
 	};
 	
 	const getFilterLabel = (type: string, values: string[]): string => {
@@ -234,6 +286,19 @@
 	const removeFilter = (filterId: string) => {
 		activeFilters.value = activeFilters.value.filter(f => f.id !== filterId);
 		emit('filterChange', activeFilters.value);
+		
+		// Only check if we should decompress if we have few filters left
+		// This prevents visual glitches when removing filters from compressed state
+		if (activeFilters.value.length <= 2) {
+			nextTick(() => {
+				checkFiltersCompression();
+			});
+		}
+		
+		// Close tooltip if no filters left
+		if (activeFilters.value.length === 0) {
+			showFiltersTooltip.value = false;
+		}
 	};
 	
 	const clearAll = () => {
@@ -241,6 +306,92 @@
 		activeFilters.value = [];
 		showPopup.value = false;
 		emit('filterChange', []);
+	};
+
+	const clearAllFilters = () => {
+		activeFilters.value = [];
+		emit('filterChange', []);
+		// Close tooltip when all filters are cleared
+		showFiltersTooltip.value = false;
+	};
+
+	// Check if filters should be compressed based on available space
+	const checkFiltersCompression = () => {
+		if (!formRef.value || !filterChipsRef.value || activeFilters.value.length === 0) {
+			shouldCompressFilters.value = false;
+			return;
+		}
+
+		// Get the form width and filter chips width
+		const formWidth = formRef.value.offsetWidth;
+		const filterChipsWidth = filterChipsRef.value.offsetWidth;
+		
+		// More aggressive compression - compress if filter chips take more than 40% of the form width
+		// Also compress if we have more than 2 filters regardless of width
+		const compressionThreshold = formWidth * 0.4;
+		const shouldCompressByWidth = filterChipsWidth > compressionThreshold;
+		const shouldCompressByCount = activeFilters.value.length > 2;
+		
+		shouldCompressFilters.value = shouldCompressByWidth || shouldCompressByCount;
+	};
+
+	// Handle mouse enter on compressed filters
+	const handleFiltersMouseEnter = () => {
+		// Clear any existing timeout
+		if (filtersTooltipTimeout.value) {
+			clearTimeout(filtersTooltipTimeout.value);
+			filtersTooltipTimeout.value = null;
+		}
+		showFiltersTooltip.value = true;
+	};
+
+	// Handle mouse leave from compressed filters
+	const handleFiltersMouseLeave = () => {
+		// Set a timeout before hiding to allow moving to tooltip
+		filtersTooltipTimeout.value = setTimeout(() => {
+			showFiltersTooltip.value = false;
+		}, 200);
+	};
+
+	// Handle mouse enter on tooltip
+	const handleTooltipMouseEnter = () => {
+		// Clear any existing timeout
+		if (filtersTooltipTimeout.value) {
+			clearTimeout(filtersTooltipTimeout.value);
+			filtersTooltipTimeout.value = null;
+		}
+		showFiltersTooltip.value = true;
+	};
+
+	// Handle mouse leave from tooltip
+	const handleTooltipMouseLeave = () => {
+		// Set a timeout before hiding
+		filtersTooltipTimeout.value = setTimeout(() => {
+			showFiltersTooltip.value = false;
+		}, 100);
+	};
+
+	// Set up ResizeObserver to monitor filter chips width
+	const setupResizeObserver = () => {
+		if (!filterChipsRef.value) return;
+
+		// Clean up existing observer
+		if (resizeObserver.value) {
+			resizeObserver.value.disconnect();
+		}
+
+		// Create new observer
+		resizeObserver.value = new ResizeObserver(() => {
+			checkFiltersCompression();
+		});
+
+		// Observe the filter chips container
+		resizeObserver.value.observe(filterChipsRef.value);
+		
+		// Also observe the form to detect width changes
+		if (formRef.value) {
+			resizeObserver.value.observe(formRef.value);
+		}
 	};
 	
 	// Close popup when clicking outside
@@ -253,10 +404,21 @@
 	
 	onMounted(() => {
 		document.addEventListener('click', handleClickOutside);
+		
+		// Set up resize observer after DOM is ready
+		nextTick(() => {
+			setupResizeObserver();
+			checkFiltersCompression();
+		});
 	});
 	
 	onUnmounted(() => {
 		document.removeEventListener('click', handleClickOutside);
+		
+		// Clean up resize observer
+		if (resizeObserver.value) {
+			resizeObserver.value.disconnect();
+		}
 	});
 </script>
 <style module>
@@ -280,10 +442,11 @@
 		border-radius: 24px;
 		padding: 8px 16px;
 		transition: border-color 0.2s, box-shadow 0.2s;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		max-width: 575px !important;
-		max-height: 40px;
+		min-height: 40px;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		/* Remove overflow: hidden to ensure background is visible */
 	}
 	
 	.form:focus-within {
@@ -292,8 +455,7 @@
 	}
 	
 	.main {
-		background: var(--color-main);
-		border-color: var(--color-main);
+		/* Remove background and border color for main type, keep it white */
 	}
 	
 	.accent {
@@ -319,8 +481,11 @@
 	.filterChips {
 		display: flex;
 		gap: 6px;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
 		align-items: center;
+		flex-shrink: 1;
+		min-width: 0;
+		overflow: hidden;
 	}
 	
 	.filterChip {
@@ -336,6 +501,7 @@
 		cursor: pointer;
 		transition: background 0.2s, border-color 0.2s;
 		white-space: nowrap;
+		flex-shrink: 0;
 	}
 	
 	.filterChip:hover {
@@ -515,5 +681,45 @@
 			font-size: 13px;
 			padding: 5px 12px;
 		}
+	}
+
+	/* Compressed filters styles */
+	.compressedFilters {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		background: #f3f4f6;
+		border: 1px solid #d1d5db;
+		border-radius: 16px;
+		padding: 4px 10px;
+		font-size: 13px;
+		color: var(--color-primary);
+		cursor: pointer;
+		transition: background 0.2s, border-color 0.2s;
+		white-space: nowrap;
+		flex-shrink: 0;
+	}
+
+	.compressedFilters:hover {
+		background: #e5e7eb;
+		border-color: #9ca3af;
+	}
+
+	.filterCount {
+		font-size: 13px;
+		color: var(--color-primary);
+	}
+
+	.ellipsis {
+		font-weight: bold;
+		color: #6b7280;
+	}
+
+	/* Filters tooltip container */
+	.filtersTooltipContainer {
+		position: absolute;
+		top: calc(100% + 8px);
+		right: 0;
+		z-index: 1000;
 	}
 </style>
