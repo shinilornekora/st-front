@@ -190,7 +190,7 @@ const handleBecomeSeller = () => {
   text-decoration: underline;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 769px) {
   .formContainer {
     padding: 24px 16px;
   }
@@ -199,8 +199,13 @@ const handleBecomeSeller = () => {
     font-size: 24px;
     margin-bottom: 24px;
   }
+
+  .main {
+    padding: 0;
+  }
   
   .linksContainer {
+    align-items: center !important;
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
