@@ -1,17 +1,17 @@
 <template>
-	<header :class="$style.header">
+	<header :class="[$style.header, { [$style.lightHeader]: lightHeader }]">
 		<div :class="$style.headerContent">
 			<router-link :class="$style.logo" to="/">
 				<img :src="logoSrc" alt="Stivalli" :class="$style.logo" />
 			</router-link>
-			<div :class="$style.searchWrapper">
+			<div v-if="!lightHeader" :class="$style.searchWrapper">
 				<SearchField
 					v-model="searchQuery"
 					placeholder="Value"
 					:class="$style.search"
 				/>
 			</div>
-			<div :class="$style.headerIcons">
+			<div v-if="!lightHeader" :class="$style.headerIcons">
 				<router-link
 					to="/profile"
 					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Profile') }]"
@@ -46,6 +46,9 @@
 					/>
 				</router-link>
 			</div>
+			<router-link v-if="lightHeader" to="/" :class="$style.closeBtn" aria-label="Закрыть">
+				<img :src="crossIcon" alt="" :class="$style.headerIcon" />
+			</router-link>
 		</div>
 	</header>
 </template>
@@ -62,6 +65,16 @@ import darkShoppingCartIcon from '../assets/dark_shopping_cart.svg';
 import cartFilledIcon from '../assets/cart_filled.svg';
 import notificationIcon from '../assets/notification_icon.svg';
 import notificationFilledIcon from '../assets/notification_filled.svg';
+import crossIcon from '../assets/cross.svg';
+
+// Define props
+interface Props {
+	lightHeader?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	lightHeader: false,
+});
 
 const route = useRoute();
 const searchQuery = ref('');
@@ -100,11 +113,22 @@ onUnmounted(() => {
 	top: 0;
 }
 
+.lightHeader {
+	background: transparent;
+	border-bottom: none;
+	box-shadow: none;
+	padding: 16px 0;
+}
+
 .headerContent {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	padding: 0 120px;
+}
+
+.lightHeader .headerContent {
+	justify-content: flex-end;
 }
 
 .logo {
@@ -113,6 +137,12 @@ onUnmounted(() => {
 	flex-shrink: 0;
 	object-fit: contain;
 	cursor: pointer;
+}
+
+.lightHeader .logo {
+	margin-right: auto;
+	position: absolute;
+	left: 0;
 }
 
 .searchWrapper {
@@ -160,6 +190,23 @@ onUnmounted(() => {
 	color: #6b7280;
 }
 
+.closeBtn {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 8px;
+	transition: background 0.2s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 8px;
+	text-decoration: none;
+}
+
+.closeBtn:hover {
+	background: #f3f4f6;
+}
+
 @media (max-width: 1200px) {
 	.headerContent {
 		padding: 0 15px;
@@ -170,6 +217,10 @@ onUnmounted(() => {
 @media (max-width: 768px) {
 	.header {
 		padding: 8px 0;
+	}
+
+	.lightHeader {
+		padding: 12px 0;
 	}
 
 	.headerContent {
