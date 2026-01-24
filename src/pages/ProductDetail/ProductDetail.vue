@@ -149,11 +149,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Header, Footer } from '@widgets';
-import { ProductCard, Recommendations } from '@shared/ui';
+import { Header, Footer } from '@widgets/index';
+import { ProductCard, recommendations } from '@entities/product/ui';
+const { Recommendations } = recommendations;
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
-import { getSimilarProducts } from '@shared/utils/mockData';
+import { getSimilarProducts } from '@shared/lib/mockData';
 
 const route = useRoute();
 const router = useRouter();
@@ -234,7 +235,7 @@ onMounted(async () => {
 	// Load product data based on route.params.id
 	const productId = parseInt(route.params.id as string, 10);
 	if (!isNaN(productId)) {
-		const { getProductById } = await import('../../shared/utils/mockData');
+		const { getProductById } = await import('../../shared/lib/mockData');
 		
 		const productData = getProductById(productId);
 		if (productData) {
@@ -249,7 +250,7 @@ onMounted(async () => {
 			const brand = productData.seller.name;
 			
 			// Import and generate characteristics
-			const { mockData } = await import('../../shared/utils/mockData');
+			const { mockData } = await import('../../shared/lib/mockData');
 			characteristics.value = mockData.generateCharacteristics(material, color, brand);
 			additionalInfo.value = mockData.generateAdditionalInfo();
 			

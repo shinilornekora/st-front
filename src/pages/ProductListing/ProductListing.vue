@@ -68,7 +68,7 @@ import SearchField from '@shared/ui/SearchField.vue';
 import IconButton from '@shared/ui/IconButton.vue';
 import Carousel from '@shared/ui/Carousel.vue';
 import Chip from '@shared/ui/Chip.vue';
-import ProductCard from '@shared/ui/ProductCard.vue';
+import ProductCard from '@entities/product/ui/ProductCard.vue';
 import Button from '@shared/ui/Button.vue';
 import Link from '@shared/ui/Link.vue';
 
@@ -172,7 +172,7 @@ onMounted(async () => {
 	await getProductsFx();
 	
 	// Generate realistic mock products (more products to test pagination)
-	const { generateProducts } = await import('../../shared/utils/mockData');
+	const { generateProducts } = await import('../../shared/lib/mockData');
 	const mockProducts = generateProducts(250); // Generate 250 products = 13 pages
 	
 	// Set mock products

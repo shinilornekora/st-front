@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { Header, Footer } from '@widgets';
+import { Header, Footer } from '@widgets/index';
 </script>
 
 <style module>

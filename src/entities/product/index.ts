@@ -1,3 +1,4 @@
 export * from './product.store';
 export * from './product.types';
-export { ProductCard, Recommendations } from './ui';
+export { ProductCard } from './ui';
+export * as recommendations from './ui/recommendations';

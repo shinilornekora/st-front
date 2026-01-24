@@ -70,11 +70,11 @@ import { useStore } from 'effector-vue/composition';
 import { $cart, removeItem, updateQty } from '@entities/cart/cart.store';
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
-import { Header, Footer } from '@widgets';
+import { Header, Footer } from '@widgets/index';
 import Button from '@shared/ui/Button.vue';
-import ProductCard from '@shared/ui/ProductCard.vue';
-import CartItem from '@shared/ui/CartItem.vue';
-import { generateProducts, getSimilarProducts } from '@shared/utils/mockData';
+import ProductCard from '@entities/product/ui/ProductCard.vue';
+import CartItem from '@entities/cart/ui/CartItem.vue';
+import { generateProducts, getSimilarProducts } from '@shared/lib/mockData';
 
 const router = useRouter();
 const cart = useStore($cart);
