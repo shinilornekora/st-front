@@ -89,8 +89,8 @@
 		width: 100%;
 		padding: 12px 16px;
 		background: #fff;
-		border: 2px solid var(--color-secondary);
-		border-radius: 24px;
+		border: 2px solid #f5f5f5;
+		border-radius: 8px;
 		font-size: 16px;
 		color: var(--color-primary);
 		outline: none;
@@ -142,7 +142,7 @@
 	
 	/* Default variant */
 	.uiInput--default {
-		border-color: var(--color-secondary);
+		border-color: #E5E7EB;
 	}
 	
 	.uiInput--default:hover:not(:disabled) {

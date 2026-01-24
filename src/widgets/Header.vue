@@ -4,7 +4,7 @@
 			<router-link :class="$style.logo" to="/">
 				<img :src="logoSrc" alt="Stivalli" :class="$style.logo" />
 			</router-link>
-			<div v-if="!lightHeader" :class="$style.searchWrapper">
+			<div v-if="!lightHeader && !hideSearch" :class="$style.searchWrapper">
 				<SearchField
 					v-model="searchQuery"
 					placeholder="Поиск по названию, бренду, цвету..."
@@ -77,10 +77,12 @@ import crossIcon from '@assets/cross.svg';
 // Define props
 interface Props {
 	lightHeader?: boolean;
+	hideSearch?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	lightHeader: false,
+	hideSearch: false,
 });
 
 const route = useRoute();
