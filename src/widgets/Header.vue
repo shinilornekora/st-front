@@ -258,6 +258,7 @@ onUnmounted(() => {
 		flex-wrap: wrap;
 		gap: 8px;
 		padding: 0 16px;
+		margin-top: 12px;
 	}
 
 	.logo {

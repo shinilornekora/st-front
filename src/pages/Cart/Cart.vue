@@ -85,6 +85,7 @@ import Button from '@shared/ui/Button.vue';
 import ProductCard from '@entities/product/ui/ProductCard.vue';
 import CartItem from '@entities/cart/ui/CartItem.vue';
 import { generateProducts } from '@shared/lib/mockData';
+import { isUserAuthenticated } from '@shared/utils/auth';
 
 const router = useRouter();
 const cart = useStore($cart);
@@ -174,8 +175,15 @@ const shareProduct = async (item: any) => {
 };
 
 const checkout = () => {
-  // TODO: Implement checkout logic
-  console.log('Checkout');
+  // Check if user is authenticated
+  if (!isUserAuthenticated()) {
+    // Redirect to login page if not authenticated
+    router.push('/profile');
+    return;
+  }
+  
+  // TODO: Implement checkout logic for authenticated users
+  console.log('Checkout for authenticated user');
 };
 
 const formatPrice = (price: number) => {

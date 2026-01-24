@@ -155,7 +155,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Header, Footer } from '@widgets/index';
-import { ProductCard, recommendations } from '@entities/product/ui';
+import { recommendations } from '@entities/product/ui';
 import { StatusLine } from '@shared/ui';
 const { Recommendations } = recommendations;
 import { addItem } from '@entities/cart/cart.store';
@@ -411,7 +411,7 @@ const copyCurrentUrl = async () => {
 	position: relative;
 	background: #f5f5f5;
 	border-radius: 16px;
-	padding: 16px;
+	max-height: min-content;
 }
 
 .favoriteBtn {

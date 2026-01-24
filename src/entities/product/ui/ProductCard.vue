@@ -1,6 +1,6 @@
 <template>
 	<article
-		:class="[$style.card, $style[type], recommendation ? $style.recommendation : '']"
+		:class="[$style.card, $style[type!], recommendation ? $style.recommendation : '']"
 		tabindex="0"
 		aria-label="Карточка товара"
 		@click="handleCardClick"
@@ -270,7 +270,7 @@
 		transform: scale(0.95);
 	}
 	
-	@media (min-width: 480px and max-width: 1200px) {
+	@media (min-width: 480px) and (max-width: 1200px) {
 		.imageWrapper,
 		.img {
 			width: 18vw;
@@ -314,6 +314,12 @@
 		.cartIcon {
 			width: 20px;
 			height: 20px;
+		}
+	}
+
+	@media (max-width: 424px) {
+		.card {
+			width: auto;
 		}
 	}
 	

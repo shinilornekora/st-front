@@ -520,6 +520,12 @@ onUnmounted(() => {
 
 }
 
+@media (max-width: 424px) {
+	.heroCarousel {
+		transform: translateX(-16px);
+	}
+}
+
 @media (max-width: 360px) {
 	.productGrid {
 		grid-template-columns: 1fr;
