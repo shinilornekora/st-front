@@ -140,15 +140,38 @@ export const generateProduct = (id: number): Product => {
   const typeCode = type!.substring(0, 3).toUpperCase();
   const article = `${brandCode}-${typeCode}-${id.toString().padStart(5, '0')}`;
   
+  // Generate available sizes (simplified for performance)
+  const allSizes = ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
+  const sizeCount = 3 + Math.floor(random(id * 11) * 5); // 3-7 sizes per product
+  const availableSizes: string[] = [];
+  
+  // Simple size generation without Set for better performance
+  for (let i = 0; i < sizeCount; i++) {
+    const sizeIndex = Math.floor(random(id * (i + 20)) * allSizes.length);
+    if (!availableSizes.includes(allSizes[sizeIndex]!)) {
+      availableSizes.push(allSizes[sizeIndex]!);
+    }
+  }
+  
+  // Generate stock status
+  const stockStatus = random(id * 12) > 0.3 ? 'in_stock' : 'pre_order';
+  
+  // Generate gender
+  const genderOptions = ['male', 'female', 'unisex'];
+  const gender = genderOptions[Math.floor(random(id * 13) * genderOptions.length)] as 'male' | 'female' | 'unisex';
+  
+  // Generate gender-specific description
+  const genderText = gender === 'male' ? 'мужская' : gender === 'female' ? 'женская' : 'унисекс';
+  
   return {
     id,
     name: `${type!} ${brand!} ${color!}`,
     slug: `${type!.toLowerCase().replace(/\s+/g, '-')}-${brand!.toLowerCase()}-${id}`,
-    description: `Качественная обувь от бренда ${brand!}. Изготовлена из ${material!}. Идеально подходит для повседневной носки.`,
+    description: `Качественная ${genderText} обувь от бренда ${brand!}. Изготовлена из ${material!}. Идеально подходит для повседневной носки.`,
     price,
     discount,
     currency: '₽',
-    inStock: random(id * 7) > 0.1,
+    inStock: stockStatus === 'in_stock',
     article,
     category: [
       { id: ['all', 'new', 'women', 'men', 'sale', 'accessories'][Math.floor(random(id * 8) * 6)]!, name: 'All' }
@@ -156,9 +179,13 @@ export const generateProduct = (id: number): Product => {
     tags: [
       { id: `tag-${material!}`, name: material! },
       { id: `tag-${color!}`, name: color! },
-      { id: `tag-${brand!}`, name: brand! }
+      { id: `tag-${brand!}`, name: brand! },
+      { id: `tag-${gender}`, name: genderText }
     ],
     images: generateDeterministicImages(),
+    sizes: availableSizes,
+    stockStatus,
+    gender,
     seller: {
       id: 1 + Math.floor(random(id * 9) * 10),
       name: brand!,

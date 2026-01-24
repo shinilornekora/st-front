@@ -7,8 +7,10 @@
 			<div v-if="!lightHeader" :class="$style.searchWrapper">
 				<SearchField
 					v-model="searchQuery"
-					placeholder="Value"
+					placeholder="Поиск по названию, бренду, цвету..."
 					:class="$style.search"
+					@submit="handleSearch"
+					@filterChange="handleFilterChange"
 				/>
 			</div>
 			<div v-if="!lightHeader" :class="$style.headerIcons">
@@ -57,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, watchEffect } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
 import { $cart } from '@entities/cart/cart.store';
@@ -86,6 +88,9 @@ const searchQuery = ref('');
 const screenWidth = ref(window.innerWidth);
 const cart = useStore($cart);
 
+// Define emits
+const emit = defineEmits(['search', 'filter']);
+
 // Force reactivity with watchEffect
 watchEffect(() => {
   // Just accessing the cart value to ensure reactivity
@@ -102,6 +107,14 @@ const logoSrc = computed(() => {
 // Check if a route is active
 const isRouteActive = (routeName: string) => {
 	return route.name === routeName;
+};
+
+const handleSearch = ({ query }: { query: string }) => {
+	emit('search', query);
+};
+
+const handleFilterChange = (filters: any[]) => {
+	emit('filter', filters);
 };
 
 const updateScreenWidth = () => {

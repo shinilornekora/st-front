@@ -11,6 +11,9 @@ export interface Product {
 	category: Category[];
 	tags: Tag[];
 	images: string[];
+	sizes: string[]; // Доступные размеры
+	stockStatus: 'in_stock' | 'pre_order'; // Статус наличия
+	gender: 'male' | 'female' | 'unisex'; // Пол
 	seller: {
 		id: number;
 		name: string;

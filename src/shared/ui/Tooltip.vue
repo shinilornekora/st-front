@@ -1,41 +1,55 @@
 <template>
-	<span
-		:class="$style.wrap"
-		@mouseenter="show = true"
-		@mouseleave="show = false"
-	>
-		<slot />
-		<span v-if="show" :class="$style.tooltip" role="tooltip">{{
-			text
-		}}</span>
-	</span>
+	<div :class="$style.tooltipContainer" ref="tooltipRef">
+		<div :class="$style.tooltip" :style="{ width: width }">
+			<slot />
+		</div>
+	</div>
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue';
-	import theme from './theme.module.css';
-	const show = ref(false);
-	defineProps<{ text: string }>();
+import { ref, onMounted, onUnmounted } from 'vue';
+
+interface Props {
+	width?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	width: '280px',
+});
+
+const emit = defineEmits(['close']);
+
+const tooltipRef = ref<HTMLElement | null>(null);
+
+// Close tooltip when clicking outside
+const handleClickOutside = (event: MouseEvent) => {
+	if (tooltipRef.value && !tooltipRef.value.contains(event.target as Node)) {
+		emit('close');
+	}
+};
+
+onMounted(() => {
+	document.addEventListener('click', handleClickOutside);
+});
+
+onUnmounted(() => {
+	document.removeEventListener('click', handleClickOutside);
+});
 </script>
 
 <style module>
-	@import './theme.module.css';
-	.wrap {
-		position: relative;
-		display: inline-block;
-	}
-	.tooltip {
-		position: absolute;
-		left: 50%;
-		bottom: 120%;
-		transform: translateX(-50%);
-		padding: 6px 14px;
-		color: #fff;
-		background: var(--color-dark);
-		border-radius: 5px;
-		font-size: 13px;
-		white-space: nowrap;
-		z-index: 20;
-		box-shadow: 0 1px 8px #0002;
-	}
+.tooltipContainer {
+	position: absolute;
+	top: calc(100% + 8px);
+	left: 0;
+	z-index: 1000;
+}
+
+.tooltip {
+	background: white;
+	border-radius: 12px;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+	border: 1px solid #e5e7eb;
+	padding: 16px;
+}
 </style>

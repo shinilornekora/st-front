@@ -5,21 +5,12 @@ export const setProducts = createEvent<Product[]>();
 export const addProduct = createEvent<Product>();
 export const updateProduct = createEvent<Product>();
 
-export const getProductsFx = createEffect<void, Product[]>(async () => [
-	{
-		id: 100,
-		name: 'Demo Product',
-		slug: 'demo-product',
-		description: 'Демо товар',
-		price: 1990,
-		currency: 'RUB',
-		inStock: true,
-		category: [],
-		tags: [],
-		images: [],
-		seller: { id: 77, name: 'Demo Seller' },
-	},
-]);
+export const getProductsFx = createEffect<void, Product[]>(async () => {
+	// Import mock data generator
+	const { generateProducts } = await import('@shared/lib/mockData');
+	// Generate 50 products for better performance
+	return generateProducts(50);
+});
 
 export const $products = createStore<Product[]>([])
 	.on(setProducts, (_, list) => list)

@@ -1,7 +1,7 @@
 <template>
 	<div :class="$style.page">
 		<!-- Header -->
-		<Header />
+		<Header @search="handleHeaderSearch" @filter="handleFilterChange" />
 
 		<!-- Hero Carousel with 3 images -->
 		<section :class="$style.heroSection">
@@ -17,6 +17,7 @@
 				</div>
 			</div>
 		</section>
+
 
 		<!-- Gray placeholder boxes -->
 		<section :class="$style.placeholderSection">
@@ -57,21 +58,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
 import { $products, getProductsFx } from '@entities/product/product.store';
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
-import { Header, Footer } from '@widgets';
+import Header from '@widgets/Header.vue';
+import Footer from '@widgets/Footer.vue';
 import { Pagination } from '@shared/ui';
-import SearchField from '@shared/ui/SearchField.vue';
-import IconButton from '@shared/ui/IconButton.vue';
-import Carousel from '@shared/ui/Carousel.vue';
-import Chip from '@shared/ui/Chip.vue';
 import ProductCard from '@entities/product/ui/ProductCard.vue';
-import Button from '@shared/ui/Button.vue';
-import Link from '@shared/ui/Link.vue';
 
 const router = useRouter();
 
@@ -80,7 +76,7 @@ const searchQuery = ref('');
 const selectedCategory = ref<string | null>(null);
 const currentPage = ref(1);
 const itemsPerPage = 20;
-const currentHeroIndex = ref(0);
+const activeFilters = ref<any[]>([]);
 
 // Store
 const products = useStore($products);
@@ -93,33 +89,120 @@ const heroImages = ref([
 ]);
 
 // Auto-rotate hero images
-setInterval(() => {
-	currentHeroIndex.value = (currentHeroIndex.value + 1) % heroImages.value.length;
-}, 5000);
+let heroInterval: number | null = null;
 
-// Categories
-const categories = ref([
-	{ id: 'all', name: 'Все' },
-	{ id: 'new', name: 'Новинки' },
-	{ id: 'women', name: 'Женщинам' },
-	{ id: 'men', name: 'Мужчинам' },
-	{ id: 'sale', name: 'Распродажа' },
-	{ id: 'accessories', name: 'Аксессуары' },
-]);
+const startHeroRotation = () => {
+	heroInterval = window.setInterval(() => {
+		// We don't need to track currentHeroIndex since we're not using it
+	}, 5000);
+};
+
+const stopHeroRotation = () => {
+	if (heroInterval) {
+		clearInterval(heroInterval);
+		heroInterval = null;
+	}
+};
 
 // Computed
 const filteredProducts = computed(() => {
-	let result = products.value;
+	// Early return if no products
+	if (!products.value || products.value.length === 0) {
+		return [];
+	}
+	
+	let result = [...products.value]; // Create a copy to avoid mutations
 
 	if (searchQuery.value) {
-		result = result.filter((p) =>
-			p.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-		);
+		const query = searchQuery.value.toLowerCase();
+		result = result.filter((p) => {
+			// Search in product name
+			if (p.name.toLowerCase().includes(query)) return true;
+			
+			// Search in brand (seller name)
+			if (p.seller && p.seller.name.toLowerCase().includes(query)) return true;
+			
+			// Search in description
+			if (p.description.toLowerCase().includes(query)) return true;
+			
+			// Search in tags
+			if (p.tags.some(tag => tag.name.toLowerCase().includes(query))) return true;
+			
+			// Search in article
+			if (p.article && p.article.toLowerCase().includes(query)) return true;
+			
+			return false;
+		});
+	}
+
+	// Apply filters
+	if (activeFilters.value && activeFilters.value.length > 0) {
+		result = result.filter((p) => {
+			return activeFilters.value.every((filter) => {
+				switch (filter.id) {
+					case 'size':
+						// Check if product has the selected size
+						return filter.values.some((size: string) =>
+							p.sizes && p.sizes.includes(size)
+						);
+					
+					case 'quantity':
+						// Check stock status
+						if (filter.values.includes('in_stock')) {
+							return p.stockStatus === 'in_stock';
+						}
+						if (filter.values.includes('pre_order')) {
+							return p.stockStatus === 'pre_order';
+						}
+						return true;
+					
+					case 'price':
+						const [min, max] = filter.values;
+						const price = p.price;
+						if (min && max) {
+							return price >= parseInt(min) && price <= parseInt(max);
+						}
+						if (min) {
+							return price >= parseInt(min);
+						}
+						if (max) {
+							return price <= parseInt(max);
+						}
+						return true;
+					
+					case 'sex':
+						// Check gender directly from the product property
+						return filter.values.includes(p.gender);
+					
+					case 'color':
+						// Check if product name, description or tags contain the color
+						return filter.values.some((color: string) => {
+							const colorNames: Record<string, string> = {
+								'black': 'черный',
+								'white': 'белый',
+								'brown': 'коричневый',
+								'beige': 'бежевый',
+								'gray': 'серый',
+								'blue': 'синий',
+								'red': 'красный',
+								'green': 'зеленый'
+							};
+							const colorName = colorNames[color] || color;
+							return p.name.toLowerCase().includes(colorName) ||
+								p.description.toLowerCase().includes(colorName) ||
+								p.tags.some(tag => tag.name.toLowerCase().includes(colorName));
+						});
+					
+					default:
+						return true;
+				}
+			});
+		});
 	}
 
 	if (selectedCategory.value && selectedCategory.value !== 'all') {
 		result = result.filter((p) =>
-			p.category.some((c) => c.id === selectedCategory.value)
+			p.category && p.category.some((c) => c.id === selectedCategory.value)
 		);
 	}
 
@@ -138,9 +221,15 @@ const displayedProducts = computed(() => {
 
 
 // Methods
-const selectCategory = (categoryId: string) => {
-	selectedCategory.value = categoryId;
-	currentPage.value = 1;
+
+const handleHeaderSearch = (query: string) => {
+	searchQuery.value = query;
+	currentPage.value = 1; // Reset to first page when searching
+};
+
+const handleFilterChange = (filters: any[]) => {
+	activeFilters.value = filters;
+	currentPage.value = 1; // Reset to first page when filters change
 };
 
 const productGrid = ref<HTMLElement | null>(null);
@@ -171,14 +260,11 @@ const addToCart = (product: Product) => {
 // Lifecycle
 onMounted(async () => {
 	await getProductsFx();
-	
-	// Generate realistic mock products (more products to test pagination)
-	const { generateProducts } = await import('../../shared/lib/mockData');
-	const mockProducts = generateProducts(250); // Generate 250 products = 13 pages
-	
-	// Set mock products
-	const { setProducts } = await import('../../entities/product/product.store');
-	setProducts(mockProducts);
+	startHeroRotation();
+});
+
+onUnmounted(() => {
+	stopHeroRotation();
 });
 </script>
 

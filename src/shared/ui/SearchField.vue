@@ -57,15 +57,27 @@
 				<!-- Filter labels at top -->
 				<div :class="$style.popupSection">
 					<div :class="$style.filterLabels">
-						<button
+						<div
 							v-for="filter in allFilters"
 							:key="filter.id"
-							:class="$style.filterLabel"
-							type="button"
-							@click="addFilter(filter)"
+							:class="$style.filterLabelWrapper"
+							ref="filterLabelRefs"
 						>
-							{{ filter.label }}
-						</button>
+							<button
+								:class="$style.filterLabel"
+								type="button"
+								@click="openFilterTooltip(filter)"
+							>
+								{{ filter.label }}
+							</button>
+							<!-- Filter tooltip -->
+							<FilterTooltip
+								v-if="activeTooltip === filter.id"
+								:filter-type="filter.id"
+								@apply="handleFilterApply"
+								@close="closeTooltip"
+							/>
+						</div>
 					</div>
 				</div>
 				
@@ -90,25 +102,36 @@
 </template>
 <script setup lang="ts">
 	import { ref, computed, onMounted, onUnmounted } from 'vue';
+	import FilterTooltip from './FilterTooltip.vue';
 	import theme from './theme.module.css';
 	
 	interface Filter {
-		id: string;
+		id: 'size' | 'quantity' | 'price' | 'sex' | 'color';
 		label: string;
+	}
+	
+	interface AppliedFilter extends Filter {
+		values: string[];
 	}
 	
 	const props = defineProps<{
 		placeholder?: string;
 		type?: 'main' | 'accent';
 		hideFilters?: boolean;
+		modelValue?: string;
 	}>();
 	
 	const emit = defineEmits(['submit', 'update:modelValue', 'filterChange']);
 	
-	const value = ref('');
-	const activeFilters = ref<Filter[]>([]);
+	const value = computed({
+		get: () => props.modelValue || '',
+		set: (val) => emit('update:modelValue', val)
+	});
+	const activeFilters = ref<AppliedFilter[]>([]);
 	const showPopup = ref(false);
+	const activeTooltip = ref<string | null>(null);
 	const containerRef = ref<HTMLElement | null>(null);
+	const filterLabelRefs = ref<HTMLElement[]>([]);
 	
 	// All available filters
 	const allFilters = ref<Filter[]>([
@@ -121,9 +144,9 @@
 	
 	// Search suggestions
 	const searchSuggestions = ref<string[]>([
-		'Search Field',
-		'Search Field',
-		'Search Field',
+		'Кроссовки',
+		'Ботинки',
+		'Туфли',
 	]);
 	
 	const selectSuggestion = (suggestion: string) => {
@@ -137,10 +160,74 @@
 		emit('submit', { query: value.value, filters: activeFilters.value });
 	};
 	
-	const addFilter = (filter: Filter) => {
-		if (!activeFilters.value.find(f => f.id === filter.id)) {
-			activeFilters.value.push(filter);
-			emit('filterChange', activeFilters.value);
+	const openFilterTooltip = (filter: Filter) => {
+		// Close any existing tooltip first
+		activeTooltip.value = null;
+		// Open the new tooltip
+		setTimeout(() => {
+			activeTooltip.value = filter.id;
+		}, 10);
+	};
+	
+	const closeTooltip = () => {
+		activeTooltip.value = null;
+	};
+	
+	const handleFilterApply = (filterData: { type: string; values: string[] }) => {
+		// Remove existing filter of the same type if it exists
+		activeFilters.value = activeFilters.value.filter(f => f.id !== filterData.type);
+		
+		// Add the new filter
+		const filter = allFilters.value.find(f => f.id === filterData.type);
+		if (filter) {
+			const label = getFilterLabel(filterData.type, filterData.values);
+			activeFilters.value.push({
+				...filter,
+				values: filterData.values,
+				label
+			});
+		}
+		
+		emit('filterChange', activeFilters.value);
+		closeTooltip();
+	};
+	
+	const getFilterLabel = (type: string, values: string[]): string => {
+		const filter = allFilters.value.find(f => f.id === type);
+		if (!filter) return '';
+		
+		switch (type) {
+			case 'size':
+				return `Размер: ${values.join(', ')}`;
+			case 'quantity':
+				return values.includes('in_stock') ? 'В наличии' : 'Под заказ';
+			case 'price':
+				const [min, max] = values;
+				if (min && max) return `Цена: ${min}-${max}`;
+				if (min) return `Цена: от ${min}`;
+				if (max) return `Цена: до ${max}`;
+				return 'Цена';
+			case 'sex':
+				const sexLabels: Record<string, string> = {
+					'male': 'Мужской',
+					'female': 'Женский',
+					'unisex': 'Унисекс'
+				};
+				return values.map(v => sexLabels[v] || v).join(', ');
+			case 'color':
+				const colorLabels: Record<string, string> = {
+					'black': 'Черный',
+					'white': 'Белый',
+					'brown': 'Коричневый',
+					'beige': 'Бежевый',
+					'gray': 'Серый',
+					'blue': 'Синий',
+					'red': 'Красный',
+					'green': 'Зеленый'
+				};
+				return values.map(v => colorLabels[v] || v).join(', ');
+			default:
+				return filter.label;
 		}
 	};
 	
@@ -150,10 +237,9 @@
 	};
 	
 	const clearAll = () => {
-		value.value = '';
+		emit('update:modelValue', '');
 		activeFilters.value = [];
 		showPopup.value = false;
-		emit('update:modelValue', '');
 		emit('filterChange', []);
 	};
 	
@@ -161,6 +247,7 @@
 	const handleClickOutside = (event: MouseEvent) => {
 		if (containerRef.value && !containerRef.value.contains(event.target as Node)) {
 			showPopup.value = false;
+			activeTooltip.value = null;
 		}
 	};
 	
@@ -311,7 +398,6 @@
 		border-radius: 16px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 		z-index: 1000;
-		overflow: hidden;
 		border: 1px solid #e5e7eb;
 	}
 	
@@ -328,6 +414,10 @@
 		display: flex;
 		gap: 12px;
 		flex-wrap: wrap;
+	}
+	
+	.filterLabelWrapper {
+		position: relative;
 	}
 	
 	.filterLabel {
