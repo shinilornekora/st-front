@@ -66,6 +66,9 @@
       </section>
     </main>
     <Footer />
+    
+    <!-- Status Line -->
+    <StatusLine :show="showStatusLine" message="Ссылка на товар была успешно скопирована" />
   </div>
 </template>
 
@@ -77,6 +80,7 @@ import { $cart, removeItem, updateQty } from '@entities/cart/cart.store';
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
 import { Header, Footer } from '@widgets/index';
+import { StatusLine } from '@shared/ui';
 import Button from '@shared/ui/Button.vue';
 import ProductCard from '@entities/product/ui/ProductCard.vue';
 import CartItem from '@entities/cart/ui/CartItem.vue';
@@ -98,6 +102,8 @@ const cartItemsCount = computed(() => cart.value.items.length);
 
 // Similar products state
 const similarProducts = ref<Product[]>([]);
+// Status line state
+const showStatusLine = ref(false);
 
 // Load similar products on mount
 onMounted(() => {
@@ -130,9 +136,41 @@ const addToFavourites = (item: any) => {
   console.log('Added to favourites:', productName, 'ID:', productId);
 };
 
-const shareProduct = (item: any) => {
-  // TODO: Implement share logic
-  console.log('Shared product:', item.product.name);
+const shareProduct = async (item: any) => {
+  try {
+    // Get the product ID from the cart item
+    const productId = item.product ? item.product.id : item.id;
+    
+    // Generate the dynamic URL for the product
+    const productUrl = `${window.location.origin}/product/${productId}`;
+    
+    // Copy the URL to clipboard
+    await navigator.clipboard.writeText(productUrl);
+    console.log('Product URL copied to clipboard:', productUrl);
+    
+    // Show status line
+    showStatusLine.value = true;
+    setTimeout(() => {
+      showStatusLine.value = false;
+    }, 2500);
+  } catch (err) {
+    console.error('Failed to copy product URL:', err);
+    // Fallback for older browsers
+    const productId = item.product ? item.product.id : item.id;
+    const productUrl = `${window.location.origin}/product/${productId}`;
+    const textArea = document.createElement('textarea');
+    textArea.value = productUrl;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    
+    // Show status line
+    showStatusLine.value = true;
+    setTimeout(() => {
+      showStatusLine.value = false;
+    }, 2500);
+  }
 };
 
 const checkout = () => {
@@ -333,6 +371,34 @@ const goToProduct = (productId: number) => {
   
   .similarProducts {
     gap: 12px;
+  }
+}
+
+/* Status Line */
+.statusLine {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  color: #306D68;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
   }
 }
 </style>

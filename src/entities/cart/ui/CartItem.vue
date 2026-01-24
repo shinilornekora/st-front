@@ -80,6 +80,7 @@
 	const emit = defineEmits(['remove', 'update-quantity', 'favourite', 'share', 'product-click']);
 	
 	const isFavorite = ref(false);
+	const shareBtnClicked = ref(false);
 	
 	// Check if product is favorite on mount
 	onMounted(() => {
@@ -123,6 +124,16 @@
 	
 	const goToProduct = () => {
 		emit('product-click', props.id);
+	};
+	
+	const handleShare = () => {
+		// Add click animation to button
+		shareBtnClicked.value = true;
+		setTimeout(() => {
+			shareBtnClicked.value = false;
+		}, 200);
+		
+		emit('share');
 	};
 </script>
 <style module>
@@ -259,5 +270,9 @@
 		width: 28px;
 		height: 28px;
 		transition: all 0.2s;
+	}
+	
+	.actionBtnClicked {
+		transform: scale(0.9);
 	}
 </style>

@@ -58,18 +58,14 @@
 				<div :class="$style.productInfo">
 					<div :class="$style.topRow">
 						<span v-if="product.discount" :class="$style.badge">Распродажа</span>
-						<button :class="$style.shareBtn" aria-label="Поделиться">
-							<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<circle cx="18" cy="5" r="3"></circle>
-								<circle cx="6" cy="12" r="3"></circle>
-								<circle cx="18" cy="19" r="3"></circle>
-								<line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-								<line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-							</svg>
-						</button>
 					</div>
 					
-					<h1 :class="$style.productTitle">{{ product.name }}</h1>
+					<div :class="$style.titleRow">
+						<h1 :class="$style.productTitle">{{ product.name }}</h1>
+						<button :class="[$style.shareBtn, { [$style.shareBtnClicked]: shareBtnClicked }]" aria-label="Поделиться" @click="copyCurrentUrl">
+							<img src="@assets/ghost_share.svg" alt="Share icon" :class="$style.shareIcon" />
+						</button>
+					</div>
 					
 					<div :class="$style.priceBlock">
 						<span :class="$style.currentPrice">{{ formatPrice(product.price) }}</span>
@@ -149,6 +145,9 @@
 		</main>
 
 		<Footer />
+		
+		<!-- Status Line -->
+		<StatusLine :show="showStatusLine" message="Ссылка на товар была успешно скопирована" />
 	</div>
 </template>
 
@@ -157,6 +156,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Header, Footer } from '@widgets/index';
 import { ProductCard, recommendations } from '@entities/product/ui';
+import { StatusLine } from '@shared/ui';
 const { Recommendations } = recommendations;
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
@@ -173,6 +173,8 @@ const quantity = ref(1);
 const currentImageIndex = ref(0);
 const isAccordionOpen = ref(0);
 const isFavorite = ref(false);
+const showStatusLine = ref(false);
+const shareBtnClicked = ref(false);
 const product = ref<Product>({
   id: 0,
   name: '',
@@ -298,6 +300,36 @@ const toggleFavoriteStatus = () => {
 	}
 	
 	console.log('Product favorite status changed:', product.value.name, isFavorite.value);
+};
+
+const copyCurrentUrl = async () => {
+	// Add click animation to button
+	shareBtnClicked.value = true;
+	setTimeout(() => {
+		shareBtnClicked.value = false;
+	}, 200);
+	
+	try {
+		await navigator.clipboard.writeText(window.location.href);
+		console.log('URL copied to clipboard:', window.location.href);
+		showStatusLine.value = true;
+		setTimeout(() => {
+			showStatusLine.value = false;
+		}, 2500);
+	} catch (err) {
+		console.error('Failed to copy URL:', err);
+		// Fallback for older browsers
+		const textArea = document.createElement('textarea');
+		textArea.value = window.location.href;
+		document.body.appendChild(textArea);
+		textArea.select();
+		document.execCommand('copy');
+		document.body.removeChild(textArea);
+		showStatusLine.value = true;
+		setTimeout(() => {
+			showStatusLine.value = false;
+		}, 2500);
+	}
 };
 </script>
 
@@ -511,8 +543,15 @@ const toggleFavoriteStatus = () => {
 
 .topRow {
 	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.titleRow {
+	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	margin: 16px 0;
 }
 
 .badge {
@@ -533,10 +572,22 @@ const toggleFavoriteStatus = () => {
 	color: #6b7280;
 	transition: color 0.2s;
 	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .shareBtn:hover {
 	color: var(--color-accent);
+}
+
+.shareIcon {
+	width: 20px;
+	height: 20px;
+}
+
+.shareBtnClicked {
+	transform: scale(0.9);
 }
 
 .productTitle {
@@ -870,5 +921,33 @@ const toggleFavoriteStatus = () => {
 		height: 60px;
 	}
 
+}
+
+/* Status Line */
+.statusLine {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	background: white;
+	color: #306D68;
+	padding: 12px 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	text-align: left;
+	font-size: 14px;
+	font-weight: 500;
+	z-index: 1000;
+	animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+	from {
+		transform: translateX(100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
 }
 </style>
