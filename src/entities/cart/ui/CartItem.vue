@@ -6,11 +6,31 @@
 	>
 		<img v-if="image" :src="image" :alt="title" :class="$style.img" />
 		<div :class="$style.info">
-			<h4 :class="$style.title">{{ title || 'No title' }}</h4>
-			<slot name="variations" />
-			<div :class="$style.price">
-				{{ formatPrice(price || 0) }} x {{ qty || 0 }} =
-				<b>{{ formatPrice((price || 0) * (qty || 0)) }}</b>
+			<div :class="$style.topBlock">
+				<h4 :class="$style.title">{{ title || 'No title' }}</h4>
+				<div v-if="article" :class="$style.article">Артикул: {{ article }}</div>
+			</div>
+			<div :class="bottomBlock">
+				<slot name="variations" />
+				<div :class="$style.price">
+					{{ formatPrice(price || 0) }} x {{ qty || 0 }} =
+					<b>{{ formatPrice((price || 0) * (qty || 0)) }}</b>
+				</div>
+				<div :class="$style.actions">
+					<button :class="$style.actionBtn" @click="$emit('favourite')" aria-label="Добавить в избранное">
+						<img src="@assets/favourite.svg" alt="Favourite" :class="$style.actionIcon" />
+					</button>
+					<button :class="$style.actionBtn" @click="$emit('share')" aria-label="Поделиться">
+						<img src="@assets/share.svg" alt="Share" :class="$style.actionIcon" />
+					</button>
+					<button
+						:class="$style.remove"
+						@click="$emit('remove')"
+						aria-label="Удалить из корзины"
+					>
+						<img src="@assets/trash.svg" alt="Remove" :class="$style.actionIcon" />
+					</button>
+				</div>
 			</div>
 		</div>
 		<div :class="$style.controls">
@@ -32,13 +52,6 @@
 					<img src="@assets/plus_circle.svg" alt="Increase quantity" :class="$style.quantityIcon" />
 				</button>
 			</div>
-			<button
-				:class="$style.remove"
-				@click="$emit('remove')"
-				aria-label="Удалить из корзины"
-			>
-				×
-			</button>
 		</div>
 	</article>
 </template>
@@ -51,10 +64,11 @@
 		title: string;
 		price: number;
 		qty: number;
+		article?: string;
 		type?: 'selected' | 'error' | 'disabled';
 	}>();
 	
-	const emit = defineEmits(['remove', 'update-quantity']);
+	const emit = defineEmits(['remove', 'update-quantity', 'favourite', 'share']);
 	
 	const formatPrice = (price: number) => {
 		return `${price.toLocaleString('ru-RU')} ₽`;
@@ -93,8 +107,8 @@
 		filter: grayscale(0.12);
 	}
 	.img {
-		width: 65px;
-		height: 54px;
+		width: 160px;
+		height: 166px;
 		object-fit: cover;
 		border-radius: 6px;
 	}
@@ -103,21 +117,31 @@
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
+		text-align: left;
+		height: 100%;
+		justify-content: space-between;
 	}
 	.title {
-		font-weight: 500;
-		font-size: 15px;
-		color: #2c2c2c;
+		font-weight: 700;
+		font-size: 20px;
+		color: #333333;
+		margin: 0;
+	}
+	.article {
+		font-size: 12px;
+		color: #6b7280;
+		margin-top: 2px;
 	}
 	.price {
-		font-size: 14px;
-		color: #2c2c2c;
+		font-size: 16px;
+		color: #333333;
 	}
 	.controls {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		gap: 8px;
+		height: 100%;
 	}
 	.quantityControl {
 		display: flex;
@@ -156,9 +180,37 @@
 		background: none;
 		border: none;
 		color: var(--color-error-main);
-		font-size: 22px;
 		cursor: pointer;
-		font-weight: bold;
-		padding: 0 7px;
+		padding: 5px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.removeIcon {
+		width: 20px;
+		height: 20px;
+	}
+	.actions {
+		display: flex;
+		gap: 8px;
+		margin-top: 8px;
+	}
+	.actionBtn {
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: 5px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 4px;
+		transition: background-color 0.2s;
+	}
+	.actionBtn:hover {
+		background-color: #f3f4f6;
+	}
+	.actionIcon {
+		width: 28px;
+		height: 28px;
 	}
 </style>

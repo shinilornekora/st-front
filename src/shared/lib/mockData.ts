@@ -135,6 +135,11 @@ export const generateProduct = (id: number): Product => {
     return images;
   };
   
+  // Generate article based on brand, type and ID
+  const brandCode = brand!.substring(0, 3).toUpperCase();
+  const typeCode = type!.substring(0, 3).toUpperCase();
+  const article = `${brandCode}-${typeCode}-${id.toString().padStart(5, '0')}`;
+  
   return {
     id,
     name: `${type!} ${brand!} ${color!}`,
@@ -144,6 +149,7 @@ export const generateProduct = (id: number): Product => {
     discount,
     currency: '₽',
     inStock: random(id * 7) > 0.1,
+    article,
     category: [
       { id: ['all', 'new', 'women', 'men', 'sale', 'accessories'][Math.floor(random(id * 8) * 6)]!, name: 'All' }
     ],

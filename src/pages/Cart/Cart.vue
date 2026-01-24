@@ -18,8 +18,11 @@
               :title="item.product.name"
               :price="item.price"
               :qty="item.quantity"
+              :article="item.product.article"
               @remove="removeFromCart(item.id)"
               @update-quantity="updateQuantity"
+              @favourite="addToFavourites(item)"
+              @share="shareProduct(item)"
             />
           </div>
           
@@ -114,6 +117,16 @@ const removeFromCart = (itemId: number) => {
 
 const updateQuantity = (payload: { id: number; quantity: number }) => {
   updateQty(payload);
+};
+
+const addToFavourites = (item: any) => {
+  // TODO: Implement add to favourites logic
+  console.log('Added to favourites:', item.product.name);
+};
+
+const shareProduct = (item: any) => {
+  // TODO: Implement share logic
+  console.log('Shared product:', item.product.name);
 };
 
 const checkout = () => {

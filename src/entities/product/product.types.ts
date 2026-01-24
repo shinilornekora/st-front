@@ -7,6 +7,7 @@ export interface Product {
 	discount?: number;
 	currency: string;
 	inStock: boolean;
+	article?: string; // Артикул товара
 	category: Category[];
 	tags: Tag[];
 	images: string[];

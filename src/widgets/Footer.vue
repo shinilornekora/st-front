@@ -8,25 +8,24 @@
 			<div :class="$style.textColumns">
 				<div :class="$style.footerColumn">
 					<h3 :class="$style.footerTitle">Каталог</h3>
-					<a href="#" :class="$style.footerLink">Новинки</a>
-					<a href="#" :class="$style.footerLink">Женщинам</a>
-					<a href="#" :class="$style.footerLink">Мужчинам</a>
-					<a href="#" :class="$style.footerLink">Распродажа (Sale)</a>
+					<router-link to="/catalog?category=new" :class="$style.footerLink">Новинки</router-link>
+					<router-link to="/catalog?category=women" :class="$style.footerLink">Женщинам</router-link>
+					<router-link to="/catalog?category=men" :class="$style.footerLink">Мужчинам</router-link>
+					<router-link to="/catalog?category=sale" :class="$style.footerLink">Распродажа (Sale)</router-link>
 				</div>
 				<div :class="$style.footerColumn">
 					<h3 :class="$style.footerTitle">Покупателям</h3>
-					<a href="#" :class="$style.footerLink">Доставка и оплата</a>
-					<a href="#" :class="$style.footerLink">Обмен и возврат</a>
-					<a href="#" :class="$style.footerLink">Вопросы и ответы (FAQ)</a>
+					<router-link to="/delivery" :class="$style.footerLink">Доставка и оплата</router-link>
+					<router-link to="/returns" :class="$style.footerLink">Обмен и возврат</router-link>
+					<router-link to="/faq" :class="$style.footerLink">Вопросы и ответы (FAQ)</router-link>
 				</div>
 				<div :class="$style.footerColumn">
 					<h3 :class="$style.footerTitle">О компании</h3>
-					<a href="#" :class="$style.footerLink">О бренде Stivalli</a>
-					<a href="#" :class="$style.footerLink">Контакты</a>
-					<a href="#" :class="$style.footerLink">Партнерам (B2B)</a>
-					<a href="#" :class="$style.footerLink">Публичная оферта</a>
-					<a href="#" :class="$style.footerLink">Политика</a>
-					<a href="#" :class="$style.footerLink">Конфиденциальности</a>
+					<router-link to="/about" :class="$style.footerLink">О бренде Stivalli</router-link>
+					<router-link to="/contacts" :class="$style.footerLink">Контакты</router-link>
+					<router-link to="/partners" :class="$style.footerLink">Партнерам (B2B)</router-link>
+					<router-link to="/offer" :class="$style.footerLink">Публичная оферта</router-link>
+					<router-link to="/privacy" :class="$style.footerLink">Политика конфиденциальности</router-link>
 				</div>
 			</div>
 		</div>
@@ -152,6 +151,7 @@ onUnmounted(() => {
 	text-decoration: none;
 	font-size: 14px;
 	transition: color 0.2s;
+	display: block;
 }
 
 .footerLink:hover {

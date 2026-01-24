@@ -241,7 +241,6 @@ onMounted(async () => {
 		if (productData) {
 			product.value = {
 				...productData,
-				article: `ART-${productId.toString().padStart(6, '0')}`,
 			};
 			
 			// Generate characteristics based on product data
