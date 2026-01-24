@@ -108,6 +108,7 @@
 		justify-content: space-between;
 		align-items: center;
 		flex: 1;
+		gap: 5px;
 	}
 	
 	.title {

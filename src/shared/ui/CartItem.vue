@@ -44,7 +44,6 @@
 </template>
 <script setup lang="ts">
 	import theme from './theme.module.css';
-	import { updateQty } from '../../entities/cart/cart.store';
 	
 	const props = defineProps<{
 		id: number;
@@ -55,7 +54,7 @@
 		type?: 'selected' | 'error' | 'disabled';
 	}>();
 	
-	defineEmits(['remove']);
+	const emit = defineEmits(['remove', 'update-quantity']);
 	
 	const formatPrice = (price: number) => {
 		return `${price.toLocaleString('ru-RU')} ₽`;
@@ -63,12 +62,12 @@
 	
 	const decreaseQuantity = () => {
 		if (props.qty > 1) {
-			updateQty({ id: props.id, quantity: props.qty - 1 });
+			emit('update-quantity', { id: props.id, quantity: props.qty - 1 });
 		}
 	};
 	
 	const increaseQuantity = () => {
-		updateQty({ id: props.id, quantity: props.qty + 1 });
+		emit('update-quantity', { id: props.id, quantity: props.qty + 1 });
 	};
 </script>
 <style module>

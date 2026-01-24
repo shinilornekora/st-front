@@ -28,11 +28,14 @@
 					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Cart') }]"
 					aria-label="Корзина"
 				>
-					<img
-						:src="isRouteActive('Cart') ? cartFilledIcon : darkShoppingCartIcon"
-						alt=""
-						:class="$style.headerIcon"
-					/>
+					<div :class="$style.cartIconWrapper">
+						<img
+							:src="isRouteActive('Cart') ? cartFilledIcon : darkShoppingCartIcon"
+							alt=""
+							:class="$style.headerIcon"
+						/>
+						<span v-if="cartItemsCount > 0" :class="$style.cartBadge">{{ cartItemsCount }}</span>
+					</div>
 				</router-link>
 				<router-link
 					to="/notifications"
@@ -54,8 +57,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
+import { useStore } from 'effector-vue/composition';
+import { $cart } from '../entities/cart/cart.store';
 import SearchField from '../shared/ui/SearchField.vue';
 import logoFull from '../assets/logo_full.svg';
 import logo from '../assets/logo.svg';
@@ -79,6 +84,16 @@ const props = withDefaults(defineProps<Props>(), {
 const route = useRoute();
 const searchQuery = ref('');
 const screenWidth = ref(window.innerWidth);
+const cart = useStore($cart);
+
+// Force reactivity with watchEffect
+watchEffect(() => {
+  // Just accessing the cart value to ensure reactivity
+  cart.value;
+});
+
+// Create reactive computed property for cart items count
+const cartItemsCount = computed(() => cart.value.items.length);
 
 const logoSrc = computed(() => {
 	return screenWidth.value < 1200 ? logo : logoFull;
@@ -247,5 +262,29 @@ onUnmounted(() => {
 	.iconBtn {
 		padding: 6px;
 	}
+}
+
+.cartIconWrapper {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.cartBadge {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	background: var(--color-accent);
+	color: white;
+	font-size: 10px;
+	font-weight: bold;
+	border-radius: 50%;
+	width: 16px;
+	height: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 16px;
 }
 </style>

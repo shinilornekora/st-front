@@ -2,7 +2,7 @@
   <div :class="$style.page">
     <Header />
     <main :class="$style.main">
-      <div v-if="cart.items.length === 0" :class="$style.emptyCart">
+      <div v-if="cartItemsCount === 0" :class="$style.emptyCart">
         <img src="../../assets/plain_cart_icon.svg" alt="Empty Cart" :class="$style.cartIcon" />
         <Button type="accent" @click="goToShop" :class="$style.customButton">Перейти к покупкам</Button>
       </div>
@@ -11,7 +11,7 @@
         <div :class="$style.cartContent">
           <div :class="$style.cartItems">
             <CartItem
-              v-for="item in cart.items"
+              v-for="item in cartItems"
               :key="item.id"
               :id="item.id"
               :image="item.product.images && item.product.images.length > 0 ? item.product.images[0] : ''"
@@ -19,13 +19,14 @@
               :price="item.price"
               :qty="item.quantity"
               @remove="removeFromCart(item.id)"
+              @update-quantity="updateQuantity"
             />
           </div>
           
           <div :class="$style.cartSummary">
             <div :class="$style.summaryItem">
-              <span>Товары ({{ cart.items.length }})</span>
-              <span>{{ formatPrice(cart.total) }}</span>
+              <span>Товары ({{ cartItemsCount }})</span>
+              <span>{{ formatPrice(cartTotal) }}</span>
             </div>
             <div :class="$style.summaryItem">
               <span>Доставка</span>
@@ -33,7 +34,7 @@
             </div>
             <div :class="$style.summaryTotal">
               <span>Итого</span>
-              <span>{{ formatPrice(cart.total) }}</span>
+              <span>{{ formatPrice(cartTotal) }}</span>
             </div>
             <Button type="accent" @click="checkout" :class="$style.checkoutBtn">Оформить заказ</Button>
           </div>
@@ -63,10 +64,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
-import { $cart, removeItem } from '../../entities/cart/cart.store';
+import { $cart, removeItem, updateQty } from '../../entities/cart/cart.store';
 import { addItem } from '../../entities/cart/cart.store';
 import type { Product } from '../../entities/product/product.types';
 import { Header, Footer } from '../../widgets';
@@ -78,6 +79,17 @@ import { generateProducts, getSimilarProducts } from '../../shared/utils/mockDat
 const router = useRouter();
 const cart = useStore($cart);
 
+// Force reactivity with watchEffect
+watchEffect(() => {
+  // Just accessing the cart value to ensure reactivity
+  cart.value;
+});
+
+// Create reactive computed properties
+const cartItems = computed(() => cart.value.items);
+const cartTotal = computed(() => cart.value.total);
+const cartItemsCount = computed(() => cart.value.items.length);
+
 // Similar products state
 const similarProducts = ref<Product[]>([]);
 
@@ -85,7 +97,7 @@ const similarProducts = ref<Product[]>([]);
 onMounted(() => {
   // Get a random selection of products that aren't already in the cart
   const allProducts = generateProducts(10);
-  const cartItemIds = cart.value.items.map(item => item.id);
+  const cartItemIds = cartItems.value.map(item => item.id);
   
   // Filter out products already in cart and take 5 random ones
   const availableProducts = allProducts.filter(product => !cartItemIds.includes(product.id));
@@ -98,6 +110,10 @@ const goToShop = () => {
 
 const removeFromCart = (itemId: number) => {
   removeItem(itemId);
+};
+
+const updateQuantity = (payload: { id: number; quantity: number }) => {
+  updateQty(payload);
 };
 
 const checkout = () => {
@@ -248,7 +264,7 @@ const goToProduct = (productId: number) => {
 }
 
 .similarProducts {
-  gap: 16px;
+  gap: 24px;
   display: flex;
   margin-top: 24px;
   flex-direction: row;
