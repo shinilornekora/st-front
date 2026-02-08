@@ -41,6 +41,6 @@ h1 {
 
 p {
   font-size: 16px;
-  color: #6b7280;
+  color: var(--color-secondary);
 }
 </style>

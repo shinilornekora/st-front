@@ -74,15 +74,11 @@ const activeTab = ref<'sellers' | 'applications'>('sellers');
 .tabsWrapper {
   position: relative;
   margin-bottom: 40px;
+  border-bottom: 1px solid #E5E7EB;
 }
 
 .tabsLine {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #e5e5e5;
+  display: none;
 }
 
 .tabs {
@@ -96,31 +92,33 @@ const activeTab = ref<'sellers' | 'applications'>('sellers');
   border: none;
   padding: 16px 0;
   font-size: 16px;
-  font-weight: 500;
-  color: #6b7280;
+  font-weight: 400;
+  color: #9CA3AF;
   cursor: pointer;
   position: relative;
   transition: color 0.2s;
-  margin-right: 48px;
+  white-space: nowrap;
+  width: 410px;
+  text-align: left;
 }
 
 .tab:hover {
-  color: var(--color-primary);
+  color: #6B7280;
 }
 
 .tabActive {
-  color: var(--color-primary);
-  font-weight: 600;
+  color: #1F2937;
+  font-weight: 400;
 }
 
 .tabActive::after {
   content: '';
   position: absolute;
-  bottom: -2px;
+  bottom: -1px;
   left: 0;
   right: 0;
   height: 2px;
-  background: var(--color-accent);
+  background: var(--color-dark);
 }
 
 /* Content */

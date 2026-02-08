@@ -176,7 +176,7 @@
 	.title {
 		font-weight: 700;
 		font-size: 20px;
-		color: #333333;
+		color: var(--color-primary);
 		margin: 0;
 		cursor: pointer;
 		transition: color 0.2s;
@@ -186,12 +186,12 @@
 	}
 	.article {
 		font-size: 12px;
-		color: #6b7280;
+		color: var(--color-secondary);
 		margin-top: 2px;
 	}
 	.price {
 		font-size: 16px;
-		color: #333333;
+		color: var(--color-primary);
 	}
 	.controls {
 		display: flex;
@@ -231,7 +231,7 @@
 		font-weight: 500;
 		min-width: 20px;
 		text-align: center;
-		color: #2c2c2c;
+		color: var(--color-primary);
 	}
 	.remove {
 		background: none;

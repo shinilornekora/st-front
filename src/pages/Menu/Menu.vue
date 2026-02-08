@@ -123,7 +123,7 @@ import { Header, Footer } from '@widgets/index';
   font-size: 24px;
   font-weight: 600;
   margin: 0;
-  color: #1a1a1a;
+  color: var(--color-primary);
 }
 
 .menuSections {
@@ -140,7 +140,7 @@ import { Header, Footer } from '@widgets/index';
   font-weight: 600;
   margin: 0 0 12px 0;
   padding: 0 16px;
-  color: #1a1a1a;
+  color: var(--color-primary);
 }
 
 .menuItems {
@@ -153,7 +153,7 @@ import { Header, Footer } from '@widgets/index';
   align-items: center;
   padding: 16px;
   text-decoration: none;
-  color: #333;
+  color: var(--color-primary);
   transition: background-color 0.2s;
 }
 
@@ -176,7 +176,7 @@ import { Header, Footer } from '@widgets/index';
 
 .itemArrow {
   font-size: 20px;
-  color: #999;
+  color: var(--color-secondary);
 }
 
 /* Responsive adjustments */

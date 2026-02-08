@@ -101,8 +101,8 @@ onUnmounted(() => {
 
 <style module>
 .footer {
-	background: #2c2c2c;
-	color: white;
+	background: var(--color-primary);
+	color: var(--inverse-fill-color);
 	padding: 40px 120px;
 	margin-top: 84px;
 }
@@ -138,15 +138,15 @@ onUnmounted(() => {
 }
 
 .footerTitle {
-	font-size: 16px;
+	font-size: 20px;
 	font-weight: 600;
 	text-align: left;
 	margin: 0 0 8px 0;
-	color: white;
+	color: var(--inverse-fill-color);
 }
 
 .footerLink {
-	color: #9ca3af;
+	color: var(--inverse-fill-color);
 	text-align: left;
 	text-decoration: none;
 	font-size: 14px;
@@ -155,7 +155,7 @@ onUnmounted(() => {
 }
 
 .footerLink:hover {
-	color: white;
+	color: var(--inverse-fill-color);
 }
 
 /* Responsive */
@@ -260,7 +260,7 @@ onUnmounted(() => {
 .mobileFooterIcon {
 	width: 24px;
 	height: 24px;
-	color: #6b7280;
+	color: var(--color-secondary);
 }
 
 .mobileFooterBtn.active .mobileFooterIcon {

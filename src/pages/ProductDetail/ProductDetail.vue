@@ -428,7 +428,7 @@ const copyCurrentUrl = async () => {
 }
 
 .breadcrumbLink {
-	color: #6b7280;
+	color: var(--color-secondary);
 	text-decoration: none;
 	transition: color 0.2s;
 }
@@ -438,11 +438,11 @@ const copyCurrentUrl = async () => {
 }
 
 .breadcrumbSeparator {
-	color: #9ca3af;
+	color: var(--color-secondary);
 }
 
 .breadcrumbCurrent {
-	color: #2c2c2c;
+	color: var(--color-primary);
 }
 
 /* Main Content */
@@ -492,7 +492,7 @@ const copyCurrentUrl = async () => {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: #9ca3af;
+	color: var(--color-secondary);
 	transition: all 0.2s;
 	z-index: 2;
 }
@@ -537,7 +537,7 @@ const copyCurrentUrl = async () => {
 .leatherBadge svg {
 	width: 50px;
 	height: 50px;
-	color: #2c2c2c;
+	color: var(--color-primary);
 	margin-bottom: 8px;
 }
 
@@ -547,7 +547,7 @@ const copyCurrentUrl = async () => {
 	align-items: center;
 	font-size: 10px;
 	font-weight: 700;
-	color: #2c2c2c;
+	color: var(--color-primary);
 	line-height: 1.2;
 	text-align: center;
 }
@@ -634,7 +634,7 @@ const copyCurrentUrl = async () => {
 	border: none;
 	cursor: pointer;
 	padding: 8px;
-	color: #6b7280;
+	color: var(--color-secondary);
 	transition: color 0.2s;
 	flex-shrink: 0;
 	display: flex;
@@ -659,7 +659,7 @@ const copyCurrentUrl = async () => {
 	font-size: 28px;
 	font-weight: 600;
 	margin: 0;
-	color: #2c2c2c;
+	color: var(--color-primary);
 	line-height: 1.3;
 	text-align: left;
 }
@@ -673,12 +673,12 @@ const copyCurrentUrl = async () => {
 .currentPrice {
 	font-size: 24px;
 	font-weight: 700;
-	color: #2c2c2c;
+	color: var(--color-primary);
 }
 
 .oldPrice {
 	font-size: 18px;
-	color: #9ca3af;
+	color: var(--color-secondary);
 	text-decoration: line-through;
 }
 
@@ -691,12 +691,12 @@ const copyCurrentUrl = async () => {
 
 .articleLabel {
 	font-size: 14px;
-	color: #6b7280;
+	color: var(--color-secondary);
 }
 
 .articleValue {
 	font-size: 14px;
-	color: #2c2c2c;
+	color: var(--color-primary);
 	font-weight: 500;
 }
 
@@ -748,7 +748,7 @@ const copyCurrentUrl = async () => {
 	background: transparent;
 	font-size: 16px;
 	font-weight: 600;
-	color: #2c2c2c;
+	color: var(--color-primary);
 }
 
 .quantityInput::-webkit-outer-spin-button,
@@ -789,14 +789,14 @@ const copyCurrentUrl = async () => {
 .sectionTitle {
 	font-size: 24px;
 	font-weight: 600;
-	color: #2c2c2c;
+	color: var(--color-primary);
 	text-align: left;
 	margin: 12px 0 0 0;
 }
 
 .sectionSubtitle {
 	font-size: 14px;
-	color: #333333;
+	color: var(--color-primary);
 	margin: 0 0 24px 0;
 }
 
@@ -814,12 +814,12 @@ const copyCurrentUrl = async () => {
 }
 
 .charLabel {
-	color: #6b7280;
+	color: var(--color-secondary);
 	font-size: 15px;
 }
 
 .charValue {
-	color: #2c2c2c;
+	color: var(--color-primary);
 	font-size: 15px;
 	font-weight: 400;
 }
@@ -850,7 +850,7 @@ const copyCurrentUrl = async () => {
 
 .accordionIcon {
 	transition: transform 0.3s;
-	color: #6b7280;
+	color: var(--color-secondary);
 }
 
 .accordionIconOpen {
@@ -875,12 +875,12 @@ const copyCurrentUrl = async () => {
 }
 
 .infoLabel {
-	color: #6b7280;
+	color: var(--color-secondary);
 	font-size: 15px;
 }
 
 .infoValue {
-	color: #2c2c2c;
+	color: var(--color-primary);
 	font-size: 15px;
 	font-weight: 400;
 }
@@ -1164,7 +1164,7 @@ const copyCurrentUrl = async () => {
 	bottom: 20px;
 	right: 20px;
 	background: white;
-	color: #306D68;
+	color: var(--color-dark);
 	padding: 12px 20px;
 	border-radius: 8px;
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

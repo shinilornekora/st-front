@@ -51,7 +51,7 @@ const handleProductClick = (product: Product) => {
 .sectionTitle {
 	font-size: 24px;
 	font-weight: 600;
-	color: #2c2c2c;
+	color: var(--color-primary);
 	text-align: left;
 	margin: 0;
 }

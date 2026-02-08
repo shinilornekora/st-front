@@ -247,7 +247,7 @@ onUnmounted(() => {
 .headerIcon {
 	width: 24px;
 	height: 24px;
-	color: #6b7280;
+	color: var(--color-secondary);
 }
 
 .closeBtn {

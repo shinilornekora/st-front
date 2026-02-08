@@ -269,7 +269,7 @@ const goToProduct = (product: Product) => {
   font-size: 32px;
   font-weight: 600;
   margin-bottom: 32px;
-  color: #2c2c2c;
+  color: var(--color-primary);
 }
 
 .cartContent {
@@ -300,7 +300,7 @@ const goToProduct = (product: Product) => {
   justify-content: space-between;
   margin-bottom: 16px;
   font-size: 16px;
-  color: #6b7280;
+  color: var(--color-secondary);
 }
 
 .summaryTotal {
@@ -309,7 +309,7 @@ const goToProduct = (product: Product) => {
   margin-bottom: 24px;
   font-size: 18px;
   font-weight: 600;
-  color: #2c2c2c;
+  color: var(--color-primary);
   padding-top: 16px;
   border-top: 1px solid #e5e7eb;
 }
@@ -330,7 +330,7 @@ const goToProduct = (product: Product) => {
 .sectionTitle {
   font-size: 20px;
   font-weight: 600;
-  color: #333333;
+  color: var(--color-primary);
   text-align: left;
   margin: 0 0 24px 0;
 }
@@ -399,7 +399,7 @@ const goToProduct = (product: Product) => {
   bottom: 20px;
   right: 20px;
   background: white;
-  color: #306D68;
+  color: var(--color-dark);
   padding: 12px 20px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);

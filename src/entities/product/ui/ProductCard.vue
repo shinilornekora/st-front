@@ -211,7 +211,7 @@
 		font-size: 22px;
 		font-weight: 600;
 		margin: 0;
-		color: #2c2c2c;
+		color: var(--color-primary);
 		overflow: hidden;
 		text-overflow: ellipsis;
 		display: -webkit-box;
@@ -236,7 +236,7 @@
 	.price {
 		font-size: 16px;
 		font-weight: 600;
-		color: #333333;
+		color: var(--color-primary);
 		text-align: left;
 	}
 	

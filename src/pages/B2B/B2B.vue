@@ -97,7 +97,7 @@ const activeTab = ref<'analytics' | 'products'>('analytics');
   padding: 16px 0;
   font-size: 16px;
   font-weight: 500;
-  color: #6b7280;
+  color: var(--color-secondary);
   cursor: pointer;
   position: relative;
   transition: color 0.2s;
