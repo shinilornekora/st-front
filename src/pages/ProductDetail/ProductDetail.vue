@@ -1023,7 +1023,7 @@ const copyCurrentUrl = async () => {
 
 .skeletonRow {
 	height: 20px;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	border-radius: 8px;
 	animation: pulse 1.5s ease-in-out infinite;
 }
@@ -1058,7 +1058,7 @@ const copyCurrentUrl = async () => {
 	flex-shrink: 0;
 	width: 166px;
 	height: 278px;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	border-radius: 8px;
 	animation: pulse 1.5s ease-in-out infinite;
 }
@@ -1067,7 +1067,7 @@ const copyCurrentUrl = async () => {
 .imageSkeleton {
 	width: 100%;
 	height: 100%;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	animation: pulse 1.5s ease-in-out infinite;
 }
 
@@ -1075,7 +1075,7 @@ const copyCurrentUrl = async () => {
 .skeletonBadge {
 	width: 100px;
 	height: 28px;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	border-radius: 16px;
 	animation: pulse 1.5s ease-in-out infinite;
 }
@@ -1083,7 +1083,7 @@ const copyCurrentUrl = async () => {
 .skeletonTitle {
 	width: 70%;
 	height: 36px;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	border-radius: 8px;
 	animation: pulse 1.5s ease-in-out infinite;
 }
@@ -1091,7 +1091,7 @@ const copyCurrentUrl = async () => {
 .skeletonPrice {
 	width: 150px;
 	height: 32px;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	border-radius: 8px;
 	margin-top: 16px;
 	animation: pulse 1.5s ease-in-out infinite;
@@ -1100,7 +1100,7 @@ const copyCurrentUrl = async () => {
 .skeletonArticle {
 	width: 100%;
 	height: 20px;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	border-radius: 8px;
 	margin: 12px 0;
 	animation: pulse 1.5s ease-in-out infinite;
@@ -1109,7 +1109,7 @@ const copyCurrentUrl = async () => {
 .skeletonQuantity {
 	width: 150px;
 	height: 48px;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	border-radius: 50px;
 	animation: pulse 1.5s ease-in-out infinite;
 }
@@ -1117,7 +1117,7 @@ const copyCurrentUrl = async () => {
 .skeletonButton {
 	width: 100%;
 	height: 54px;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	border-radius: 12px;
 	margin-top: 24px;
 	animation: pulse 1.5s ease-in-out infinite;
@@ -1132,7 +1132,7 @@ const copyCurrentUrl = async () => {
 	display: block;
 	width: 300px;
 	height: 28px;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	border-radius: 8px;
 	margin-bottom: 8px;
 	animation: pulse 1.5s ease-in-out infinite;
@@ -1143,7 +1143,7 @@ const copyCurrentUrl = async () => {
 	display: block;
 	width: 200px;
 	height: 16px;
-	background: #e5e7eb;
+	background: var(--background-skeleton);
 	border-radius: 8px;
 	margin-bottom: 24px;
 	animation: pulse 1.5s ease-in-out infinite;

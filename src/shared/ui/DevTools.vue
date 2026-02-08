@@ -47,15 +47,6 @@
 						/>
 					</div>
 				</section>
-				
-				<!-- Info -->
-				<section :class="$style.section">
-					<div :class="$style.info">
-						<p>💡 Mock API позволяет работать без backend</p>
-						<p>⚡ Задержка имитирует реальные сетевые запросы</p>
-						<p>🔄 Изменения применяются сразу</p>
-					</div>
-				</section>
 			</div>
 		</div>
 		
@@ -177,21 +168,21 @@ onMounted(() => {
 	justify-content: space-between;
 	align-items: center;
 	padding: 16px 20px;
-	border-bottom: 1px solid #e5e7eb;
+	border-bottom: 1px solid var(--color-secondary);
 }
 
 .title {
 	margin: 0;
 	font-size: 16px;
 	font-weight: 600;
-	color: #1f2937;
+	color: var(--color-primary);
 }
 
 .closeBtn {
 	background: none;
 	border: none;
 	font-size: 20px;
-	color: #6b7280;
+	color: var(--color-secondary);
 	cursor: pointer;
 	padding: 4px 8px;
 	border-radius: 4px;
@@ -199,8 +190,8 @@ onMounted(() => {
 }
 
 .closeBtn:hover {
-	background: #f3f4f6;
-	color: #1f2937;
+	background: var(--background-secondary);
+	color: var(--color-primary);
 }
 
 .content {
@@ -221,7 +212,7 @@ onMounted(() => {
 	margin: 0 0 12px 0;
 	font-size: 14px;
 	font-weight: 600;
-	color: #374151;
+	color: var(--color-primary);
 }
 
 .setting {
@@ -237,7 +228,7 @@ onMounted(() => {
 	align-items: center;
 	gap: 8px;
 	font-size: 14px;
-	color: #4b5563;
+	color: var(--color-secondary);
 	cursor: pointer;
 }
 
@@ -250,15 +241,17 @@ onMounted(() => {
 .input {
 	width: 80px;
 	padding: 6px 10px;
-	border: 1px solid #d1d5db;
+	border: 1px solid var(--color-secondary);
 	border-radius: 6px;
 	font-size: 14px;
 	margin-left: auto;
+	background: var(--background-default);
+	color: var(--color-primary);
 }
 
 .input:focus {
 	outline: none;
-	border-color: #3b82f6;
+	border-color: var(--color-accent);
 }
 
 .slider {
@@ -268,7 +261,7 @@ onMounted(() => {
 }
 
 .info {
-	background: #f9fafb;
+	background: var(--background-secondary);
 	border-radius: 8px;
 	padding: 12px;
 }
@@ -276,7 +269,7 @@ onMounted(() => {
 .info p {
 	margin: 0 0 8px 0;
 	font-size: 13px;
-	color: #6b7280;
+	color: var(--color-secondary);
 	line-height: 1.5;
 }
 
@@ -295,7 +288,7 @@ onMounted(() => {
 	border: none;
 	font-size: 24px;
 	cursor: pointer;
-	box-shadow: 0 4px 12px rgba(48, 109, 104, 0.4);
+	box-shadow: 0 4px 12px rgba(95, 219, 209, 0.4);
 	transition: all 0.2s;
 	z-index: 9999;
 	display: flex;
@@ -305,7 +298,7 @@ onMounted(() => {
 
 .toggleBtn:hover {
 	transform: scale(1.1);
-	box-shadow: 0 6px 16px rgba(48, 109, 104, 0.5);
+	box-shadow: 0 6px 16px rgba(95, 219, 209, 0.5);
 }
 
 .toggleBtn:active {
