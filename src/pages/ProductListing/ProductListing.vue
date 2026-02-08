@@ -1,7 +1,11 @@
 <template>
 	<div :class="$style.page">
 		<!-- Header -->
-		<Header @search="handleHeaderSearch" @filter="handleFilterChange" />
+		<Header
+			:initial-filters="activeFilters"
+			@search="handleHeaderSearch"
+			@filter="handleFilterChange"
+		/>
 
 		<!-- Hero Carousel with 3 images -->
 		<section :class="$style.heroSection">
@@ -59,8 +63,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
 import { $products, getProductsFx } from '@entities/product/product.store';
 import { addItem } from '@entities/cart/cart.store';
@@ -71,6 +75,7 @@ import { Pagination } from '@shared/ui';
 import ProductCard from '@entities/product/ui/ProductCard.vue';
 
 const router = useRouter();
+const route = useRoute();
 
 // State
 const searchQuery = ref('');
@@ -78,6 +83,35 @@ const selectedCategory = ref<string | null>(null);
 const currentPage = ref(1);
 const itemsPerPage = 20;
 const activeFilters = ref<any[]>([]);
+
+// Watch for category changes in URL query params
+watch(() => route.query.category, (newCategory) => {
+	if (newCategory) {
+		// Map category to gender filter
+		if (newCategory === 'women') {
+			activeFilters.value = [{
+				id: 'sex',
+				label: 'Женский',
+				values: ['female']
+			}];
+		} else if (newCategory === 'men') {
+			activeFilters.value = [{
+				id: 'sex',
+				label: 'Мужской',
+				values: ['male']
+			}];
+		} else {
+			selectedCategory.value = newCategory as string;
+		}
+		currentPage.value = 1;
+	} else {
+		// Clear filters if no category
+		if (selectedCategory.value || activeFilters.value.length > 0) {
+			selectedCategory.value = null;
+			activeFilters.value = [];
+		}
+	}
+}, { immediate: true });
 
 // Store
 const products = useStore($products);

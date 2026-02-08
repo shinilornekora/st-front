@@ -85,18 +85,34 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import Tooltip from './Tooltip.vue';
 
 interface Props {
 	filterType: 'size' | 'quantity' | 'price' | 'sex' | 'color';
+	currentValues?: string[];
 }
 
 const props = defineProps<Props>();
 const emit = defineEmits(['apply', 'close']);
 
-const selectedValues = ref<string[]>([]);
-const priceRange = reactive({ min: '', max: '' });
+const selectedValues = ref<string[]>(props.currentValues || []);
+const priceRange = reactive({
+	min: props.currentValues?.[0] || '',
+	max: props.currentValues?.[1] || ''
+});
+
+// Watch for prop changes to update internal state
+watch(() => props.currentValues, (newValues) => {
+	if (newValues) {
+		if (props.filterType === 'price') {
+			priceRange.min = newValues[0] || '';
+			priceRange.max = newValues[1] || '';
+		} else {
+			selectedValues.value = [...newValues];
+		}
+	}
+}, { immediate: true });
 
 const tooltipWidth = computed(() => {
 	switch (props.filterType) {
@@ -273,6 +289,19 @@ const updatePriceFilter = () => {
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
 	font-size: 14px;
+	background: white;
+	color: var(--color-primary);
+	width: 100%;
+	box-sizing: border-box;
+}
+
+.priceInput input:focus {
+	outline: none;
+	border-color: var(--color-accent);
+}
+
+.priceInput input::placeholder {
+	color: #9ca3af;
 }
 
 /* Sex Filter */

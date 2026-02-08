@@ -25,7 +25,7 @@
                 <span :class="$style.itemArrow">›</span>
               </router-link>
               <router-link to="/?category=sale" :class="$style.menuItem">
-                <span :class="$style.itemText">Распродажа (Sale)</span>
+                <span :class="$style.itemText">Распродажа</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
             </div>

@@ -88,6 +88,7 @@
 							<FilterTooltip
 								v-if="activeTooltip === filter.id"
 								:filter-type="filter.id"
+								:current-values="getCurrentFilterValues(filter.id)"
 								@apply="handleFilterApply"
 								@close="closeTooltip"
 							/>
@@ -129,7 +130,7 @@
 	</div>
 </template>
 <script setup lang="ts">
-	import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+	import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 	import FilterTooltip from './FilterTooltip.vue';
 	import FiltersTooltip from './FiltersTooltip.vue';
 	import theme from './theme.module.css';
@@ -148,8 +149,10 @@
 		type?: 'main' | 'accent';
 		hideFilters?: boolean;
 		modelValue?: string;
+		initialFilters?: AppliedFilter[];
 	}>(), {
 		type: 'main',
+		initialFilters: () => [],
 	});
 	
 	const emit = defineEmits(['submit', 'update:modelValue', 'filterChange']);
@@ -158,7 +161,14 @@
 		get: () => props.modelValue || '',
 		set: (val) => emit('update:modelValue', val)
 	});
-	const activeFilters = ref<AppliedFilter[]>([]);
+	const activeFilters = ref<AppliedFilter[]>(props.initialFilters || []);
+	
+	// Watch for initialFilters changes and update activeFilters
+	watch(() => props.initialFilters, (newFilters) => {
+		if (newFilters && newFilters.length > 0) {
+			activeFilters.value = [...newFilters];
+		}
+	}, { deep: true });
 	const showPopup = ref(false);
 	const activeTooltip = ref<string | null>(null);
 	const containerRef = ref<HTMLElement | null>(null);
@@ -281,6 +291,11 @@
 			default:
 				return filter.label;
 		}
+	};
+	
+	const getCurrentFilterValues = (filterId: string): string[] => {
+		const filter = activeFilters.value.find(f => f.id === filterId);
+		return filter ? filter.values : [];
 	};
 	
 	const removeFilter = (filterId: string) => {

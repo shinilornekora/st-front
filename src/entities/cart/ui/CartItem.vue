@@ -93,27 +93,21 @@
 	
 	// Check if product is favorite on mount
 	onMounted(() => {
-		if (!isUserAuthenticated()) {
-			isFavorite.value = isProductFavorite(props.id);
-		}
+		// Use localStorage for all users (TODO: integrate with API for authenticated users)
+		isFavorite.value = isProductFavorite(props.id);
 	});
 	
 	// Watch for id changes
 	watch(() => props.id, (newId) => {
-		if (newId && !isUserAuthenticated()) {
+		if (newId) {
+			// Use localStorage for all users (TODO: integrate with API for authenticated users)
 			isFavorite.value = isProductFavorite(newId);
 		}
 	});
 	
 	const toggleHeart = () => {
-		if (!isUserAuthenticated()) {
-			// Use localStorage for non-authenticated users
-			isFavorite.value = toggleFavorite(props.id);
-		} else {
-			// For authenticated users, just toggle the UI state
-			// In a real app, this would make an API call
-			isFavorite.value = !isFavorite.value;
-		}
+		// Use localStorage for all users (TODO: integrate with API for authenticated users)
+		isFavorite.value = toggleFavorite(props.id);
 		emit('favourite');
 	};
 	

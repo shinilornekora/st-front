@@ -11,6 +11,7 @@
 					v-model="searchQuery"
 					placeholder="Поиск по названию, бренду, цвету..."
 					:class="$style.search"
+					:initial-filters="initialFilters"
 					@submit="handleSearch"
 					@filterChange="handleFilterChange"
 				/>
@@ -81,12 +82,14 @@ interface Props {
 	lightHeader?: boolean;
 	hideSearch?: boolean;
 	userRole?: 'customer' | 'partner' | 'admin' | null;
+	initialFilters?: any[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	lightHeader: false,
 	hideSearch: false,
 	userRole: null,
+	initialFilters: () => [],
 });
 
 const route = useRoute();
