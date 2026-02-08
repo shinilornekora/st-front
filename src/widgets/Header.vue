@@ -141,7 +141,7 @@ onUnmounted(() => {
 
 <style module>
 .header {
-	background: white;
+	background: var(--background-default);
 	border-bottom: 1px solid #e5e5e5;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 	padding: 27px 0;
@@ -151,7 +151,7 @@ onUnmounted(() => {
 }
 
 .lightHeader {
-	background: white;
+	background: var(--background-default);
 	border-bottom: none;
 	box-shadow: none;
 	padding: 16px 0;
@@ -348,7 +348,7 @@ onUnmounted(() => {
 	top: -4px;
 	right: -4px;
 	background: var(--color-accent);
-	color: white;
+	color: var(--background-default);;
 	font-size: 10px;
 	font-weight: bold;
 	border-radius: 50%;

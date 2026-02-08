@@ -217,7 +217,7 @@ const goToProduct = (productOrId: number | Product) => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--background-default);
 }
 
 @media (max-width: 480px) {
@@ -320,7 +320,7 @@ const goToProduct = (productOrId: number | Product) => {
 
 /* Similar Products */
 .similarSection {
-  background: white;
+  background: var(--background-default);
   padding: 32px;
   border-radius: 16px;
   margin-top: 48px;
@@ -397,7 +397,7 @@ const goToProduct = (productOrId: number | Product) => {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: white;
+  background: var(--background-default);
   color: var(--color-dark);
   padding: 12px 20px;
   border-radius: 8px;

@@ -66,7 +66,7 @@
 		padding: 7px 10px;
 		border: 1px solid var(--color-secondary);
 		border-radius: 4px;
-		background: #fff;
+		background: var(--background-default);
 		color: var(--color-primary);
 		font-size: 15px;
 		outline: none;

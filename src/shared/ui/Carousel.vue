@@ -55,7 +55,7 @@
 	}
 	.arrow {
 		background: var(--color-secondary);
-		color: #fff;
+		color: var(--background-default);
 		padding: 7px 11px;
 		border: none;
 		border-radius: 18px;

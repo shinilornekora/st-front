@@ -186,7 +186,7 @@ const goToNextPage = () => {
 
 .paginationBtn.active {
 	background: var(--color-main);
-	color: white;
+	color: var(--background-default);;
 	font-weight: 600;
 }
 

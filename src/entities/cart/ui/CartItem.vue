@@ -146,7 +146,7 @@
 		align-items: center;
 		gap: 13px;
 		padding: 8px 18px;
-		background: #fff;
+		background: var(--background-default);
 		border-radius: 9px;
 		box-shadow: 0 1px 8px #0001;
 		margin-bottom: 7px;
@@ -218,7 +218,7 @@
 		height: 24px;
 		border-radius: 4px;
 		border: 1px solid #e5e7eb;
-		background: #fff;
+		background: var(--background-default);
 		cursor: pointer;
 		display: flex;
 		align-items: center;

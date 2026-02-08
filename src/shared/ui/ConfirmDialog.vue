@@ -31,7 +31,7 @@
 		justify-content: center;
 	}
 	.dialog {
-		background: #fff;
+		background: var(--background-default);
 		padding: 26px 18px 17px;
 		border-radius: 11px;
 		box-shadow: 0 2px 24px #0003;
@@ -52,7 +52,7 @@
 	.btn {
 		border: none;
 		background: var(--color-main);
-		color: #fff;
+		color: var(--background-default);
 		border-radius: 6px;
 		padding: 4px 19px;
 		font-size: 15px;

@@ -41,7 +41,7 @@
 <style module>
 	@import './theme.module.css';
 	.card {
-		background: #fff;
+		background: var(--background-default);
 		border-radius: 14px;
 		box-shadow: 0 2px 12px #0001;
 		padding: 18px 22px;

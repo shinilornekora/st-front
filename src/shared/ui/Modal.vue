@@ -34,7 +34,7 @@
 		justify-content: center;
 	}
 	.dialog {
-		background: #fff;
+		background: var(--background-default);
 		min-width: 320px;
 		max-width: 90vw;
 		padding: 30px 20px 22px;

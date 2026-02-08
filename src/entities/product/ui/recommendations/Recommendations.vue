@@ -43,7 +43,7 @@ const handleProductClick = (product: Product) => {
 @import '@shared/ui/theme.module.css';
 
 .recommendationsSection {
-	background: white;
+	background: var(--background-default);
 	padding: 32px;
 	border-radius: 16px;
 }

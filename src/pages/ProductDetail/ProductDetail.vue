@@ -405,7 +405,7 @@ const copyCurrentUrl = async () => {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	background: #fff;
+	background: var(--background-default);
 }
 
 @media (max-width: 480px) {
@@ -460,7 +460,7 @@ const copyCurrentUrl = async () => {
 	grid-template-columns: 1fr 1fr;
 	gap: 48px;
 	margin-bottom: 48px;
-	background: white;
+	background: var(--background-default);
 	padding: 32px;
 	border-radius: 16px;
 }
@@ -557,7 +557,7 @@ const copyCurrentUrl = async () => {
 	aspect-ratio: 3 / 4;
 	border-radius: 12px;
 	overflow: hidden;
-	background: white;
+	background: var(--background-default);
 }
 
 .mainImage {
@@ -622,7 +622,7 @@ const copyCurrentUrl = async () => {
 .badge {
 	display: inline-block;
 	background: var(--color-accent);
-	color: white;
+	color: var(--background-default);;
 	padding: 6px 16px;
 	border-radius: 16px;
 	font-size: 14px;
@@ -727,7 +727,7 @@ const copyCurrentUrl = async () => {
 
 .quantityBtn:hover:not(:disabled) {
 	background: var(--color-accent);
-	color: white;
+	color: var(--background-default);;
 }
 
 .quantityBtn:disabled {
@@ -765,7 +765,7 @@ const copyCurrentUrl = async () => {
 	width: 100%;
 	padding: 16px;
 	background: var(--color-accent);
-	color: white;
+	color: var(--background-default);;
 	border: none;
 	border-radius: 12px;
 	font-size: 16px;
@@ -782,7 +782,7 @@ const copyCurrentUrl = async () => {
 /* Characteristics Section */
 .characteristicsSection {
 	text-align: left;
-	background: white;
+	background: var(--background-default);
 	border-radius: 16px;
 }
 
@@ -826,7 +826,7 @@ const copyCurrentUrl = async () => {
 
 /* Additional Info Section */
 .additionalSection {
-	background: white;
+	background: var(--background-default);
 	margin-bottom: 24px;
 	overflow: hidden;
 }
@@ -1036,7 +1036,7 @@ const copyCurrentUrl = async () => {
 
 /* Similar Products Skeleton */
 .similarSkeleton {
-	background: white;
+	background: var(--background-default);
 	padding: 32px;
 	border-radius: 16px;
 }
@@ -1163,7 +1163,7 @@ const copyCurrentUrl = async () => {
 	position: fixed;
 	bottom: 20px;
 	right: 20px;
-	background: white;
+	background: var(--background-default);
 	color: var(--color-dark);
 	padding: 12px 20px;
 	border-radius: 8px;

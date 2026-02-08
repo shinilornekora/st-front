@@ -50,7 +50,7 @@
 	.cta {
 		margin-top: 13px;
 		background: var(--color-accent);
-		color: #fff;
+		color: var(--background-default);
 		padding: 8px 23px;
 		border-radius: 8px;
 		border: none;

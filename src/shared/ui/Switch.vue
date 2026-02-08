@@ -62,7 +62,7 @@
 		height: 16px;
 		width: 16px;
 		border-radius: 50%;
-		background: #fff;
+		background: var(--background-default);
 		transition: 0.2s;
 	}
 	.switch:checked + .slider:before {

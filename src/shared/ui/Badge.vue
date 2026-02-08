@@ -21,18 +21,18 @@
 	}
 	.success {
 		background: var(--color-success-main);
-		color: #fff;
+		color: var(--background-default);
 	}
 	.warning {
 		background: var(--color-warn-main);
-		color: #fff;
+		color: var(--background-default);
 	}
 	.error {
 		background: var(--color-error-main);
-		color: #fff;
+		color: var(--background-default);
 	}
 	.info {
 		background: var(--color-main);
-		color: #fff;
+		color: var(--background-default);
 	}
 </style>

@@ -218,7 +218,7 @@ const updatePriceFilter = () => {
 	padding: 8px;
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
-	background: white;
+	background: var(--background-default);
 	cursor: pointer;
 	transition: all 0.2s;
 	font-size: 14px;
@@ -231,7 +231,7 @@ const updatePriceFilter = () => {
 
 .sizeOption.selected {
 	background: var(--color-accent);
-	color: white;
+	color: var(--background-default);;
 	border-color: var(--color-accent);
 }
 
@@ -247,7 +247,7 @@ const updatePriceFilter = () => {
 	padding: 10px;
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
-	background: white;
+	background: var(--background-default);
 	cursor: pointer;
 	transition: all 0.2s;
 	font-size: 14px;
@@ -261,7 +261,7 @@ const updatePriceFilter = () => {
 
 .quantityOption.selected {
 	background: var(--color-accent);
-	color: white;
+	color: var(--background-default);;
 	border-color: var(--color-accent);
 }
 
@@ -289,7 +289,7 @@ const updatePriceFilter = () => {
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
 	font-size: 14px;
-	background: white;
+	background: var(--background-default);
 	color: var(--color-primary);
 	width: 100%;
 	box-sizing: border-box;
@@ -316,7 +316,7 @@ const updatePriceFilter = () => {
 	padding: 10px;
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
-	background: white;
+	background: var(--background-default);
 	cursor: pointer;
 	transition: all 0.2s;
 	font-size: 14px;
@@ -330,7 +330,7 @@ const updatePriceFilter = () => {
 
 .sexOption.selected {
 	background: var(--color-accent);
-	color: white;
+	color: var(--background-default);;
 	border-color: var(--color-accent);
 }
 
@@ -348,7 +348,7 @@ const updatePriceFilter = () => {
 	padding: 10px;
 	border: 1px solid #d1d5db;
 	border-radius: 6px;
-	background: white;
+	background: var(--background-default);
 	cursor: pointer;
 	transition: all 0.2s;
 	font-size: 14px;
@@ -365,7 +365,7 @@ const updatePriceFilter = () => {
 
 .colorOption.selected {
 	background: var(--color-accent);
-	color: white;
+	color: var(--background-default);;
 	border-color: var(--color-accent);
 }
 
@@ -382,7 +382,7 @@ const updatePriceFilter = () => {
 
 .applyBtn {
 	background: var(--color-dark);
-	color: white;
+	color: var(--background-default);;
 	border: none;
 	border-radius: 6px;
 	padding: 8px 16px;

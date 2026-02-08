@@ -37,7 +37,7 @@
 		height: 100%;
 		width: 415px;
 		max-width: 96vw;
-		background: #fff;
+		background: var(--background-default);
 		box-shadow: -3px 0 14px #0002;
 		overflow: auto;
 		padding: 30px 16px 22px;

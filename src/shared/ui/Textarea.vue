@@ -33,7 +33,7 @@
 	.textarea {
 		min-height: 80px;
 		padding: 8px 12px;
-		background: #fff;
+		background: var(--background-default);
 		border: 1px solid var(--color-secondary);
 		border-radius: 4px;
 		font-size: 16px;

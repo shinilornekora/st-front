@@ -312,7 +312,7 @@ onUnmounted(() => {
 	min-height: 100vh;
 	display: flex;
 	flex-direction: column;
-	background: #fff;
+	background: var(--background-default);
 }
 
 @media (max-width: 480px) {
@@ -323,7 +323,7 @@ onUnmounted(() => {
 
 /* Hero Section */
 .heroSection {
-	background: white;
+	background: var(--background-default);
 	padding: clamp(16px, 3vw, 24px) 0;
 	overflow: hidden;
 }
@@ -367,7 +367,7 @@ onUnmounted(() => {
 
 /* Placeholder Section */
 .placeholderSection {
-	background: white;
+	background: var(--background-default);
 	padding: 0 120px;
 	display: flex;
 	flex-direction: row;
@@ -392,7 +392,7 @@ onUnmounted(() => {
 
 /* Category Section */
 .categorySection {
-	background: white;
+	background: var(--background-default);
 	padding: clamp(12px, 2vw, 16px) 0;
 	border-bottom: 1px solid #e5e5e5;
 }
@@ -424,7 +424,7 @@ onUnmounted(() => {
 	padding: 0 120px;
 	padding-top: 23px;
 	box-sizing: border-box;
-	background: white;
+	background: var(--background-default);
 }
 
 .productGrid {

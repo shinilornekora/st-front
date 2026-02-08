@@ -92,7 +92,7 @@ import { Header, Footer } from '@widgets/index';
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--background-default);
 }
 
 @media (max-width: 480px) {
@@ -113,7 +113,7 @@ import { Header, Footer } from '@widgets/index';
 
 .menuHeader {
   padding: 24px 16px;
-  background: #fff;
+  background: var(--background-default);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -144,7 +144,7 @@ import { Header, Footer } from '@widgets/index';
 }
 
 .menuItems {
-  background: #fff;
+  background: var(--background-default);
   overflow: hidden;
 }
 

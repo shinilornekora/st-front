@@ -32,7 +32,7 @@
 	}
 	.toggle {
 		background: var(--color-main);
-		color: #fff;
+		color: var(--background-default);
 		border: none;
 		padding: 7px 14px;
 		cursor: pointer;
@@ -44,7 +44,7 @@
 		left: 0;
 		min-width: 130px;
 		z-index: 10;
-		background: #fff;
+		background: var(--background-default);
 		border: 1px solid var(--color-secondary);
 		border-radius: 3px;
 		box-shadow: 0 2px 8px #0002;

@@ -18,7 +18,7 @@ import { Header, Footer } from '@widgets/index';
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--background-default);
 }
 
 @media (max-width: 480px) {

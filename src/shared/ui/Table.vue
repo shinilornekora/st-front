@@ -64,7 +64,7 @@
 		border-collapse: collapse;
 		min-width: 280px;
 		box-shadow: 0 1px 7px #0001;
-		background: #fff;
+		background: var(--background-default);
 		border-radius: 6px 6px 0 0;
 		overflow: hidden;
 	}
@@ -90,7 +90,7 @@
 	}
 	.main th {
 		background: var(--color-main);
-		color: #fff;
+		color: var(--background-default);
 	}
 	.accent th {
 		background: var(--color-accent);
@@ -98,10 +98,10 @@
 	}
 	.error th {
 		background: var(--color-error-main);
-		color: #fff;
+		color: var(--background-default);
 	}
 	.success th {
 		background: var(--color-success-main);
-		color: #fff;
+		color: var(--background-default);
 	}
 </style>

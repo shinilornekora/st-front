@@ -88,7 +88,7 @@
 	.uiInput {
 		width: 100%;
 		padding: 12px 16px;
-		background: #fff;
+		background: var(--background-default);
 		border: 2px solid #f5f5f5;
 		border-radius: 8px;
 		font-size: 16px;

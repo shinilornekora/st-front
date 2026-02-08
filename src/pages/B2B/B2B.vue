@@ -56,13 +56,13 @@ const activeTab = ref<'analytics' | 'products'>('analytics');
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--background-default);
 }
 
 .main {
   flex: 1;
   padding: 6px 120px 48px;
-  background: #fff;
+  background: var(--background-default);
 }
 
 .container {

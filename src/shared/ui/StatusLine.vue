@@ -18,7 +18,7 @@ defineProps<{
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: white;
+  background: var(--background-default);
   color: #306D68;
   padding: 12px 20px;
   border-radius: 8px;

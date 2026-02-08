@@ -733,7 +733,7 @@ const handleAddToCart = (product: Product) => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: var(--background-default);;
 }
 
 .alertBackdrop {
@@ -754,7 +754,7 @@ const handleAddToCart = (product: Product) => {
   width: 90%;
   max-width: 400px;
   min-height: 84px;
-  background: #fff;
+  background: var(--background-default);;
   border: 1px solid var(--color-success-light);
   border-radius: 16px;
   display: flex;
@@ -863,7 +863,7 @@ const handleAddToCart = (product: Product) => {
   max-width: 400px;
   padding: 32px;
   border-radius: 16px;
-  background: #fff;
+  background: var(--background-default);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(73, 164, 157, 0.1);
 }
@@ -893,8 +893,8 @@ const handleAddToCart = (product: Product) => {
 
 .input :global(.uiInput) {
   border-radius: 8px !important;
-  background: #fff !important;
-  background-color: #fff !important;
+  background: var(--background-default) !important;
+  background-color: var(--background-default) !important;
 }
 
 .input :global(.uiInput:-webkit-autofill),
@@ -903,11 +903,11 @@ const handleAddToCart = (product: Product) => {
 .input :global(.uiInput:-webkit-autofill:active) {
   -webkit-box-shadow: 0 0 0 30px white inset !important;
   -webkit-text-fill-color: var(--color-primary) !important;
-  background-color: #fff !important;
+  background-color: var(--background-default) !important;
 }
 
 .input :global(.uiInput:-internal-autofill-selected) {
-  background-color: #fff !important;
+  background-color: var(--background-default) !important;
   background-image: none !important;
 }
 
@@ -985,7 +985,7 @@ const handleAddToCart = (product: Product) => {
   max-width: 600px;
   padding: 32px;
   border-radius: 16px;
-  background: #fff;
+  background: var(--background-default);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(73, 164, 157, 0.1);
 }
@@ -1174,7 +1174,7 @@ const handleAddToCart = (product: Product) => {
 }
 
 .linkCard {
-  background: white;
+  background: var(--background-default);
   border-radius: 16px;
   padding: 24px;
   text-decoration: none;
@@ -1219,7 +1219,7 @@ const handleAddToCart = (product: Product) => {
 
 /* Carousel Wrapper */
 .carouselWrapper {
-  background: white;
+  background: var(--background-default);
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);

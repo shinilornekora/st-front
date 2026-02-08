@@ -146,7 +146,7 @@
 	/* Accent - Filled */
 	.btn--accent--filled {
 		background: var(--color-accent);
-		color: #fff;
+		color: var(--background-default);
 		border-color: var(--color-accent);
 	}
 	.btn--accent--filled:hover:not(:disabled) {
@@ -227,7 +227,7 @@
 	/* Error - Filled */
 	.btn--error--filled {
 		background: var(--color-error-main);
-		color: #fff;
+		color: var(--background-default);
 		border-color: var(--color-error-main);
 	}
 	.btn--error--filled:hover:not(:disabled) {
@@ -260,7 +260,7 @@
 	/* Success - Filled */
 	.btn--success--filled {
 		background: var(--color-success-main);
-		color: #fff;
+		color: var(--background-default);
 		border-color: var(--color-success-main);
 	}
 	.btn--success--filled:hover:not(:disabled) {
@@ -293,7 +293,7 @@
 	/* Warning - Filled */
 	.btn--warning--filled {
 		background: var(--color-warn-main);
-		color: #fff;
+		color: var(--background-default);
 		border-color: var(--color-warn-main);
 	}
 	.btn--warning--filled:hover:not(:disabled) {

@@ -452,7 +452,7 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		background: white;
+		background: var(--background-default);
 		border: 2px solid #e5e7eb;
 		border-radius: 24px;
 		padding: 0px 16px;
@@ -575,7 +575,7 @@
 		top: calc(100% + 22px);
 		left: 0;
 		right: 0;
-		background: white;
+		background: var(--background-default);
 		border-radius: 16px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 		z-index: 1000;
