@@ -1,15 +1,19 @@
 import { createStore, createEvent, createEffect } from 'effector';
 import type { Product } from './product.types';
+import { getProducts } from '@shared/api';
 
 export const setProducts = createEvent<Product[]>();
 export const addProduct = createEvent<Product>();
 export const updateProduct = createEvent<Product>();
 
 export const getProductsFx = createEffect<void, Product[]>(async () => {
-	// Import mock data generator
-	const { generateProducts } = await import('@shared/lib/mockData');
-	// Generate 50 products for better performance
-	return generateProducts(250);
+	const response = await getProducts({ __mock: true });
+	
+	if (!response.success) {
+		throw new Error(response.error || 'Не удалось загрузить товары');
+	}
+	
+	return response.data || [];
 });
 
 export const $products = createStore<Product[]>([])

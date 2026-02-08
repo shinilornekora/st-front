@@ -10,8 +10,9 @@
 				:image="product.images && product.images.length > 0 ? product.images[0] : ''"
 				:title="product.name"
 				:price="product.price"
-				:oldPrice="product.oldPrice"
+				:oldPrice="product.discount ? Math.round(product.price / (1 - product.discount / 100)) : undefined"
 				:recommendation="true"
+				:product="product"
 				@click="handleProductClick(product)"
 				@add-to-cart="$emit('add-to-cart', product)"
 			/>
@@ -21,14 +22,7 @@
 
 <script setup lang="ts">
 import ProductCard from '@entities/product/ui/ProductCard.vue';
-
-interface Product {
-	id: number;
-	name: string;
-	price: number;
-	oldPrice?: number;
-	images?: string[];
-}
+import type { Product } from '@entities/product/product.types';
 
 defineProps<{
 	title: string;

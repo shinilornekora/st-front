@@ -1,9 +1,11 @@
 <script setup lang="ts">
 	// точка входа для приложения — минимум логики, только slot/page outlet
+	import DevTools from '@shared/ui/DevTools.vue';
 </script>
 
 <template>
 	<router-view :key="$route.fullPath" />
+	<DevTools />
 </template>
 
 <style scoped>

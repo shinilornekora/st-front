@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import ProductListing from '@pages/ProductListing/ProductListing.vue';
 import ProductDetail from '@pages/ProductDetail/ProductDetail.vue';
 import Profile from '@pages/Profile/Profile.vue';
+import B2B from '@pages/B2B/B2B.vue';
+import Admin from '@pages/Admin/Admin.vue';
 import Menu from '@pages/Menu/Menu.vue';
 import Cart from '@pages/Cart/Cart.vue';
 import Notifications from '@pages/Notifications/Notifications.vue';
@@ -34,6 +36,16 @@ const routes = [
 		path: '/profile',
 		name: 'Profile',
 		component: Profile,
+	},
+	{
+		path: '/b2b',
+		name: 'B2B',
+		component: B2B,
+	},
+	{
+		path: '/admin',
+		name: 'Admin',
+		component: Admin,
 	},
 	{
 		path: '/menu',

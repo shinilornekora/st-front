@@ -35,7 +35,8 @@
 					:title="product.name"
 					:price="product.price"
 					:oldPrice="product.discount ? Math.round(product.price / (1 - product.discount / 100)) : undefined"
-					@click="goToProduct(product.id)"
+					:product="product"
+					@click="goToProduct"
 					@add-to-cart="addToCart(product)"
 				/>
 			</div>
@@ -243,8 +244,11 @@ const handlePageChange = (page: number) => {
 	}
 };
 
-const goToProduct = (productId: number) => {
-	router.push(`/product/${productId}`);
+const goToProduct = (product: Product) => {
+	// Pass product data through history state for instant display
+	router.push(`/product/${product.id}`);
+	// Use history.replaceState to add product data to the current state
+	history.replaceState({ product: { ...product } }, '');
 };
 
 const addToCart = (product: Product) => {

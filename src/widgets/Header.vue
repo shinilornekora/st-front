@@ -1,8 +1,10 @@
 <template>
 	<header :class="[$style.header, { [$style.lightHeader]: lightHeader }]">
 		<div :class="$style.headerContent">
-			<router-link :class="$style.logo" to="/">
+			<router-link :class="$style.logoWrapper" to="/">
 				<img :src="logoSrc" alt="Stivalli" :class="$style.logo" />
+				<span v-if="userRole === 'partner'" :class="$style.partnersText">partner</span>
+				<span v-if="userRole === 'admin'" :class="$style.adminText">admin</span>
 			</router-link>
 			<div v-if="!lightHeader && !hideSearch" :class="$style.searchWrapper">
 				<SearchField
@@ -78,11 +80,13 @@ import crossIcon from '@assets/cross.svg';
 interface Props {
 	lightHeader?: boolean;
 	hideSearch?: boolean;
+	userRole?: 'customer' | 'partner' | 'admin' | null;
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	lightHeader: false,
 	hideSearch: false,
+	userRole: null,
 });
 
 const route = useRoute();
@@ -161,19 +165,44 @@ onUnmounted(() => {
 	justify-content: flex-end;
 }
 
-.logo {
-	height: 35px;
-	width: 138px;
-	flex-shrink: 0;
-	object-fit: contain;
+.logoWrapper {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	text-decoration: none;
 	cursor: pointer;
+	flex-shrink: 0;
 }
 
-.lightHeader .logo {
+.logo {
+	height: 35px;
+	width: auto;
+	max-width: 138px;
+	flex-shrink: 0;
+	object-fit: contain;
+}
+
+.partnersText {
+	font-size: 20px;
+	font-weight: 700;
+    margin-bottom: 10px;
+	color: var(--color-accent);
+	text-transform: lowercase;
+}
+
+.adminText {
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--color-accent);
+	text-transform: lowercase;
+}
+
+.lightHeader .logoWrapper {
 	width: min-content;
 	margin-right: auto;
 	position: absolute;
 	left: 20px;
+	margin-left: 24px;
 }
 
 .searchWrapper {
@@ -242,6 +271,15 @@ onUnmounted(() => {
 	.headerContent {
 		padding: 0 15px;
 	}
+
+	.logoWrapper {
+		flex-shrink: 0;
+		gap: 0;
+	}
+	
+	.logo {
+		margin-left: 24px;
+	}
 }
 
 /* Responsive */
@@ -256,13 +294,27 @@ onUnmounted(() => {
 
 	.headerContent {
 		flex-wrap: wrap;
-		gap: 8px;
 		padding: 0 16px;
 		margin-top: 12px;
 	}
 
+	.logoWrapper {
+		flex-shrink: 0;
+		gap: 6px;
+	}
+
 	.logo {
-		flex: 1;
+		height: 30px;
+		width: auto;
+		max-width: 120px;
+		margin-left: 24px;
+	}
+
+	.partnersText,
+	.adminText {
+		font-size: 14px;
+		margin-bottom: 10px;
+		white-space: nowrap;
 	}
 
 	.searchWrapper {

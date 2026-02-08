@@ -40,6 +40,7 @@
 </template>
 <script setup lang="ts">
 	import { ref, onMounted, watch } from 'vue';
+	import type { Product } from '@entities/product/product.types';
 	import theme from '@shared/ui/theme.module.css';
 	import heartIcon from '@assets/heart_icon.svg';
 	import darkHeartIcon from '@assets/dark_heart_icon.svg';
@@ -57,6 +58,7 @@
 		seller?: string;
 		type?: 'grid' | 'list';
 		recommendation?: boolean;
+		product?: Product;
 	}>();
 	
 	const emit = defineEmits(['add-to-cart', 'click', 'favourite']);
@@ -98,7 +100,7 @@
 	};
 	
 	const handleCardClick = () => {
-		emit('click');
+		emit('click', props.product);
 	};
 </script>
 <style module>
@@ -111,8 +113,8 @@
 		cursor: pointer;
 		height: 100%;
 		gap: 12px;
-		height: 378px;
-    	width: 234px;
+		max-height: 378px;
+    	max-width: 234px;
 	}
 	
 	.card.list {
@@ -202,6 +204,7 @@
 		align-items: center;
 		flex: 1;
 		gap: 5px;
+		max-height: min-content;
 	}
 	
 	.title {
@@ -273,14 +276,9 @@
 	@media (min-width: 480px) and (max-width: 1200px) {
 		.imageWrapper,
 		.img {
-			width: 18vw;
+			width: 100%;
 			height: 20vw;
 			aspect-ratio: auto;
-		}
-
-		.card {
-			width: 214px;
-			height: 369px;
 		}
 	}
 

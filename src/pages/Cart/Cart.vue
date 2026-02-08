@@ -58,7 +58,8 @@
             :title="similarProduct.name"
             :price="similarProduct.price"
             :recommendation="true"
-            @click="goToProduct(similarProduct.id)"
+            :product="similarProduct"
+            @click="goToProduct"
             @add-to-cart="addSimilarToCart(similarProduct)"
             @favourite="addToFavourites(similarProduct)"
           />
@@ -84,7 +85,7 @@ import { StatusLine } from '@shared/ui';
 import Button from '@shared/ui/Button.vue';
 import ProductCard from '@entities/product/ui/ProductCard.vue';
 import CartItem from '@entities/cart/ui/CartItem.vue';
-import { generateProducts } from '@shared/lib/mockData';
+import { getProducts } from '@shared/api';
 import { isUserAuthenticated } from '@shared/utils/auth';
 
 const router = useRouter();
@@ -107,14 +108,17 @@ const similarProducts = ref<Product[]>([]);
 const showStatusLine = ref(false);
 
 // Load similar products on mount
-onMounted(() => {
-  // Get a random selection of products that aren't already in the cart
-  const allProducts = generateProducts(10);
-  const cartItemIds = cartItems.value.map(item => item.id);
+onMounted(async () => {
+  // Get products using API
+  const response = await getProducts({ __mock: true });
   
-  // Filter out products already in cart and take 5 random ones
-  const availableProducts = allProducts.filter(product => !cartItemIds.includes(product.id));
-  similarProducts.value = availableProducts.slice(0, 5);
+  if (response.success && response.data) {
+    const cartItemIds = cartItems.value.map(item => item.id);
+    
+    // Filter out products already in cart and take 5 random ones
+    const availableProducts = response.data.filter(product => !cartItemIds.includes(product.id));
+    similarProducts.value = availableProducts.slice(0, 5);
+  }
 });
 
 const goToShop = () => {
@@ -201,8 +205,11 @@ const addSimilarToCart = (similarProduct: Product) => {
   });
 };
 
-const goToProduct = (productId: number) => {
-  router.push(`/product/${productId}`);
+const goToProduct = (product: Product) => {
+  // Pass product data through history state for instant display
+  router.push(`/product/${product.id}`);
+  // Use history.replaceState to add product data to the current state
+  history.replaceState({ product: { ...product } }, '');
 };
 </script>
 

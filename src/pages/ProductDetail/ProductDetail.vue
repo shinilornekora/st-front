@@ -39,7 +39,8 @@
 							</div>
 						</div>
 						<div :class="$style.mainImageWrapper">
-							<img :src="currentImage" :alt="product.name" :class="$style.mainImage" />
+							<img v-if="currentImage" :src="currentImage" :alt="product.name" :class="$style.mainImage" />
+							<div v-else :class="$style.imageSkeleton"></div>
 						</div>
 					</div>
 					<div :class="$style.thumbnails">
@@ -69,7 +70,7 @@
 					
 					<div :class="$style.priceBlock">
 						<span :class="$style.currentPrice">{{ formatPrice(product.price) }}</span>
-						<span v-if="product.oldPrice" :class="$style.oldPrice">{{ formatPrice(product.oldPrice) }}</span>
+						<span v-if="product.discount" :class="$style.oldPrice">{{ formatPrice(product.price / (1 - product.discount / 100)) }}</span>
 					</div>
 					
 					<div :class="$style.articleRow">
@@ -96,11 +97,14 @@
 						<h2 :class="$style.sectionTitle">Характеристики и описание</h2>
 						<p :class="$style.sectionSubtitle">Основная информация</p>
 						
-						<div :class="$style.characteristicsTable">
+						<div v-if="characteristics.length > 0" :class="$style.characteristicsTable">
 							<div v-for="(char, index) in characteristics" :key="index" :class="$style.characteristicRow">
 								<span :class="$style.charLabel">{{ char.label }}</span>
 								<span :class="$style.charValue">{{ char.value }}</span>
 							</div>
+						</div>
+						<div v-else :class="$style.characteristicsSkeleton">
+							<div v-for="i in 5" :key="i" :class="$style.skeletonRow"></div>
 						</div>
 					</section>
 
@@ -136,7 +140,15 @@
 			</div>
 
 			<!-- Similar Products Section -->
+			<section v-if="similarProducts.length === 0" :class="$style.similarSkeleton">
+				<h2 :class="$style.sectionTitle">Вам может понравиться:</h2>
+				<div :class="$style.skeletonCards">
+					<div v-for="i in 5" :key="i" :class="$style.skeletonCard"></div>
+				</div>
+			</section>
+			
 			<Recommendations
+				v-else
 				title="Вам может понравиться:"
 				:products="similarProducts"
 				@product-click="goToProduct"
@@ -156,26 +168,54 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Header, Footer } from '@widgets/index';
 import { recommendations } from '@entities/product/ui';
-import { StatusLine } from '@shared/ui';
+import { StatusLine, Skeleton } from '@shared/ui';
 const { Recommendations } = recommendations;
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
-import { getSimilarProducts } from '@shared/lib/mockData';
+import { getProductById, getSimilarProducts } from '@shared/api';
 import { isUserAuthenticated } from '@shared/utils/auth';
 import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
 import heartIcon from '@assets/heart_icon.svg';
 import darkHeartIcon from '@assets/dark_heart_icon.svg';
 
+interface ProductRouterState {
+  product?: Partial<Product>;
+}
+
 const route = useRoute();
 const router = useRouter();
 
+const isLoading = ref(false);
 const quantity = ref(1);
 const currentImageIndex = ref(0);
-const isAccordionOpen = ref(0);
+const isAccordionOpen = ref(false);
 const isFavorite = ref(false);
 const showStatusLine = ref(false);
 const shareBtnClicked = ref(false);
-const product = ref<Product>({
+
+// Get initial product data from router state if available
+const routerState = history.state as ProductRouterState;
+const stateProduct = routerState?.product;
+
+// Initialize product with router state data if available, otherwise use empty defaults
+const product = ref<Product>(stateProduct && stateProduct.id ? {
+  id: stateProduct.id,
+  name: stateProduct.name || '',
+  slug: stateProduct.slug || '',
+  description: stateProduct.description || '',
+  price: stateProduct.price || 0,
+  currency: stateProduct.currency || '₽',
+  inStock: stateProduct.inStock ?? true,
+  category: stateProduct.category || [],
+  tags: stateProduct.tags || [],
+  images: stateProduct.images || [],
+  sizes: stateProduct.sizes || [],
+  stockStatus: stateProduct.stockStatus || 'in_stock',
+  gender: stateProduct.gender || 'unisex',
+  seller: stateProduct.seller || { id: 0, name: '' },
+  discount: stateProduct.discount,
+  article: stateProduct.article,
+} : {
   id: 0,
   name: '',
   slug: '',
@@ -186,6 +226,9 @@ const product = ref<Product>({
   category: [],
   tags: [],
   images: [],
+  sizes: [],
+  stockStatus: 'in_stock',
+  gender: 'unisex',
   seller: { id: 0, name: '' },
 });
 
@@ -236,39 +279,61 @@ const addSimilarToCart = (similarProduct: Product) => {
 	});
 };
 
-const goToProduct = (product: any) => {
-	// Use replace instead of push to ensure navigation happens even if we're on the same route
+const goToProduct = (product: Product) => {
+	// Pass product data through history state for instant display
 	router.replace(`/product/${product.id}`);
+	// Use history.replaceState to add product data to the current state
+	history.replaceState({ product: { ...product } }, '');
 };
 
 onMounted(async () => {
 	// Scroll to top when page loads
 	window.scrollTo({ top: 0, behavior: 'instant' });
 	
-	// Load product data based on route.params.id
-	const productId = parseInt(route.params.id as string, 10);
-	if (!isNaN(productId)) {
-		const { getProductById } = await import('../../shared/lib/mockData');
-		
-		const productData = getProductById(productId);
-		if (productData) {
-			product.value = {
-				...productData,
+	try {
+		// Load product data based on route.params.id
+		const productId = parseInt(route.params.id as string, 10);
+		if (!isNaN(productId)) {
+			// If we don't have basic product data from router state, fetch it
+			if (!product.value.id || product.value.id !== productId) {
+				isLoading.value = true;
+				const productResponse = await getProductById({ id: productId, __mock: true });
+				
+				if (productResponse.success && productResponse.data) {
+					product.value = productResponse.data;
+				}
+				isLoading.value = false;
+			}
+			
+			// Load additional data (characteristics and similar products) asynchronously
+			// This happens in the background while basic product info is already displayed
+			const loadAdditionalData = async () => {
+				const [similarResponse] = await Promise.all([
+					getSimilarProducts({ productId, __mock: true })
+				]);
+				
+				// Generate characteristics based on product data
+				const material = product.value.tags.find(tag => tag.name.includes('кожа') || tag.name.includes('замша') || tag.name.includes('нубук'))?.name || 'натуральная кожа';
+				const color = product.value.tags.find(tag => ['черный', 'коричневый', 'бежевый', 'белый', 'синий', 'красный', 'серый', 'зеленый', 'бордовый'].includes(tag.name))?.name || 'черный';
+				const brand = product.value.seller.name;
+				
+				// Import and generate characteristics
+				const { mockData } = await import('../../shared/lib/mockData');
+				characteristics.value = mockData.generateCharacteristics(material, color, brand);
+				additionalInfo.value = mockData.generateAdditionalInfo();
+				
+				// Set similar products
+				if (similarResponse.success && similarResponse.data) {
+					similarProducts.value = similarResponse.data;
+				}
 			};
 			
-			// Generate characteristics based on product data
-			const material = productData.tags.find(tag => tag.name.includes('кожа') || tag.name.includes('замша') || tag.name.includes('нубук'))?.name || 'натуральная кожа';
-			const color = productData.tags.find(tag => ['черный', 'коричневый', 'бежевый', 'белый', 'синий', 'красный', 'серый', 'зеленый', 'бордовый'].includes(tag.name))?.name || 'черный';
-			const brand = productData.seller.name;
-			
-			// Import and generate characteristics
-			const { mockData } = await import('../../shared/lib/mockData');
-			characteristics.value = mockData.generateCharacteristics(material, color, brand);
-			additionalInfo.value = mockData.generateAdditionalInfo();
-			
-			// Generate similar products
-			similarProducts.value = getSimilarProducts(productId);
+			// Load additional data in the background
+			loadAdditionalData();
 		}
+	} catch (error) {
+		console.error('Error loading product:', error);
+		isLoading.value = false;
 	}
 });
 
@@ -416,8 +481,8 @@ const copyCurrentUrl = async () => {
 
 .favoriteBtn {
 	position: absolute;
-	top: 24px;
-	left: 24px;
+	top: 12px;
+	left: 12px;
 	width: 40px;
 	height: 40px;
 	border-radius: 50%;
@@ -946,6 +1011,150 @@ const copyCurrentUrl = async () => {
 
 	.additionalTable {
 		gap: 12px;
+	}
+}
+
+/* Characteristics Skeleton */
+.characteristicsSkeleton {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.skeletonRow {
+	height: 20px;
+	background: #e5e7eb;
+	border-radius: 8px;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonRow:nth-child(1) { width: 100%; }
+.skeletonRow:nth-child(2) { width: 90%; }
+.skeletonRow:nth-child(3) { width: 95%; }
+.skeletonRow:nth-child(4) { width: 85%; }
+.skeletonRow:nth-child(5) { width: 92%; }
+
+/* Similar Products Skeleton */
+.similarSkeleton {
+	background: white;
+	padding: 32px;
+	border-radius: 16px;
+}
+
+.skeletonCards {
+	display: flex;
+	gap: 35px;
+	margin-top: 24px;
+	overflow-x: auto;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.skeletonCards::-webkit-scrollbar {
+	display: none;
+}
+
+.skeletonCard {
+	flex-shrink: 0;
+	width: 166px;
+	height: 278px;
+	background: #e5e7eb;
+	border-radius: 8px;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Image Skeleton */
+.imageSkeleton {
+	width: 100%;
+	height: 100%;
+	background: #e5e7eb;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Skeleton styles */
+.skeletonBadge {
+	width: 100px;
+	height: 28px;
+	background: #e5e7eb;
+	border-radius: 16px;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonTitle {
+	width: 70%;
+	height: 36px;
+	background: #e5e7eb;
+	border-radius: 8px;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonPrice {
+	width: 150px;
+	height: 32px;
+	background: #e5e7eb;
+	border-radius: 8px;
+	margin-top: 16px;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonArticle {
+	width: 100%;
+	height: 20px;
+	background: #e5e7eb;
+	border-radius: 8px;
+	margin: 12px 0;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonQuantity {
+	width: 150px;
+	height: 48px;
+	background: #e5e7eb;
+	border-radius: 50px;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonButton {
+	width: 100%;
+	height: 54px;
+	background: #e5e7eb;
+	border-radius: 12px;
+	margin-top: 24px;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonCharacteristics {
+	margin-top: 32px;
+}
+
+.skeletonCharacteristics::before {
+	content: '';
+	display: block;
+	width: 300px;
+	height: 28px;
+	background: #e5e7eb;
+	border-radius: 8px;
+	margin-bottom: 8px;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+.skeletonCharacteristics::after {
+	content: '';
+	display: block;
+	width: 200px;
+	height: 16px;
+	background: #e5e7eb;
+	border-radius: 8px;
+	margin-bottom: 24px;
+	animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+	0%, 100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
 	}
 }
 
