@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.page">
-    <Header :hideSearch="true" :userRole="currentUserRole" />
+    <Header :hideSearch="true" :userRole="displayUserRole" />
     
     <!-- Success Alert Popup with Backdrop -->
     <transition name="fade">
@@ -23,7 +23,78 @@
     </transition>
     
     <main :class="$style.main">
-      <div :class="$style.formContainer">
+      <!-- Profile View (when authenticated) -->
+      <div v-if="isAuthenticated && user" :class="$style.profileWrapper">
+        <div :class="$style.profileLayout">
+          <!-- Left Column: Actions Block -->
+          <div :class="$style.actionsBlock">
+            <nav :class="$style.actionsList">
+              <a :class="[$style.actionItem, $style.profileItem]" @click="handleProfileEdit">
+                <div :class="$style.avatar">
+                  <img :src="userCircleIcon" alt="User" :class="$style.avatarIcon" />
+                </div>
+                <span>Профиль</span>
+                <span :class="$style.userNameArrow">›</span>
+              </a>
+              <a :class="$style.actionItem" @click="handlePaymentMethods">
+                <img :src="cardIcon" alt="" :class="$style.actionIcon" />
+                <span>Способы оплаты</span>
+              </a>
+              <a :class="$style.actionItem" @click="handleRequisites">
+                <img :src="docsIcon" alt="" :class="$style.actionIcon" />
+                <span>Реквизиты</span>
+              </a>
+              <a :class="$style.actionItem" @click="handleSupport">
+                <img :src="chatIcon" alt="" :class="$style.actionIcon" />
+                <span>Написать в поддержку</span>
+              </a>
+              <a :class="$style.actionItem" @click="handleSettings">
+                <img :src="settingsIcon" alt="" :class="$style.actionIcon" />
+                <span>Настройки</span>
+              </a>
+            </nav>
+          </div>
+
+          <!-- Right Column: Links Block and Carousel -->
+          <div :class="$style.rightColumn">
+            <div :class="$style.linksBlock">
+              <router-link to="/favorites" :class="$style.linkCard">
+                <div :class="$style.linkHeader">
+                  <h3 :class="$style.linkTitle">Избранное</h3>
+                  <img :src="favouritesIcon" alt="" :class="$style.linkIcon" />
+                </div>
+                <p :class="$style.linkDescription">0 товаров</p>
+              </router-link>
+              
+              <router-link to="/orders" :class="$style.linkCard">
+                <div :class="$style.linkHeader">
+                  <h3 :class="$style.linkTitle">Покупки</h3>
+                  <img :src="boxIcon" alt="" :class="$style.linkIcon" />
+                </div>
+                <p :class="$style.linkDescription">Смотреть</p>
+              </router-link>
+            </div>
+            
+            <!-- Carousel -->
+            <div :class="$style.carouselWrapper">
+              <Carousel :images="carouselImages" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Recently Viewed Products (full width) -->
+        <div v-if="recentlyViewedProducts.length > 0" :class="$style.recentlyViewedSection">
+          <Recommendations
+            title="Недавно смотрели:"
+            :products="recentlyViewedProducts"
+            @product-click="handleProductClick"
+            @add-to-cart="handleAddToCart"
+          />
+        </div>
+      </div>
+      
+      <!-- Login/Register Form (when not authenticated) -->
+      <div v-else :class="$style.formContainer">
         <form :class="$style.form" @submit.prevent="handleLogin">
           <!-- Форма для входа покупателя (2 поля) -->
           <template v-if="!isSellerMode && !isRegisterMode">
@@ -196,16 +267,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useStore } from 'effector-vue/composition';
 import { Header, Footer } from '../../widgets';
-import { Input, Button } from '../../shared/ui';
+import { Input, Button, Carousel } from '../../shared/ui';
 import { loginUser, registerUser } from '@shared/api';
-import { setUser } from '@entities/user/user.store';
+import { setUser, resetUser, $user } from '@entities/user/user.store';
+import { isUserAuthenticated, setAuthenticationStatus } from '@shared/utils/auth';
+import { Recommendations } from '@entities/product/ui/recommendations';
+import { addItem } from '@entities/cart/cart.store';
+import type { Product } from '@entities/product/product.types';
 import successCheckIcon from '@assets/success_check.svg';
 import crossIcon from '@assets/cross.svg';
+import userCircleIcon from '@assets/user_circle.svg';
+import cardIcon from '@assets/card.svg';
+import docsIcon from '@assets/docs.svg';
+import chatIcon from '@assets/chat.svg';
+import settingsIcon from '@assets/settings.svg';
+import favouritesIcon from '@assets/favourutes.svg';
+import boxIcon from '@assets/box.svg';
 
 const router = useRouter();
+const user = useStore($user);
+
+// Check if user is authenticated
+const isAuthenticated = ref(false);
+
+// Check authentication on mount
+onMounted(() => {
+  isAuthenticated.value = isUserAuthenticated() && user.value !== null;
+});
+
+// Watch for user changes to update authentication status
+watch(user, (newUser) => {
+  isAuthenticated.value = isUserAuthenticated() && newUser !== null;
+});
 
 // Loading states
 const isLoading = ref(false);
@@ -224,6 +321,17 @@ const currentUserRole = computed<'customer' | 'partner' | 'admin' | null>(() => 
   // Пока что можно раскомментировать для тестирования:
   // return 'admin';
   return null;
+});
+
+// Вычисляемое свойство для отображения роли в Header
+const displayUserRole = computed<'customer' | 'partner' | 'admin' | null>(() => {
+  if (isAuthenticated.value && user.value) {
+    const role = user.value.role;
+    if (role === 'CUSTOMER') return 'customer';
+    if (role === 'SELLER') return 'partner';
+    if (role === 'ADMIN') return 'admin';
+  }
+  return currentUserRole.value;
 });
 
 // Поля для входа покупателя
@@ -419,6 +527,12 @@ const handleLogin = async () => {
       if (response.success && response.data) {
         // Сохраняем пользователя в store
         setUser(response.data);
+        
+        // Устанавливаем cookie аутентификации
+        setAuthenticationStatus(true);
+        
+        // Обновляем статус аутентификации
+        isAuthenticated.value = true;
 
         // Перенаправляем в зависимости от роли
         if (response.data.role === 'SELLER') {
@@ -480,6 +594,135 @@ const clearAllFields = () => {
   sellerEmail.value = '';
   sellerPassword.value = '';
   clearErrors();
+};
+
+const handleLogout = () => {
+  // Сбрасываем пользователя в store
+  resetUser();
+  
+  // Удаляем cookie аутентификации
+  setAuthenticationStatus(false);
+  
+  // Обновляем статус аутентификации
+  isAuthenticated.value = false;
+  
+  // Перенаправляем на главную
+  router.push('/');
+};
+
+// Mock carousel images (серые плейсхолдеры)
+const carouselImages = ref<string[]>([
+  'https://placehold.co/160x110/e5e5e5/e5e5e5',
+  'https://placehold.co/160x110/e5e5e5/e5e5e5',
+  'https://placehold.co/160x110/e5e5e5/e5e5e5'
+]);
+
+// Mock data for recently viewed products (в будущем будет из localStorage или API)
+const recentlyViewedProducts = ref<Product[]>([
+  {
+    id: 1,
+    name: 'Кроссовки Nike Air Max',
+    slug: 'nike-air-max',
+    price: 12990,
+    discount: 15,
+    currency: 'RUB',
+    images: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop'],
+    description: 'Удобные кроссовки для повседневной носки',
+    category: [{ id: '1', name: 'Обувь' }],
+    tags: [{ id: 't1', name: 'Спорт' }],
+    sizes: ['40', '41', '42', '43'],
+    stockStatus: 'in_stock',
+    gender: 'unisex',
+    inStock: true,
+    seller: {
+      id: 1,
+      name: 'Nike Store',
+      rating: 4.8
+    }
+  },
+  {
+    id: 2,
+    name: 'Футболка Adidas',
+    slug: 'adidas-tshirt',
+    price: 2990,
+    currency: 'RUB',
+    images: ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop'],
+    description: 'Спортивная футболка из дышащей ткани',
+    category: [{ id: '2', name: 'Одежда' }],
+    tags: [{ id: 't2', name: 'Спорт' }],
+    sizes: ['S', 'M', 'L', 'XL'],
+    stockStatus: 'in_stock',
+    gender: 'unisex',
+    inStock: true,
+    seller: {
+      id: 2,
+      name: 'Adidas Store',
+      rating: 4.7
+    }
+  },
+  {
+    id: 3,
+    name: 'Рюкзак Puma',
+    slug: 'puma-backpack',
+    price: 4990,
+    discount: 10,
+    currency: 'RUB',
+    images: ['https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop'],
+    description: 'Вместительный рюкзак для спорта и путешествий',
+    category: [{ id: '3', name: 'Аксессуары' }],
+    tags: [{ id: 't3', name: 'Аксессуары' }],
+    sizes: ['One Size'],
+    stockStatus: 'in_stock',
+    gender: 'unisex',
+    inStock: true,
+    seller: {
+      id: 3,
+      name: 'Puma Store',
+      rating: 4.9
+    }
+  }
+]);
+
+// Handlers for action items
+const handleProfileEdit = () => {
+  console.log('Edit profile');
+  // TODO: Открыть модальное окно редактирования профиля
+};
+
+const handlePaymentMethods = () => {
+  console.log('Payment methods');
+  // TODO: Перейти на страницу способов оплаты
+};
+
+const handleRequisites = () => {
+  console.log('Requisites');
+  // TODO: Перейти на страницу реквизитов
+};
+
+const handleSupport = () => {
+  console.log('Contact support');
+  // TODO: Открыть форму обращения в поддержку
+};
+
+const handleSettings = () => {
+  console.log('Settings');
+  // TODO: Перейти на страницу настроек
+};
+
+// Handlers for recommendations
+const handleProductClick = (product: Product) => {
+  router.push(`/product/${product.id}`);
+};
+
+const handleAddToCart = (product: Product) => {
+  addItem({
+    id: product.id,
+    product: product,
+    quantity: 1,
+    price: product.price,
+    discount: product.discount,
+    currency: product.currency
+  });
 };
 </script>
 
@@ -737,6 +980,86 @@ const clearAllFields = () => {
   }
 }
 
+.profileContainer {
+  width: 100%;
+  max-width: 600px;
+  padding: 32px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(73, 164, 157, 0.1);
+}
+
+.profileTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.infoLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+.infoValue {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-primary);
+  text-align: right;
+}
+
+.logoutButton {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.logoutButton :global(.btn) {
+  border-radius: 8px !important;
+}
+
+@media (max-width: 769px) {
+  .profileContainer {
+    padding: 24px 16px;
+  }
+  
+  .profileTitle {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .infoRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .infoValue {
+    text-align: left;
+  }
+}
+
 /* Transition for backdrop */
 .fade-enter-active,
 .fade-leave-active {
@@ -746,5 +1069,205 @@ const clearAllFields = () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+/* Profile Wrapper */
+.profileWrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 120px;
+}
+
+/* Profile Layout */
+.profileLayout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+/* Actions Block */
+.actionsBlock {
+  background: #f5f5f5;
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  max-width: 334px;
+}
+
+.actionsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.actionItem {
+  padding: 16px 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-primary);
+  transition: background 0.2s;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.actionItem:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.profileItem {
+  padding: 24px;
+  justify-content: flex-start;
+}
+
+.profileItem:hover {
+  background: #fafafa;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatarIcon {
+  width: 32px;
+  height: 32px;
+  color: #666;
+}
+
+.userNameArrow {
+  font-size: 20px;
+  color: #999;
+  margin-left: auto;
+}
+
+.actionIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Right Column */
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Links Block */
+.linksBlock {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.linkCard {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  text-decoration: none;
+  transition: box-shadow 0.2s;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 87px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.linkCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.linkHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.linkTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin: 0;
+}
+
+.linkIcon {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.linkDescription {
+  font-size: 14px;
+  color: var(--color-dark);
+  text-align: left;
+  margin: 0;
+}
+
+/* Carousel Wrapper */
+.carouselWrapper {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Recently Viewed Section */
+.recentlyViewedSection {
+  width: 100%;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .profileWrapper {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .profileLayout {
+    grid-template-columns: 1fr;
+  }
+  
+  .rightColumn {
+    order: 2;
+  }
+  
+  .linksBlock {
+    grid-template-columns: 1fr;
+  }
+  
+  .carouselWrapper {
+    order: 3;
+  }
+}
+
+@media (max-width: 1024px) {
+  .profileLayout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .profileWrapper {
+    padding: 0 16px;
+  }
+  
+  .linksBlock {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

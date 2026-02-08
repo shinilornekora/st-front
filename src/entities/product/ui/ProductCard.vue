@@ -29,18 +29,22 @@
 				</div>
 			</div>
 			<button
-				:class="$style.cartBtn"
-				@click.stop="$emit('add-to-cart')"
-				aria-label="Добавить в корзину"
+				:class="[$style.cartBtn, isInCart ? $style.inCart : '']"
+				@click.stop="handleAddToCart"
+				:disabled="isInCart"
+				:aria-label="isInCart ? 'В корзине' : 'Добавить в корзину'"
 			>
-				<img src="@assets/shopping_cart.svg" alt="" :class="$style.cartIcon" />
+				<span v-if="isInCart" :class="$style.cartText">В корзине</span>
+				<img v-else src="@assets/shopping_cart.svg" alt="" :class="$style.cartIcon" />
 			</button>
 		</div>
 	</article>
 </template>
 <script setup lang="ts">
-	import { ref, onMounted, watch } from 'vue';
+	import { ref, onMounted, watch, computed } from 'vue';
+	import { useStore } from 'effector-vue/composition';
 	import type { Product } from '@entities/product/product.types';
+	import { $cart } from '@entities/cart/cart.store';
 	import theme from '@shared/ui/theme.module.css';
 	import heartIcon from '@assets/heart_icon.svg';
 	import darkHeartIcon from '@assets/dark_heart_icon.svg';
@@ -64,17 +68,24 @@
 	const emit = defineEmits(['add-to-cart', 'click', 'favourite']);
 	
 	const isFavorite = ref(false);
+	const cart = useStore($cart);
+	
+	// Check if product is in cart
+	const isInCart = computed(() => {
+		if (!props.id) return false;
+		return cart.value.items.some(item => item.id === props.id);
+	});
 	
 	// Check if product is favorite on mount
 	onMounted(() => {
-		if (props.id && !isUserAuthenticated()) {
+		if (props.id) {
 			isFavorite.value = isProductFavorite(props.id);
 		}
 	});
 	
 	// Watch for id changes
 	watch(() => props.id, (newId) => {
-		if (newId && !isUserAuthenticated()) {
+		if (newId) {
 			isFavorite.value = isProductFavorite(newId);
 		}
 	});
@@ -82,14 +93,9 @@
 	const toggleHeart = () => {
 		if (!props.id) return;
 		
-		if (!isUserAuthenticated()) {
-			// Use localStorage for non-authenticated users
-			isFavorite.value = toggleFavorite(props.id);
-		} else {
-			// For authenticated users, just toggle the UI state
-			// In a real app, this would make an API call
-			isFavorite.value = !isFavorite.value;
-		}
+		// Use localStorage for all users (both authenticated and non-authenticated)
+		// TODO: In the future, authenticated users should call 'add_favourite' API endpoint
+		isFavorite.value = toggleFavorite(props.id);
 		
 		// Emit the favourite event
 		emit('favourite', { id: props.id, isFavorite: isFavorite.value });
@@ -97,6 +103,12 @@
 	
 	const formatPrice = (price: number) => {
 		return `${price.toLocaleString('ru-RU')} ₽`;
+	};
+	
+	const handleAddToCart = () => {
+		if (!isInCart.value) {
+			emit('add-to-cart');
+		}
 	};
 	
 	const handleCardClick = () => {
@@ -241,9 +253,9 @@
 	}
 	
 	.cartBtn {
-		width: 36px;
+		min-width: 36px;
 		height: 36px;
-		border-radius: 50%;
+		border-radius: 18px;
 		border: none;
 		background: transparent;
 		cursor: pointer;
@@ -252,7 +264,21 @@
 		justify-content: center;
 		transition: all 0.2s;
 		flex-shrink: 0;
-		padding: 0;
+		padding: 0 8px;
+		white-space: nowrap;
+	}
+	
+	.cartBtn.inCart {
+		background: #e5e5e5;
+		cursor: not-allowed;
+		opacity: 0.7;
+	}
+	
+	.cartText {
+		font-size: 12px;
+		font-weight: 500;
+		color: var(--color-primary);
+		padding: 0 4px;
 	}
 	
 	.cartIcon {
@@ -261,15 +287,15 @@
 		color: var(--color-accent);
 	}
 	
-	.cartBtn:hover {
+	.cartBtn:not(.inCart):hover {
 		transform: scale(1.1);
 	}
 	
-	.cartBtn:hover .cartIcon {
+	.cartBtn:not(.inCart):hover .cartIcon {
 		filter: brightness(1.2);
 	}
 	
-	.cartBtn:active {
+	.cartBtn:not(.inCart):active {
 		transform: scale(0.95);
 	}
 	

@@ -4,7 +4,16 @@
 		tabindex="0"
 		aria-label="Позиция в корзине"
 	>
-		<img v-if="image" :src="image" :alt="title" :class="$style.img" />
+		<img
+			v-if="image"
+			:src="image"
+			:alt="title"
+			:class="$style.img"
+			@click="goToProduct"
+			role="button"
+			tabindex="0"
+			@keydown.enter="goToProduct"
+		/>
 		<div :class="$style.info">
 			<div :class="$style.topBlock">
 				<h4 :class="$style.title" @click="goToProduct" role="button" tabindex="0" @keydown.enter="goToProduct">{{ title || 'No title' }}</h4>
@@ -163,6 +172,11 @@
 		height: 166px;
 		object-fit: cover;
 		border-radius: 6px;
+		cursor: pointer;
+		transition: opacity 0.2s;
+	}
+	.img:hover {
+		opacity: 0.8;
 	}
 	.info {
 		flex: 1;

@@ -205,11 +205,10 @@ const addSimilarToCart = (similarProduct: Product) => {
   });
 };
 
-const goToProduct = (product: Product) => {
-  // Pass product data through history state for instant display
-  router.push(`/product/${product.id}`);
-  // Use history.replaceState to add product data to the current state
-  history.replaceState({ product: { ...product } }, '');
+const goToProduct = (productOrId: number | Product) => {
+  // Handle both number (from CartItem) and Product object (from ProductCard)
+  const productId = typeof productOrId === 'number' ? productOrId : productOrId.id;
+  router.push(`/product/${productId}`);
 };
 </script>
 
