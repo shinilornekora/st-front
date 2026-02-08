@@ -4,6 +4,7 @@ export { default as ProductDetail } from './ProductDetail/ProductDetail.vue';
 export { default as Profile } from './Profile/Profile.vue';
 export { default as Menu } from './Menu/Menu.vue';
 export { default as Cart } from './Cart/Cart.vue';
+export { default as Favorites } from './Favorites/Favorites.vue';
 export { default as Notifications } from './Notifications/Notifications.vue';
 export { default as Delivery } from './Delivery/Delivery.vue';
 export { default as Returns } from './Returns/Returns.vue';

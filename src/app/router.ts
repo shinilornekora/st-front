@@ -6,6 +6,7 @@ import B2B from '@pages/B2B/B2B.vue';
 import Admin from '@pages/Admin/Admin.vue';
 import Menu from '@pages/Menu/Menu.vue';
 import Cart from '@pages/Cart/Cart.vue';
+import Favorites from '@pages/Favorites/Favorites.vue';
 import Notifications from '@pages/Notifications/Notifications.vue';
 import Delivery from '@pages/Delivery/Delivery.vue';
 import Returns from '@pages/Returns/Returns.vue';
@@ -56,6 +57,11 @@ const routes = [
 		path: '/cart',
 		name: 'Cart',
 		component: Cart,
+	},
+	{
+		path: '/favorites',
+		name: 'Favorites',
+		component: Favorites,
 	},
 	{
 		path: '/notifications',

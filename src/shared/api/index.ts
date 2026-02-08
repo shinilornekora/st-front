@@ -22,6 +22,28 @@ export type {
   GetSimilarProductsRequest
 } from './products.api';
 
+// Sellers API
+export {
+  getSellersDashboard
+} from './sellers.api';
+export type {
+  SellerStats,
+  ChartData,
+  SellersDashboard,
+  GetSellersDashboardRequest
+} from './sellers.api';
+
+// Applications API
+export {
+  getApplications,
+  updateApplicationStatus
+} from './applications.api';
+export type {
+  Application,
+  GetApplicationsRequest,
+  UpdateApplicationStatusRequest
+} from './applications.api';
+
 // В будущем здесь будут другие API модули:
 // export * from './orders.api';
 // export * from './analytics.api';

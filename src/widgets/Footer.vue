@@ -206,7 +206,7 @@ onUnmounted(() => {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	background: #F8FAFC;
+	background: var(--background-secondary);
 	border-top: 1px solid #e5e5e5;
 	z-index: 1000;
 	height: 46px;

@@ -2,6 +2,20 @@
   <div :class="$style.page">
     <Header :hideSearch="true" :userRole="displayUserRole" />
     
+    <!-- Settings Modal -->
+    <SettingsModal
+      v-model="showSettingsModal"
+      @save="handleSaveSettings"
+      @logout="handleLogout"
+      @delete-account="handleDeleteAccount"
+    />
+    
+    <!-- Requisites Modal -->
+    <RequisitesModal
+      v-model="showRequisitesModal"
+      @save-requisites="handleSaveRequisites"
+    />
+    
     <!-- Success Alert Popup with Backdrop -->
     <transition name="fade">
       <div v-if="showSuccessAlert" :class="$style.alertBackdrop" @click="closeAlert">
@@ -25,8 +39,8 @@
     <main :class="$style.main">
       <!-- Profile View (when authenticated) -->
       <div v-if="isAuthenticated && user" :class="$style.profileWrapper">
-        <div :class="$style.profileLayout">
-          <!-- Left Column: Actions Block -->
+        <!-- Admin View: Only Actions Block -->
+        <div v-if="user.role === 'ADMIN'" :class="$style.adminLayout">
           <div :class="$style.actionsBlock">
             <nav :class="$style.actionsList">
               <a :class="[$style.actionItem, $style.profileItem]" @click="handleProfileEdit">
@@ -54,42 +68,85 @@
               </a>
             </nav>
           </div>
-
-          <!-- Right Column: Links Block and Carousel -->
-          <div :class="$style.rightColumn">
-            <div :class="$style.linksBlock">
-              <router-link to="/favorites" :class="$style.linkCard">
-                <div :class="$style.linkHeader">
-                  <h3 :class="$style.linkTitle">Избранное</h3>
-                  <img :src="favouritesIcon" alt="" :class="$style.linkIcon" />
-                </div>
-                <p :class="$style.linkDescription">0 товаров</p>
-              </router-link>
-              
-              <router-link to="/orders" :class="$style.linkCard">
-                <div :class="$style.linkHeader">
-                  <h3 :class="$style.linkTitle">Покупки</h3>
-                  <img :src="boxIcon" alt="" :class="$style.linkIcon" />
-                </div>
-                <p :class="$style.linkDescription">Смотреть</p>
-              </router-link>
-            </div>
-            
-            <!-- Carousel -->
-            <div :class="$style.carouselWrapper">
-              <Carousel :images="carouselImages" />
-            </div>
-          </div>
         </div>
 
-        <!-- Recently Viewed Products (full width) -->
-        <div v-if="recentlyViewedProducts.length > 0" :class="$style.recentlyViewedSection">
-          <Recommendations
-            title="Недавно смотрели:"
-            :products="recentlyViewedProducts"
-            @product-click="handleProductClick"
-            @add-to-cart="handleAddToCart"
-          />
+        <!-- Customer/Seller View: Full Layout -->
+        <div v-else>
+          <div :class="$style.profileLayout">
+            <!-- Left Column: Actions Block -->
+            <div :class="$style.actionsBlock">
+              <nav :class="$style.actionsList">
+                <a :class="[$style.actionItem, $style.profileItem]" @click="handleProfileEdit">
+                  <div :class="$style.avatar">
+                    <img :src="userCircleIcon" alt="User" :class="$style.avatarIcon" />
+                  </div>
+                  <span>Профиль</span>
+                  <span :class="$style.userNameArrow">›</span>
+                </a>
+                <a :class="$style.actionItem" @click="handlePaymentMethods">
+                  <img :src="cardIcon" alt="" :class="$style.actionIcon" />
+                  <span>Способы оплаты</span>
+                </a>
+                <a :class="$style.actionItem" @click="handleRequisites">
+                  <img :src="docsIcon" alt="" :class="$style.actionIcon" />
+                  <span>Реквизиты</span>
+                </a>
+                <a :class="$style.actionItem" @click="handleSupport">
+                  <img :src="chatIcon" alt="" :class="$style.actionIcon" />
+                  <span>Написать в поддержку</span>
+                </a>
+                <a :class="$style.actionItem" @click="handleSettings">
+                  <img :src="settingsIcon" alt="" :class="$style.actionIcon" />
+                  <span>Настройки</span>
+                </a>
+              </nav>
+            </div>
+
+            <!-- Right Column: Links Block and Carousel -->
+            <div :class="$style.rightColumn">
+              <div :class="$style.linksBlock">
+                <router-link to="/favorites" :class="$style.linkCard">
+                  <div :class="$style.linkHeader">
+                    <h3 :class="$style.linkTitle">Избранное</h3>
+                    <img :src="favouritesIcon" alt="" :class="$style.linkIcon" />
+                  </div>
+                  <p :class="$style.linkDescription">{{ favoritesCount }} {{ getFavoritesText(favoritesCount) }}</p>
+                </router-link>
+                
+                <router-link to="/favorites?tab=purchases" :class="$style.linkCard">
+                  <div :class="$style.linkHeader">
+                    <h3 :class="$style.linkTitle">Покупки</h3>
+                    <img :src="boxIcon" alt="" :class="$style.linkIcon" />
+                  </div>
+                  <p :class="$style.linkDescription">Смотреть</p>
+                </router-link>
+              </div>
+              
+              <!-- Hero Carousel with placeholder boxes -->
+              <div :class="$style.heroCarousel">
+                <div :class="$style.heroThumbnail"></div>
+                <div :class="$style.heroMain"></div>
+                <div :class="$style.heroThumbnail"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Carousel visible only with compact devices -->
+          <div :class="$style.heroCarouselCompact">
+            <div :class="$style.heroThumbnail"></div>
+            <div :class="$style.heroMain"></div>
+            <div :class="$style.heroThumbnail"></div>
+          </div>
+
+          <!-- Recently Viewed Products (full width) -->
+          <div v-if="recentlyViewedProducts.length > 0" :class="$style.recentlyViewedSection">
+            <Recommendations
+              title="Недавно смотрели:"
+              :products="recentlyViewedProducts"
+              @product-click="handleProductClick"
+              @add-to-cart="handleAddToCart"
+            />
+          </div>
         </div>
       </div>
       
@@ -271,13 +328,14 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
 import { Header, Footer } from '../../widgets';
-import { Input, Button, Carousel } from '../../shared/ui';
+import { Input, Button, SettingsModal, RequisitesModal } from '../../shared/ui';
 import { loginUser, registerUser } from '@shared/api';
 import { setUser, resetUser, $user } from '@entities/user/user.store';
 import { isUserAuthenticated, setAuthenticationStatus } from '@shared/utils/auth';
 import { Recommendations } from '@entities/product/ui/recommendations';
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
+import { getFavoriteProducts } from '@shared/utils/favorites';
 import successCheckIcon from '@assets/success_check.svg';
 import crossIcon from '@assets/cross.svg';
 import userCircleIcon from '@assets/user_circle.svg';
@@ -297,6 +355,7 @@ const isAuthenticated = ref(false);
 // Check authentication on mount
 onMounted(() => {
   isAuthenticated.value = isUserAuthenticated() && user.value !== null;
+  updateFavoritesCount();
 });
 
 // Watch for user changes to update authentication status
@@ -311,6 +370,36 @@ const isLoading = ref(false);
 const isSellerMode = ref(false);
 const isRegisterMode = ref(false);
 const showSuccessAlert = ref(false);
+const showSettingsModal = ref(false);
+const showRequisitesModal = ref(false);
+
+// Favorites count
+const favoritesCount = ref(0);
+
+// Update favorites count
+const updateFavoritesCount = () => {
+  favoritesCount.value = getFavoriteProducts().length;
+};
+
+// Helper function for correct Russian pluralization
+const getFavoritesText = (count: number): string => {
+  const lastDigit = count % 10;
+  const lastTwoDigits = count % 100;
+  
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
+    return 'товаров';
+  }
+  
+  if (lastDigit === 1) {
+    return 'товар';
+  }
+  
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return 'товара';
+  }
+  
+  return 'товаров';
+};
 
 // Вычисляемое свойство для определения роли пользователя
 const currentUserRole = computed<'customer' | 'partner' | 'admin' | null>(() => {
@@ -610,13 +699,6 @@ const handleLogout = () => {
   router.push('/');
 };
 
-// Mock carousel images (серые плейсхолдеры)
-const carouselImages = ref<string[]>([
-  'https://placehold.co/160x110/e5e5e5/e5e5e5',
-  'https://placehold.co/160x110/e5e5e5/e5e5e5',
-  'https://placehold.co/160x110/e5e5e5/e5e5e5'
-]);
-
 // Mock data for recently viewed products (в будущем будет из localStorage или API)
 const recentlyViewedProducts = ref<Product[]>([
   {
@@ -695,8 +777,13 @@ const handlePaymentMethods = () => {
 };
 
 const handleRequisites = () => {
-  console.log('Requisites');
-  // TODO: Перейти на страницу реквизитов
+  showRequisitesModal.value = true;
+};
+
+const handleSaveRequisites = (requisitesData: any) => {
+  console.log('Save requisites:', requisitesData);
+  // TODO: Сохранить реквизиты на сервер или в localStorage
+  // Можно показать уведомление об успешном сохранении
 };
 
 const handleSupport = () => {
@@ -705,8 +792,21 @@ const handleSupport = () => {
 };
 
 const handleSettings = () => {
-  console.log('Settings');
-  // TODO: Перейти на страницу настроек
+  showSettingsModal.value = true;
+};
+
+const closeSettingsModal = () => {
+  showSettingsModal.value = false;
+};
+
+const handleSaveSettings = (settings: any[]) => {
+  console.log('Save settings:', settings);
+  // TODO: Сохранить настройки в localStorage или отправить на сервер
+};
+
+const handleDeleteAccount = () => {
+  console.log('Delete account');
+  // TODO: Показать подтверждение и удалить аккаунт
 };
 
 // Handlers for recommendations
@@ -1078,6 +1178,14 @@ const handleAddToCart = (product: Product) => {
   padding: 0 120px;
 }
 
+/* Admin Layout */
+.adminLayout {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 48px;
+}
+
 /* Profile Layout */
 .profileLayout {
   display: grid;
@@ -1088,7 +1196,7 @@ const handleAddToCart = (product: Product) => {
 
 /* Actions Block */
 .actionsBlock {
-  background: #f5f5f5;
+  background: var(--background-secondary);
   border-radius: 16px;
   padding: 0;
   overflow: hidden;
@@ -1177,6 +1285,8 @@ const handleAddToCart = (product: Product) => {
   background: var(--background-default);
   border-radius: 16px;
   padding: 24px;
+  min-width: 338px;
+  max-width: 412px;
   text-decoration: none;
   transition: box-shadow 0.2s;
   cursor: pointer;
@@ -1217,12 +1327,33 @@ const handleAddToCart = (product: Product) => {
   margin: 0;
 }
 
-/* Carousel Wrapper */
-.carouselWrapper {
-  background: var(--background-default);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+/* Hero Carousel */
+.heroCarousel {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.heroCarouselCompact {
+  display: none;
+  gap: 16px;
+  align-items: center;
+}
+
+.heroThumbnail {
+  flex: 0 0 187px;
+  height: 251px;
+  max-width: 124px;
+  background: var(--background-secondary);
+  border-radius: 12px;
+}
+
+.heroMain {
+  flex: 1;
+  height: 251px;
+  background: var(--background-secondary);
+  border-radius: 12px;
+  min-width: 0;
 }
 
 /* Recently Viewed Section */
@@ -1235,9 +1366,22 @@ const handleAddToCart = (product: Product) => {
   .profileWrapper {
     padding: 0 24px;
   }
+
+  .linksBlock {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .heroCarousel {
+    display: none;
+  }
+  
+  .heroCarouselCompact {
+    display: flex;
+  }
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
   .profileLayout {
     grid-template-columns: 1fr;
   }
@@ -1250,14 +1394,8 @@ const handleAddToCart = (product: Product) => {
     grid-template-columns: 1fr;
   }
   
-  .carouselWrapper {
+  .heroCarouselCompact {
     order: 3;
-  }
-}
-
-@media (max-width: 1024px) {
-  .profileLayout {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -1268,6 +1406,11 @@ const handleAddToCart = (product: Product) => {
   
   .linksBlock {
     grid-template-columns: 1fr;
+  }
+  
+  .placeholderBox {
+    min-width: 107px;
+    height: 71px;
   }
 }
 </style>
