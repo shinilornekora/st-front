@@ -1,6 +1,7 @@
-import { createStore, createEvent, createEffect } from 'effector';
+import { createStore, createEvent, createEffect, sample } from 'effector';
 import type { Cart, CartItem } from './cart.types';
 import { isUserAuthenticated } from '@shared/utils/auth';
+import { showToast, hideToast } from '@shared/ui/toast.store';
 
 // Helper functions for localStorage
 const saveCartToLocalStorage = (cart: Cart) => {
@@ -59,6 +60,7 @@ export const $cart = createStore<Cart>(initialCart)
 		const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
 		const newCart = { ...state, items, total };
 		saveCartToLocalStorage(newCart);
+		
 		return newCart;
 	})
 	.on(removeItem, (state, id) => {
@@ -79,3 +81,32 @@ export const $cart = createStore<Cart>(initialCart)
 		saveCartToLocalStorage(cart);
 		return cart;
 	});
+
+
+// Effect to hide toast after delay
+const hideToastFx = createEffect(() => {
+	return new Promise<void>((resolve) => {
+		setTimeout(() => {
+			resolve();
+		}, 2500);
+	});
+});
+
+// Show toast when item is added to cart
+sample({
+	clock: addItem,
+	fn: () => 'Товар успешно добавлен в корзину',
+	target: showToast,
+});
+
+// Start timer to hide toast
+sample({
+	clock: addItem,
+	target: hideToastFx,
+});
+
+// Hide toast when timer completes
+sample({
+	clock: hideToastFx.doneData,
+	target: hideToast,
+});

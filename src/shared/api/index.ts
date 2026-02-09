@@ -44,7 +44,18 @@ export type {
   UpdateApplicationStatusRequest
 } from './applications.api';
 
+// Analytics API
+export {
+  getAnalyticsDashboard,
+  getSellerProducts
+} from './analytics.api';
+export type {
+  AnalyticsDashboard,
+  ProductAnalytics,
+  ProductListItem,
+  GetAnalyticsDashboardRequest
+} from './analytics.api';
+
 // В будущем здесь будут другие API модули:
 // export * from './orders.api';
-// export * from './analytics.api';
 // и т.д.

@@ -17,30 +17,17 @@
     />
     
     <!-- Success Alert Popup with Backdrop -->
-    <transition name="fade">
-      <div v-if="showSuccessAlert" :class="$style.alertBackdrop" @click="closeAlert">
-        <div :class="$style.successAlert" @click.stop>
-          <img :src="successCheckIcon" alt="" :class="$style.alertIcon" />
-          <div :class="$style.alertContent">
-            <div :class="$style.alertTitle">В процессе рассмотрения</div>
-            <div :class="$style.alertText">
-              <p>Ваша заявка в данный момент ожидает резолюции от администратора, пожалуйста, подождите.</p>
-              <p>После рассмотрения вашей заявки, на указанную электронную почту придет резолюция, после чего использовав ваши данные для входа, вы сможете войти в ваш аккаунт.</p>
-              <p>Если рассмотрение заявки занимает более трех дней, вы можете написать нам на почту, после чего мы проверим актуальный статус вашей заявки, и сообщим вам примерные сроки.</p>
-            </div>
-          </div>
-          <button :class="$style.alertClose" @click="closeAlert" aria-label="Закрыть">
-            <img :src="crossIcon" alt="" :class="$style.closeIcon" />
-          </button>
-        </div>
-      </div>
-    </transition>
+    <SuccessAlert v-model="showSuccessAlert" title="В процессе рассмотрения">
+      <p>Ваша заявка в данный момент ожидает резолюции от администратора, пожалуйста, подождите.</p>
+      <p>После рассмотрения вашей заявки, на указанную электронную почту придет резолюция, после чего использовав ваши данные для входа, вы сможете войти в ваш аккаунт.</p>
+      <p>Если рассмотрение заявки занимает более трех дней, вы можете написать нам на почту, после чего мы проверим актуальный статус вашей заявки, и сообщим вам примерные сроки.</p>
+    </SuccessAlert>
     
     <main :class="$style.main">
       <!-- Profile View (when authenticated) -->
       <div v-if="isAuthenticated && user" :class="$style.profileWrapper">
-        <!-- Admin View: Only Actions Block -->
-        <div v-if="user.role === 'ADMIN'" :class="$style.adminLayout">
+        <!-- Admin/Seller View: Only Actions Block -->
+        <div v-if="user.role === 'ADMIN' || user.role === 'SELLER'" :class="$style.adminLayout">
           <div :class="$style.actionsBlock">
             <nav :class="$style.actionsList">
               <a :class="[$style.actionItem, $style.profileItem]" @click="handleProfileEdit">
@@ -50,11 +37,9 @@
                 <span>Профиль</span>
                 <span :class="$style.userNameArrow">›</span>
               </a>
-              <a :class="$style.actionItem" @click="handlePaymentMethods">
-                <img :src="cardIcon" alt="" :class="$style.actionIcon" />
-                <span>Способы оплаты</span>
-              </a>
-              <a :class="$style.actionItem" @click="handleRequisites">
+              <!-- Hide "Способы оплаты" for both ADMIN and SELLER -->
+              <!-- Hide "Реквизиты" for ADMIN only -->
+              <a v-if="user.role === 'SELLER'" :class="$style.actionItem" @click="handleRequisites">
                 <img :src="docsIcon" alt="" :class="$style.actionIcon" />
                 <span>Реквизиты</span>
               </a>
@@ -70,7 +55,7 @@
           </div>
         </div>
 
-        <!-- Customer/Seller View: Full Layout -->
+        <!-- Customer View: Full Layout -->
         <div v-else>
           <div :class="$style.profileLayout">
             <!-- Left Column: Actions Block -->
@@ -328,7 +313,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
 import { Header, Footer } from '../../widgets';
-import { Input, Button, SettingsModal, RequisitesModal } from '../../shared/ui';
+import { Input, Button, SettingsModal, RequisitesModal, SuccessAlert } from '../../shared/ui';
 import { loginUser, registerUser } from '@shared/api';
 import { setUser, resetUser, $user } from '@entities/user/user.store';
 import { isUserAuthenticated, setAuthenticationStatus } from '@shared/utils/auth';
@@ -336,8 +321,7 @@ import { Recommendations } from '@entities/product/ui/recommendations';
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
 import { getFavoriteProducts } from '@shared/utils/favorites';
-import successCheckIcon from '@assets/success_check.svg';
-import crossIcon from '@assets/cross.svg';
+import { showToast } from '@shared/ui/toast.store';
 import userCircleIcon from '@assets/user_circle.svg';
 import cardIcon from '@assets/card.svg';
 import docsIcon from '@assets/docs.svg';
@@ -631,6 +615,14 @@ const handleLogin = async () => {
         } else {
           router.push('/'); // Покупатели на главную
         }
+      } else {
+        // Ошибка входа - показываем тост и делаем инпуты красными
+        showToast({
+          message: 'Не удалось войти, проверьте правильность ввода логина и/или пароля',
+          type: 'error'
+        });
+        loginError.value = 'Неверный логин или пароль';
+        passwordError.value = 'Неверный логин или пароль';
       }
     }
   } catch (error) {
@@ -638,10 +630,6 @@ const handleLogin = async () => {
   } finally {
     isLoading.value = false;
   }
-};
-
-const closeAlert = () => {
-  showSuccessAlert.value = false;
 };
 
 const handleRegister = () => {
@@ -833,115 +821,7 @@ const handleAddToCart = (product: Product) => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--background-default);;
-}
-
-.alertBackdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.successAlert {
-  width: 90%;
-  max-width: 400px;
-  min-height: 84px;
-  background: var(--background-default);;
-  border: 1px solid var(--color-success-light);
-  border-radius: 16px;
-  display: flex;
-  align-items: flex-start;
-  padding: 16px;
-  gap: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  position: relative;
-  animation: slideIn 0.3s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.alertIcon {
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-  margin-top: 0;
-}
-
-.alertContent {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: left;
-}
-
-.alertTitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--color-primary);
-  line-height: 1.2;
-  text-align: left;
-}
-
-.alertText {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--color-secondary);
-  line-height: 1.4;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.alertText p {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--color-secondary);
-  line-height: 1.4;
-  text-align: left;
-}
-
-.alertClose {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: opacity 0.2s;
-  position: absolute;
-  top: 16px;
-  right: 16px;
-}
-
-.alertClose:hover {
-  opacity: 0.7;
-}
-
-.closeIcon {
-  width: 16px;
-  height: 16px;
+  background: var(--background-default);
 }
 
 @media (max-width: 480px) {
@@ -1160,16 +1040,6 @@ const handleAddToCart = (product: Product) => {
   }
 }
 
-/* Transition for backdrop */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
 /* Profile Wrapper */
 .profileWrapper {
   width: 100%;

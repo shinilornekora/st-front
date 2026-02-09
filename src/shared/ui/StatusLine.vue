@@ -1,16 +1,21 @@
 <template>
   <Transition name="slide">
-    <div v-if="show" :class="$style.statusLine">
+    <div v-if="show" :class="[$style.statusLine, type ? $style[type] : '']">
       {{ message }}
     </div>
   </Transition>
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import type { ToastType } from './toast.store';
+
+withDefaults(defineProps<{
   show: boolean;
   message: string;
-}>();
+  type?: ToastType;
+}>(), {
+  type: 'success'
+});
 </script>
 
 <style module>
@@ -28,6 +33,20 @@ defineProps<{
   font-size: 14px;
   font-weight: 500;
   z-index: 1000;
+}
+
+.statusLine.success {
+  color: #306D68;
+}
+
+.statusLine.error {
+  color: #DC2626;
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+.statusLine.info {
+  color: #2563EB;
+  border-color: rgba(37, 99, 235, 0.2);
 }
 
 .slide-enter-active {

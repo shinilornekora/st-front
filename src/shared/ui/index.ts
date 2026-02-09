@@ -46,6 +46,7 @@ export { default as FullscreenLoader } from './FullscreenLoader.vue';
 export { default as ErrorPage } from './ErrorPage.vue';
 export { default as Pagination } from './Pagination.vue';
 export { default as StatusLine } from './StatusLine.vue';
+export { default as SuccessAlert } from './SuccessAlert.vue';
 export { default as SettingsModal } from './SettingsModal.vue';
 export { default as RequisitesModal } from './RequisitesModal.vue';
 export { theme };

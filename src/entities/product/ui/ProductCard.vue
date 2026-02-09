@@ -29,13 +29,11 @@
 				</div>
 			</div>
 			<button
-				:class="[$style.cartBtn, isInCart ? $style.inCart : '']"
+				:class="$style.cartBtn"
 				@click.stop="handleAddToCart"
-				:disabled="isInCart"
-				:aria-label="isInCart ? 'В корзине' : 'Добавить в корзину'"
+				:aria-label="'Добавить в корзину'"
 			>
-				<span v-if="isInCart" :class="$style.cartText">В корзине</span>
-				<img v-else src="@assets/shopping_cart.svg" alt="" :class="$style.cartIcon" />
+				<img src="@assets/shopping_cart.svg" alt="" :class="$style.cartIcon" />
 			</button>
 		</div>
 	</article>
@@ -106,9 +104,7 @@
 	};
 	
 	const handleAddToCart = () => {
-		if (!isInCart.value) {
-			emit('add-to-cart');
-		}
+		emit('add-to-cart');
 	};
 	
 	const handleCardClick = () => {
