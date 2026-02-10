@@ -53,9 +53,10 @@ export const $cart = createStore<Cart>(initialCart)
 		return c;
 	})
 	.on(addItem, (state, item) => {
-		const exists = state.items.find(i => i.id === item.id);
+		// Check if item with same id AND selectedColor exists
+		const exists = state.items.find(i => i.id === item.id && i.selectedColor === item.selectedColor);
 		let items = exists
-			? state.items.map(i => (i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i))
+			? state.items.map(i => (i.id === item.id && i.selectedColor === item.selectedColor ? { ...i, quantity: i.quantity + item.quantity } : i))
 			: [...state.items, item];
 		const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
 		const newCart = { ...state, items, total };

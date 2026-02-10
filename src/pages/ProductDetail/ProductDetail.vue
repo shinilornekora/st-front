@@ -13,6 +13,7 @@
 		<main :class="$style.main">
 			<div :class="$style.productContainer">
 				<!-- Left Column: Image Gallery -->
+				<div :class="$style.leftColumn">
 				<div :class="$style.imageGallery">
 					<div :class="$style.mainImageContainer">
 						<button
@@ -53,9 +54,22 @@
 							<img :src="image" :alt="`${product.name} ${index + 1}`" />
 						</button>
 					</div>
-				</div>
-
-				<!-- Right Column: Product Info -->
+					</div>
+					
+					<!-- Color Selection -->
+					<div v-if="availableColors.length > 0" :class="$style.colorSelection">
+						<button
+							v-for="color in availableColors"
+							:key="color"
+							:class="[$style.colorBtn, selectedColor === color ? $style.colorBtnActive : '']"
+							@click="selectedColor = color"
+						>
+							{{ color }}
+						</button>
+					</div>
+					</div>
+	
+					<!-- Right Column: Product Info -->
 				<div :class="$style.productInfo">
 					<div :class="$style.topRow">
 						<span v-if="product.discount" :class="$style.badge">Распродажа</span>
@@ -72,6 +86,14 @@
 						<span :class="$style.currentPrice">{{ formatPrice(product.price) }}</span>
 						<span v-if="product.discount" :class="$style.oldPrice">{{ formatPrice(product.price / (1 - product.discount / 100)) }}</span>
 					</div>
+					
+					<button
+						:class="$style.discountLink"
+						@click="openDiscountModal"
+						aria-label="Запросить скидку"
+					>
+						Хочу скидку
+					</button>
 					
 					<div :class="$style.articleRow">
 						<span :class="$style.articleLabel">Артикул</span>
@@ -158,8 +180,16 @@
 
 		<Footer />
 		
+		<!-- Discount Request Modal -->
+		<DiscountRequestModal
+			v-model="showDiscountModal"
+			:product-id="product.id"
+			@submit="handleDiscountSubmit"
+		/>
+		
 		<!-- Status Line -->
 		<StatusLine :show="showStatusLine" message="Ссылка на товар была успешно скопирована" />
+		<StatusLine :show="showDiscountStatusLine" message="Предложение о цене успешно направлено" />
 	</div>
 </template>
 
@@ -168,7 +198,7 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { Header, Footer } from '@widgets/index';
 import { recommendations } from '@entities/product/ui';
-import { StatusLine, Skeleton } from '@shared/ui';
+import { StatusLine, Skeleton, DiscountRequestModal } from '@shared/ui';
 const { Recommendations } = recommendations;
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
@@ -192,6 +222,10 @@ const isAccordionOpen = ref(false);
 const isFavorite = ref(false);
 const showStatusLine = ref(false);
 const shareBtnClicked = ref(false);
+const showDiscountModal = ref(false);
+const showDiscountStatusLine = ref(false);
+const selectedColor = ref('');
+const availableColors = ref<string[]>([]);
 
 // Get initial product data from router state if available
 const routerState = history.state as ProductRouterState;
@@ -265,6 +299,7 @@ const addToCart = () => {
 		price: product.value.price,
 		discount: product.value.discount,
 		currency: product.value.currency,
+		selectedColor: selectedColor.value,
 	});
 };
 
@@ -312,9 +347,20 @@ onMounted(async () => {
 					getSimilarProducts({ productId, __mock: true })
 				]);
 				
+				// Extract available colors from tags
+				const colorNames = ['черный', 'коричневый', 'бежевый', 'белый', 'синий', 'красный', 'серый', 'зеленый', 'бордовый', 'хаки', 'розовый', 'оранжевый', 'желтый'];
+				availableColors.value = product.value.tags
+					.filter(tag => colorNames.includes(tag.name.toLowerCase()))
+					.map(tag => tag.name);
+				
+				// Set initial selected color
+				if (availableColors.value.length > 0 && availableColors.value[0]) {
+					selectedColor.value = availableColors.value[0];
+				}
+				
 				// Generate characteristics based on product data
 				const material = product.value.tags.find(tag => tag.name.includes('кожа') || tag.name.includes('замша') || tag.name.includes('нубук'))?.name || 'натуральная кожа';
-				const color = product.value.tags.find(tag => ['черный', 'коричневый', 'бежевый', 'белый', 'синий', 'красный', 'серый', 'зеленый', 'бордовый'].includes(tag.name))?.name || 'черный';
+				const color = selectedColor.value || product.value.tags.find(tag => colorNames.includes(tag.name))?.name || 'черный';
 				const brand = product.value.seller.name;
 				
 				// Import and generate characteristics
@@ -396,6 +442,19 @@ const copyCurrentUrl = async () => {
 		}, 2500);
 	}
 };
+
+const openDiscountModal = () => {
+	showDiscountModal.value = true;
+};
+
+const handleDiscountSubmit = (data: { productId?: number; discountAmount: number }) => {
+	console.log('Discount request submitted:', data);
+	// TODO: Send discount request to seller via API
+	showDiscountStatusLine.value = true;
+	setTimeout(() => {
+		showDiscountStatusLine.value = false;
+	}, 2500);
+};
 </script>
 
 <style module>
@@ -463,6 +522,13 @@ const copyCurrentUrl = async () => {
 	background: var(--background-default);
 	padding: 32px;
 	border-radius: 16px;
+}
+
+/* Left Column */
+.leftColumn {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
 }
 
 /* Image Gallery */
@@ -600,6 +666,40 @@ const copyCurrentUrl = async () => {
 	border-color: var(--color-accent);
 }
 
+/* Color Selection */
+.colorSelection {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.colorBtn {
+	height: 41px;
+	padding: 0 20px;
+	background: #fff;
+	border: 2px solid #e5e7eb;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--color-primary);
+	cursor: pointer;
+	transition: all 0.2s;
+	white-space: nowrap;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.colorBtn:hover {
+	border-color: var(--color-focus);
+}
+
+.colorBtnActive {
+	border-color: var(--color-focus);
+	background: #fff;
+	color: var(--color-primary);
+}
+
 /* Product Info */
 .productInfo {
 	display: flex;
@@ -692,6 +792,25 @@ const copyCurrentUrl = async () => {
 .articleLabel {
 	font-size: 14px;
 	color: var(--color-secondary);
+}
+
+.discountLink {
+	background: none;
+	border: none;
+	color: var(--color-accent);
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	padding: 0;
+	text-align: left;
+	text-decoration: underline;
+	transition: opacity 0.2s;
+	margin-bottom: 8px;
+	display: block;
+}
+
+.discountLink:hover {
+	opacity: 0.7;
 }
 
 .articleValue {

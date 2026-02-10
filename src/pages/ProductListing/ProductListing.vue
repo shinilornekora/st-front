@@ -279,10 +279,9 @@ const handlePageChange = (page: number) => {
 };
 
 const goToProduct = (product: Product) => {
-	// Pass product data through history state for instant display
+	// Just navigate to the product page
+	// The ProductDetail page will load the data itself
 	router.push(`/product/${product.id}`);
-	// Use history.replaceState to add product data to the current state
-	history.replaceState({ product: { ...product } }, '');
 };
 
 const addToCart = (product: Product) => {

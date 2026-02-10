@@ -177,10 +177,14 @@ export const generateProduct = (id: number): Product => {
       { id: ['all', 'new', 'women', 'men', 'sale', 'accessories'][Math.floor(random(id * 8) * 6)]!, name: 'All' }
     ],
     tags: [
-      { id: `tag-${material!}`, name: material! },
-      { id: `tag-${color!}`, name: color! },
-      { id: `tag-${brand!}`, name: brand! },
-      { id: `tag-${gender}`, name: genderText }
+    	{ id: `tag-${material!}`, name: material! },
+    	{ id: `tag-${color!}`, name: color! },
+    	// Add 2-4 additional colors for variety
+    	{ id: `tag-${colors[Math.floor(random(id * 14) * colors.length)]!}`, name: colors[Math.floor(random(id * 14) * colors.length)]! },
+    	{ id: `tag-${colors[Math.floor(random(id * 15) * colors.length)]!}`, name: colors[Math.floor(random(id * 15) * colors.length)]! },
+    	...(random(id * 16) > 0.5 ? [{ id: `tag-${colors[Math.floor(random(id * 17) * colors.length)]!}`, name: colors[Math.floor(random(id * 17) * colors.length)]! }] : []),
+    	{ id: `tag-${brand!}`, name: brand! },
+    	{ id: `tag-${gender}`, name: genderText }
     ],
     images: generateDeterministicImages(),
     sizes: availableSizes,
