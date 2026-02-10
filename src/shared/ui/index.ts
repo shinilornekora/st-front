@@ -50,4 +50,5 @@ export { default as SuccessAlert } from './SuccessAlert.vue';
 export { default as SettingsModal } from './SettingsModal.vue';
 export { default as RequisitesModal } from './RequisitesModal.vue';
 export { default as DiscountRequestModal } from './DiscountRequestModal.vue';
+export { default as LanguageSwitcher } from './LanguageSwitcher.vue';
 export { theme };

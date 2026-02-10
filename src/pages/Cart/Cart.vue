@@ -3,11 +3,11 @@
     <Header :hide-search="true"/>
     <main :class="$style.main">
       <div v-if="cartItemsCount === 0" :class="$style.emptyCart">
-        <img src="@assets/plain_cart_icon.svg" alt="Empty Cart" :class="$style.cartIcon" />
-        <Button type="accent" @click="goToShop" :class="$style.customButton">Перейти к покупкам</Button>
+        <img src="@assets/plain_cart_icon.svg" :alt="t('cart.empty')" :class="$style.cartIcon" />
+        <Button type="accent" @click="goToShop" :class="$style.customButton">{{ t('cart.goToShop') }}</Button>
       </div>
 
-      <div v-else :class="$style.cartContainer">        
+      <div v-else :class="$style.cartContainer">
         <div :class="$style.cartContent">
           <div :class="$style.cartItems">
             <CartItem
@@ -30,25 +30,25 @@
           
           <div :class="$style.cartSummary">
             <div :class="$style.summaryItem">
-              <span>Товары ({{ cartItemsCount }})</span>
+              <span>{{ t('cart.items') }} ({{ cartItemsCount }})</span>
               <span>{{ formatPrice(cartTotal) }}</span>
             </div>
             <div :class="$style.summaryItem">
-              <span>Доставка</span>
-              <span>Бесплатно</span>
+              <span>{{ t('cart.delivery') }}</span>
+              <span>{{ t('cart.free') }}</span>
             </div>
             <div :class="$style.summaryTotal">
-              <span>Итого</span>
+              <span>{{ t('cart.total') }}</span>
               <span>{{ formatPrice(cartTotal) }}</span>
             </div>
-            <Button type="accent" @click="checkout" :class="$style.checkoutBtn">Оформить заказ</Button>
+            <Button type="accent" @click="checkout" :class="$style.checkoutBtn">{{ t('cart.checkout') }}</Button>
           </div>
         </div>
       </div>
 
       <!-- Similar Products Section -->
       <section :class="$style.similarSection">
-        <h5 :class="$style.sectionTitle">Вам может понравиться:</h5>
+        <h5 :class="$style.sectionTitle">{{ t('cart.youMayLike') }}</h5>
         
         <div :class="$style.similarProducts">
           <ProductCard
@@ -70,7 +70,7 @@
     <Footer />
     
     <!-- Status Line -->
-    <StatusLine :show="showStatusLine" message="Ссылка на товар была успешно скопирована" />
+    <StatusLine :show="showStatusLine" :message="t('cart.linkCopied')" />
   </div>
 </template>
 
@@ -78,6 +78,7 @@
 import { computed, onMounted, ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
+import { useI18n } from 'vue-i18n';
 import { $cart, removeItem, updateQty } from '@entities/cart/cart.store';
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
@@ -88,6 +89,8 @@ import ProductCard from '@entities/product/ui/ProductCard.vue';
 import CartItem from '@entities/cart/ui/CartItem.vue';
 import { getProducts } from '@shared/api';
 import { isUserAuthenticated } from '@shared/utils/auth';
+
+const { t } = useI18n();
 
 const router = useRouter();
 const cart = useStore($cart);

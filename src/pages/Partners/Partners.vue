@@ -2,15 +2,18 @@
   <div :class="$style.page">
     <Header />
     <main :class="$style.main">
-      <h1>Партнерам (B2B)</h1>
-      <p>Информация для партнеров и B2B-клиентов будет размещена здесь.</p>
+      <h1>{{ t('pages.partnersTitle') }}</h1>
+      <p>{{ t('pages.partnersText') }}</p>
     </main>
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '@widgets';
+
+const { t } = useI18n();
 </script>
 
 <style module>

@@ -2,15 +2,18 @@
   <div :class="$style.page">
     <Header />
     <main :class="$style.main">
-      <h1>Публичная оферта</h1>
-      <p>Текст публичной оферты будет размещен здесь.</p>
+      <h1>{{ t('pages.offerTitle') }}</h1>
+      <p>{{ t('pages.offerText') }}</p>
     </main>
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '@widgets';
+
+const { t } = useI18n();
 </script>
 
 <style module>

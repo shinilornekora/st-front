@@ -1,6 +1,7 @@
 import { mockClient } from './client';
 import type { Product } from '@entities/product/product.types';
 import { generateProducts, generateProduct, getSimilarProducts } from '@shared/lib/mockData';
+import { i18n } from '@shared/i18n';
 
 export const mockGetProducts = async (count: number = 250) => {
   return mockClient.get<Product[]>(
@@ -14,7 +15,7 @@ export const mockGetProductById = async (id: number) => {
     () => {
       const product = generateProduct(id);
       if (!product) {
-        throw new Error('Товар не найден');
+        throw new Error(i18n.global.t('errors.productNotFound'));
       }
       return product;
     },

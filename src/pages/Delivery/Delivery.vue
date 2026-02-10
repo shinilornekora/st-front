@@ -2,15 +2,18 @@
   <div :class="$style.page">
     <Header />
     <main :class="$style.main">
-      <h1>Доставка и оплата</h1>
-      <p>Информация о доставке и способах оплаты будет размещена здесь.</p>
+      <h1>{{ t('pages.deliveryTitle') }}</h1>
+      <p>{{ t('pages.deliveryText') }}</p>
     </main>
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '@widgets';
+
+const { t } = useI18n();
 </script>
 
 <style module>

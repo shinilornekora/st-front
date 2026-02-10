@@ -6,7 +6,7 @@
 			:multiple="multiple"
 			:disabled="disabled"
 			@change="onChange"
-			aria-label="Загрузить файл"
+			:aria-label="$t('ui.uploadFile')"
 			:class="$style.input"
 		/>
 		<span>{{ label }}</span>

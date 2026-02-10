@@ -2,15 +2,18 @@
   <div :class="$style.page">
     <Header />
     <main :class="$style.main">
-      <h1>Вопросы и ответы (FAQ)</h1>
-      <p>Часто задаваемые вопросы и ответы на них будут размещены здесь.</p>
+      <h1>{{ t('pages.faqTitle') }}</h1>
+      <p>{{ t('pages.faqText') }}</p>
     </main>
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '@widgets';
+
+const { t } = useI18n();
 </script>
 
 <style module>

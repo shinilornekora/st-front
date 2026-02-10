@@ -9,7 +9,7 @@
 			<button
 				:class="$style.close"
 				@click="remove(item.id)"
-				aria-label="Скрыть"
+				:aria-label="t('ui.hide')"
 			>
 				×
 			</button>
@@ -18,7 +18,11 @@
 </template>
 <script setup lang="ts">
 	import { ref } from 'vue';
+	import { useI18n } from 'vue-i18n';
 	import theme from './theme.module.css';
+	
+	const { t } = useI18n();
+	
 	const props = defineProps<{
 		initial?: { id: number; text: string; type?: string }[];
 	}>();

@@ -7,25 +7,25 @@
 			</div>
 			<div :class="$style.textColumns">
 				<div :class="$style.footerColumn">
-					<h3 :class="$style.footerTitle">Каталог</h3>
-					<router-link to="/catalog?category=new" :class="$style.footerLink">Новинки</router-link>
-					<router-link to="/catalog?category=women" :class="$style.footerLink">Женщинам</router-link>
-					<router-link to="/catalog?category=men" :class="$style.footerLink">Мужчинам</router-link>
-					<router-link to="/catalog?category=sale" :class="$style.footerLink">Распродажа (Sale)</router-link>
+					<h3 :class="$style.footerTitle">{{ t('navigation.catalog') }}</h3>
+					<router-link to="/catalog?category=new" :class="$style.footerLink">{{ t('navigation.newArrivals') }}</router-link>
+					<router-link to="/catalog?category=women" :class="$style.footerLink">{{ t('navigation.women') }}</router-link>
+					<router-link to="/catalog?category=men" :class="$style.footerLink">{{ t('navigation.men') }}</router-link>
+					<router-link to="/catalog?category=sale" :class="$style.footerLink">{{ t('navigation.sale') }}</router-link>
 				</div>
 				<div :class="$style.footerColumn">
-					<h3 :class="$style.footerTitle">Покупателям</h3>
-					<router-link to="/delivery" :class="$style.footerLink">Доставка и оплата</router-link>
-					<router-link to="/returns" :class="$style.footerLink">Обмен и возврат</router-link>
-					<router-link to="/faq" :class="$style.footerLink">Вопросы и ответы (FAQ)</router-link>
+					<h3 :class="$style.footerTitle">{{ t('navigation.forCustomers') }}</h3>
+					<router-link to="/delivery" :class="$style.footerLink">{{ t('navigation.deliveryAndPayment') }}</router-link>
+					<router-link to="/returns" :class="$style.footerLink">{{ t('navigation.exchangeAndReturn') }}</router-link>
+					<router-link to="/faq" :class="$style.footerLink">{{ t('navigation.faqFull') }}</router-link>
 				</div>
 				<div :class="$style.footerColumn">
-					<h3 :class="$style.footerTitle">О компании</h3>
-					<router-link to="/about" :class="$style.footerLink">О бренде Stivalli</router-link>
-					<router-link to="/contacts" :class="$style.footerLink">Контакты</router-link>
-					<router-link to="/partners" :class="$style.footerLink">Партнерам (B2B)</router-link>
-					<router-link to="/offer" :class="$style.footerLink">Публичная оферта</router-link>
-					<router-link to="/privacy" :class="$style.footerLink">Политика конфиденциальности</router-link>
+					<h3 :class="$style.footerTitle">{{ t('navigation.aboutCompany') }}</h3>
+					<router-link to="/about" :class="$style.footerLink">{{ t('navigation.aboutBrand') }}</router-link>
+					<router-link to="/contacts" :class="$style.footerLink">{{ t('navigation.contacts') }}</router-link>
+					<router-link to="/partners" :class="$style.footerLink">{{ t('navigation.partnersB2B') }}</router-link>
+					<router-link to="/offer" :class="$style.footerLink">{{ t('navigation.publicOffer') }}</router-link>
+					<router-link to="/privacy" :class="$style.footerLink">{{ t('navigation.privacyPolicy') }}</router-link>
 				</div>
 			</div>
 		</div>
@@ -69,6 +69,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import userCircleIcon from '@assets/user_circle.svg';
 import profileFilledIcon from '@assets/profile_filled.svg';
 import hamburgerIcon from '@assets/hamburger.svg';
@@ -78,6 +79,7 @@ import cartFilledIcon from '@assets/cart_filled.svg';
 import notificationIcon from '@assets/notification_icon.svg';
 import notificationFilledIcon from '@assets/notification_filled.svg';
 
+const { t } = useI18n();
 const route = useRoute();
 const isMobile = ref(window.innerWidth <= 768);
 

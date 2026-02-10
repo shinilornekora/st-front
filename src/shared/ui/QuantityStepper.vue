@@ -4,7 +4,7 @@
 			:class="$style.btn"
 			@click="dec"
 			:disabled="disabled || value <= min"
-			aria-label="Уменьшить"
+			:aria-label="t('cart.decreaseQuantity')"
 		>
 			−
 		</button>
@@ -16,13 +16,13 @@
 			:max="max"
 			:class="$style.input"
 			:disabled="disabled"
-			aria-label="Количество"
+			:aria-label="t('cart.quantity')"
 		/>
 		<button
 			:class="$style.btn"
 			@click="inc"
 			:disabled="disabled || value >= max"
-			aria-label="Увеличить"
+			:aria-label="t('cart.increaseQuantity')"
 		>
 			+
 		</button>
@@ -31,7 +31,11 @@
 
 <script setup lang="ts">
 	import { computed } from 'vue';
+	import { useI18n } from 'vue-i18n';
 	import theme from './theme.module.css';
+	
+	const { t } = useI18n();
+	
 	const props = defineProps<{
 		modelValue: number;
 		min?: number;

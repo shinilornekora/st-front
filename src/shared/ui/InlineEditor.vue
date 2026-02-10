@@ -4,7 +4,7 @@
 			v-if="showEdit"
 			:class="[$style.btn, $style.edit, $style[type]]"
 			@click="$emit('edit')"
-			aria-label="Редактировать"
+			:aria-label="t('common.edit')"
 		>
 			✏️
 		</button>
@@ -12,14 +12,17 @@
 			v-if="showDelete"
 			:class="[$style.btn, $style.delete, $style[type]]"
 			@click="$emit('delete')"
-			aria-label="Удалить"
+			:aria-label="t('common.delete')"
 		>
 			🗑️
 		</button>
 	</span>
 </template>
 <script setup lang="ts">
+	import { useI18n } from 'vue-i18n';
 	import theme from './theme.module.css';
+	
+	const { t } = useI18n();
 	defineProps<{
 		showEdit?: boolean;
 		showDelete?: boolean;

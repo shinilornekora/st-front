@@ -4,17 +4,21 @@
 			<div :class="$style.text"><slot /></div>
 			<footer :class="$style.actions">
 				<button :class="$style.btn" @click="$emit('confirm')">
-					Да
+					{{ t('common.yes') }}
 				</button>
 				<button :class="$style.btn" @click="$emit('cancel')">
-					Нет
+					{{ t('common.no') }}
 				</button>
 			</footer>
 		</div>
 	</div>
 </template>
 <script setup lang="ts">
+	import { useI18n } from 'vue-i18n';
 	import theme from './theme.module.css';
+	
+	const { t } = useI18n();
+	
 	defineProps<{
 		type?: 'main' | 'accent' | 'success' | 'warning' | 'error';
 	}>();

@@ -3,6 +3,8 @@
  * Используется только когда __mock=1
  */
 
+import { i18n } from '@shared/i18n';
+
 export interface MockResponse<T = any> {
   success: boolean;
   data?: T;
@@ -54,7 +56,7 @@ class MockApiClient {
       if (config.shouldFail) {
         return {
           success: false,
-          error: config.errorMessage || 'Произошла ошибка при выполнении запроса'
+          error: config.errorMessage || i18n.global.t('errors.requestError')
         };
       }
 
@@ -67,7 +69,7 @@ class MockApiClient {
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Неизвестная ошибка'
+        error: error instanceof Error ? error.message : i18n.global.t('errors.unknownError')
       };
     }
   }

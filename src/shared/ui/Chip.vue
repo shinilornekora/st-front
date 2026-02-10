@@ -8,14 +8,17 @@
 			v-if="removable"
 			@click="$emit('remove')"
 			:class="$style.close"
-			aria-label="Удалить"
+			:aria-label="t('common.delete')"
 		>
 			×
 		</button>
 	</span>
 </template>
 <script setup lang="ts">
+	import { useI18n } from 'vue-i18n';
 	import theme from './theme.module.css';
+	
+	const { t } = useI18n();
 	defineProps<{ removable?: boolean }>();
 </script>
 <style module>

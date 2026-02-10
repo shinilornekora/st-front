@@ -2,7 +2,7 @@
 	<article
 		:class="[$style.item, type ? $style[type] : '']"
 		tabindex="0"
-		aria-label="Позиция в корзине"
+		:aria-label="t('cart.cartItem')"
 	>
 		<img
 			v-if="image"
@@ -17,8 +17,8 @@
 		<div :class="$style.info">
 			<div :class="$style.topBlock">
 				<h4 :class="$style.title" @click="goToProduct" role="button" tabindex="0" @keydown.enter="goToProduct">{{ title || 'No title' }}</h4>
-				<div v-if="article" :class="$style.article">Артикул: {{ article }}</div>
-				<div v-if="selectedColor" :class="$style.colorInfo">Цвет: {{ selectedColor }}</div>
+				<div v-if="article" :class="$style.article">{{ t('cart.article') }}: {{ article }}</div>
+				<div v-if="selectedColor" :class="$style.colorInfo">{{ t('cart.color') }}: {{ selectedColor }}</div>
 			</div>
 			<div :class="$style.bottomBlock">
 				<slot name="variations" />
@@ -27,20 +27,20 @@
 					<b>{{ formatPrice((price || 0) * (qty || 0)) }}</b>
 				</div>
 				<div :class="$style.actions">
-					<button :class="$style.actionBtn" @click="toggleHeart" aria-label="Добавить в избранное">
+					<button :class="$style.actionBtn" @click="toggleHeart" :aria-label="t('cart.addToFavorites')">
 						<img
 							:src="isFavorite ? filledHeartIcon : heartIcon"
 							alt="Heart icon"
 							:class="$style.actionIcon"
 						/>
 					</button>
-					<button :class="$style.actionBtn" @click="$emit('share')" aria-label="Поделиться">
+					<button :class="$style.actionBtn" @click="$emit('share')" :aria-label="t('cart.share')">
 						<img src="@assets/share.svg" alt="Share" :class="$style.actionIcon" />
 					</button>
 					<button
 						:class="$style.remove"
 						@click="$emit('remove')"
-						aria-label="Удалить из корзины"
+						:aria-label="t('cart.removeFromCart')"
 					>
 						<img src="@assets/trash.svg" alt="Remove" :class="$style.actionIcon" />
 					</button>
@@ -53,7 +53,7 @@
 					:class="$style.quantityBtn"
 					@click="decreaseQuantity"
 					:disabled="qty <= 1"
-					aria-label="Уменьшить количество"
+					:aria-label="t('cart.decreaseQuantity')"
 				>
 					<img src="@assets/minus_circle.svg" alt="Decrease quantity" :class="$style.quantityIcon" />
 				</button>
@@ -61,7 +61,7 @@
 				<button
 					:class="$style.quantityBtn"
 					@click="increaseQuantity"
-					aria-label="Увеличить количество"
+					:aria-label="t('cart.increaseQuantity')"
 				>
 					<img src="@assets/plus_circle.svg" alt="Increase quantity" :class="$style.quantityIcon" />
 				</button>
@@ -71,11 +71,14 @@
 </template>
 <script setup lang="ts">
 	import { ref, onMounted, watch } from 'vue';
+	import { useI18n } from 'vue-i18n';
 	import theme from '@shared/ui/theme.module.css';
 	import heartIcon from '@assets/favourite.svg';
 	import filledHeartIcon from '@assets/filled_heart.svg';
 	import { isUserAuthenticated } from '@shared/utils/auth';
 	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
+	
+	const { t } = useI18n();
 	
 	const props = defineProps<{
 		id: number;

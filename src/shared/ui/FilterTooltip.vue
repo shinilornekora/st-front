@@ -2,7 +2,7 @@
 	<Tooltip @close="$emit('close')" :width="tooltipWidth">
 		<!-- Size Filter Tooltip -->
 		<div v-if="filterType === 'size'">
-			<h3 :class="$style.tooltipTitle">Выберите размер</h3>
+			<h3 :class="$style.tooltipTitle">{{ t('filters.selectSize') }}</h3>
 			<div :class="$style.sizeGrid">
 				<button
 					v-for="size in sizes"
@@ -18,7 +18,7 @@
 
 		<!-- Quantity Filter Tooltip -->
 		<div v-else-if="filterType === 'quantity'">
-			<h3 :class="$style.tooltipTitle">Количество</h3>
+			<h3 :class="$style.tooltipTitle">{{ t('filters.quantity') }}</h3>
 			<div :class="$style.quantityOptions">
 				<button
 					v-for="option in quantityOptions"
@@ -34,25 +34,25 @@
 
 		<!-- Price Filter Tooltip -->
 		<div v-else-if="filterType === 'price'">
-			<h3 :class="$style.tooltipTitle">Диапазон цен</h3>
+			<h3 :class="$style.tooltipTitle">{{ t('filters.priceRange') }}</h3>
 			<div :class="$style.priceInputs">
 				<div :class="$style.priceInput">
-					<label>От</label>
+					<label>{{ t('filters.from') }}</label>
 					<input v-model="priceRange.min" type="number" placeholder="0" @input="updatePriceFilter" />
 				</div>
 				<div :class="$style.priceInput">
-					<label>До</label>
+					<label>{{ t('filters.to') }}</label>
 					<input v-model="priceRange.max" type="number" placeholder="50000" @input="updatePriceFilter" />
 				</div>
 			</div>
 			<div :class="$style.priceActions">
-				<button :class="$style.applyBtn" type="button" @click="applyPriceFilter">Применить</button>
+				<button :class="$style.applyBtn" type="button" @click="applyPriceFilter">{{ t('common.apply') }}</button>
 			</div>
 		</div>
 
 		<!-- Sex Filter Tooltip -->
 		<div v-else-if="filterType === 'sex'">
-			<h3 :class="$style.tooltipTitle">Пол</h3>
+			<h3 :class="$style.tooltipTitle">{{ t('filters.sex') }}</h3>
 			<div :class="$style.sexOptions">
 				<button
 					v-for="option in sexOptions"
@@ -68,7 +68,7 @@
 
 		<!-- Color Filter Tooltip -->
 		<div v-else-if="filterType === 'color'">
-			<h3 :class="$style.tooltipTitle">Выберите цвет</h3>
+			<h3 :class="$style.tooltipTitle">{{ t('filters.selectColor') }}</h3>
 			<div :class="$style.colorOptions">
 				<button
 					v-for="color in colors"
@@ -86,7 +86,10 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import Tooltip from './Tooltip.vue';
+
+const { t } = useI18n();
 
 interface Props {
 	filterType: 'size' | 'quantity' | 'price' | 'sex' | 'color';
@@ -128,27 +131,27 @@ const tooltipWidth = computed(() => {
 // Filter options
 const sizes = ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'];
 
-const quantityOptions = [
-	{ value: 'in_stock', label: 'В наличии' },
-	{ value: 'pre_order', label: 'Под заказ' },
-];
+const quantityOptions = computed(() => [
+	{ value: 'in_stock', label: t('filters.inStock') },
+	{ value: 'pre_order', label: t('filters.preOrder') },
+]);
 
-const sexOptions = [
-	{ value: 'male', label: 'Мужской' },
-	{ value: 'female', label: 'Женский' },
-	{ value: 'unisex', label: 'Унисекс' },
-];
+const sexOptions = computed(() => [
+	{ value: 'male', label: t('filters.male') },
+	{ value: 'female', label: t('filters.female') },
+	{ value: 'unisex', label: t('filters.unisex') },
+]);
 
-const colors = [
-	{ value: 'black', label: 'Черный', hex: '#000000' },
-	{ value: 'white', label: 'Белый', hex: '#FFFFFF' },
-	{ value: 'brown', label: 'Коричневый', hex: '#8B4513' },
-	{ value: 'beige', label: 'Бежевый', hex: '#F5F5DC' },
-	{ value: 'gray', label: 'Серый', hex: '#808080' },
-	{ value: 'blue', label: 'Синий', hex: '#0000FF' },
-	{ value: 'red', label: 'Красный', hex: '#FF0000' },
-	{ value: 'green', label: 'Зеленый', hex: '#008000' },
-];
+const colors = computed(() => [
+	{ value: 'black', label: t('filters.colors.black'), hex: '#000000' },
+	{ value: 'white', label: t('filters.colors.white'), hex: '#FFFFFF' },
+	{ value: 'brown', label: t('filters.colors.brown'), hex: '#8B4513' },
+	{ value: 'beige', label: t('filters.colors.beige'), hex: '#F5F5DC' },
+	{ value: 'gray', label: t('filters.colors.gray'), hex: '#808080' },
+	{ value: 'blue', label: t('filters.colors.blue'), hex: '#0000FF' },
+	{ value: 'red', label: t('filters.colors.red'), hex: '#FF0000' },
+	{ value: 'green', label: t('filters.colors.green'), hex: '#008000' },
+]);
 
 const toggleValue = (value: string) => {
 	const index = selectedValues.value.indexOf(value);

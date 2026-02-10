@@ -17,10 +17,10 @@
     />
     
     <!-- Success Alert Popup with Backdrop -->
-    <SuccessAlert v-model="showSuccessAlert" title="В процессе рассмотрения">
-      <p>Ваша заявка в данный момент ожидает резолюции от администратора, пожалуйста, подождите.</p>
-      <p>После рассмотрения вашей заявки, на указанную электронную почту придет резолюция, после чего использовав ваши данные для входа, вы сможете войти в ваш аккаунт.</p>
-      <p>Если рассмотрение заявки занимает более трех дней, вы можете написать нам на почту, после чего мы проверим актуальный статус вашей заявки, и сообщим вам примерные сроки.</p>
+    <SuccessAlert v-model="showSuccessAlert" :title="t('profile.applicationPending')">
+      <p>{{ t('profile.applicationPendingText') }}</p>
+      <p>{{ t('profile.applicationPendingText2') }}</p>
+      <p>{{ t('profile.applicationPendingText3') }}</p>
     </SuccessAlert>
     
     <main :class="$style.main">
@@ -34,22 +34,22 @@
                 <div :class="$style.avatar">
                   <img :src="userCircleIcon" alt="User" :class="$style.avatarIcon" />
                 </div>
-                <span>Профиль</span>
+                <span>{{ t('profile.profile') }}</span>
                 <span :class="$style.userNameArrow">›</span>
               </a>
               <!-- Hide "Способы оплаты" for both ADMIN and SELLER -->
               <!-- Hide "Реквизиты" for ADMIN only -->
               <a v-if="user.role === 'SELLER'" :class="$style.actionItem" @click="handleRequisites">
                 <img :src="docsIcon" alt="" :class="$style.actionIcon" />
-                <span>Реквизиты</span>
+                <span>{{ t('profile.requisites') }}</span>
               </a>
               <a :class="$style.actionItem" @click="handleSupport">
                 <img :src="chatIcon" alt="" :class="$style.actionIcon" />
-                <span>Написать в поддержку</span>
+                <span>{{ t('profile.support') }}</span>
               </a>
               <a :class="$style.actionItem" @click="handleSettings">
                 <img :src="settingsIcon" alt="" :class="$style.actionIcon" />
-                <span>Настройки</span>
+                <span>{{ t('profile.settings') }}</span>
               </a>
             </nav>
           </div>
@@ -65,24 +65,24 @@
                   <div :class="$style.avatar">
                     <img :src="userCircleIcon" alt="User" :class="$style.avatarIcon" />
                   </div>
-                  <span>Профиль</span>
+                  <span>{{ t('profile.profile') }}</span>
                   <span :class="$style.userNameArrow">›</span>
                 </a>
                 <a :class="$style.actionItem" @click="handlePaymentMethods">
                   <img :src="cardIcon" alt="" :class="$style.actionIcon" />
-                  <span>Способы оплаты</span>
+                  <span>{{ t('profile.paymentMethods') }}</span>
                 </a>
                 <a :class="$style.actionItem" @click="handleRequisites">
                   <img :src="docsIcon" alt="" :class="$style.actionIcon" />
-                  <span>Реквизиты</span>
+                  <span>{{ t('profile.requisites') }}</span>
                 </a>
                 <a :class="$style.actionItem" @click="handleSupport">
                   <img :src="chatIcon" alt="" :class="$style.actionIcon" />
-                  <span>Написать в поддержку</span>
+                  <span>{{ t('profile.support') }}</span>
                 </a>
                 <a :class="$style.actionItem" @click="handleSettings">
                   <img :src="settingsIcon" alt="" :class="$style.actionIcon" />
-                  <span>Настройки</span>
+                  <span>{{ t('profile.settings') }}</span>
                 </a>
               </nav>
             </div>
@@ -92,7 +92,7 @@
               <div :class="$style.linksBlock">
                 <router-link to="/favorites" :class="$style.linkCard">
                   <div :class="$style.linkHeader">
-                    <h3 :class="$style.linkTitle">Избранное</h3>
+                    <h3 :class="$style.linkTitle">{{ t('profile.favorites') }}</h3>
                     <img :src="favouritesIcon" alt="" :class="$style.linkIcon" />
                   </div>
                   <p :class="$style.linkDescription">{{ favoritesCount }} {{ getFavoritesText(favoritesCount) }}</p>
@@ -100,10 +100,10 @@
                 
                 <router-link to="/favorites?tab=purchases" :class="$style.linkCard">
                   <div :class="$style.linkHeader">
-                    <h3 :class="$style.linkTitle">Покупки</h3>
+                    <h3 :class="$style.linkTitle">{{ t('profile.purchases') }}</h3>
                     <img :src="boxIcon" alt="" :class="$style.linkIcon" />
                   </div>
-                  <p :class="$style.linkDescription">Смотреть</p>
+                  <p :class="$style.linkDescription">{{ t('profile.view') }}</p>
                 </router-link>
               </div>
               
@@ -126,7 +126,7 @@
           <!-- Recently Viewed Products (full width) -->
           <div v-if="recentlyViewedProducts.length > 0" :class="$style.recentlyViewedSection">
             <Recommendations
-              title="Недавно смотрели:"
+              :title="t('profile.recentlyViewed')"
               :products="recentlyViewedProducts"
               @product-click="handleProductClick"
               @add-to-cart="handleAddToCart"
@@ -141,10 +141,10 @@
           <!-- Форма для входа покупателя (2 поля) -->
           <template v-if="!isSellerMode && !isRegisterMode">
             <div :class="$style.inputGroup">
-              <div :class="$style.inputLabel">Телефон или почта</div>
+              <div :class="$style.inputLabel">{{ t('auth.phoneOrEmail') }}</div>
               <Input
                 v-model="login"
-                placeholder="Телефон или почта"
+                :placeholder="t('auth.phoneOrEmail')"
                 :variant="loginError ? 'error' : 'default'"
                 :error="Boolean(loginError)"
                 :class="$style.input"
@@ -152,11 +152,11 @@
             </div>
             
             <div :class="$style.inputGroup">
-              <div :class="$style.inputLabel">Пароль</div>
+              <div :class="$style.inputLabel">{{ t('auth.password') }}</div>
               <Input
                 v-model="password"
                 type="password"
-                placeholder="Пароль"
+                :placeholder="t('auth.password')"
                 :variant="passwordError ? 'error' : 'default'"
                 :error="Boolean(passwordError)"
                 showPasswordToggle
@@ -168,10 +168,10 @@
           <!-- Форма для регистрации покупателя (4 поля) -->
           <template v-else-if="isRegisterMode">
             <div :class="$style.inputGroup">
-              <div :class="$style.inputLabel">Имя</div>
+              <div :class="$style.inputLabel">{{ t('auth.name') }}</div>
               <Input
                 v-model="customerName"
-                placeholder="Имя"
+                :placeholder="t('auth.name')"
                 :variant="customerNameError ? 'error' : 'default'"
                 :error="Boolean(customerNameError)"
                 :class="$style.input"
@@ -179,10 +179,10 @@
             </div>
 
             <div :class="$style.inputGroup">
-              <div :class="$style.inputLabel">Номер телефона</div>
+              <div :class="$style.inputLabel">{{ t('auth.phone') }}</div>
               <Input
                 v-model="customerPhone"
-                placeholder="Номер телефона"
+                :placeholder="t('auth.phone')"
                 :variant="customerPhoneError ? 'error' : 'default'"
                 :error="Boolean(customerPhoneError)"
                 :class="$style.input"
@@ -190,11 +190,11 @@
             </div>
 
             <div :class="$style.inputGroup">
-              <div :class="$style.inputLabel">Email</div>
+              <div :class="$style.inputLabel">{{ t('auth.email') }}</div>
               <Input
                 v-model="customerEmail"
                 type="email"
-                placeholder="Email"
+                :placeholder="t('auth.email')"
                 :variant="customerEmailError ? 'error' : 'default'"
                 :error="Boolean(customerEmailError)"
                 :class="$style.input"
@@ -202,11 +202,11 @@
             </div>
             
             <div :class="$style.inputGroup">
-              <div :class="$style.inputLabel">Пароль</div>
+              <div :class="$style.inputLabel">{{ t('auth.password') }}</div>
               <Input
                 v-model="customerPassword"
                 type="password"
-                placeholder="Пароль"
+                :placeholder="t('auth.password')"
                 :variant="customerPasswordError ? 'error' : 'default'"
                 :error="Boolean(customerPasswordError)"
                 showPasswordToggle
@@ -218,10 +218,10 @@
           <!-- Форма для продавца (4 поля) -->
           <template v-else>
             <div :class="$style.inputGroup">
-              <div :class="$style.inputLabel">Имя</div>
+              <div :class="$style.inputLabel">{{ t('auth.name') }}</div>
               <Input
                 v-model="sellerName"
-                placeholder="Имя"
+                :placeholder="t('auth.name')"
                 :variant="sellerNameError ? 'error' : 'default'"
                 :error="Boolean(sellerNameError)"
                 :class="$style.input"
@@ -229,10 +229,10 @@
             </div>
 
             <div :class="$style.inputGroup">
-              <div :class="$style.inputLabel">Номер телефона</div>
+              <div :class="$style.inputLabel">{{ t('auth.phone') }}</div>
               <Input
                 v-model="sellerPhone"
-                placeholder="Номер телефона"
+                :placeholder="t('auth.phone')"
                 :variant="sellerPhoneError ? 'error' : 'default'"
                 :error="Boolean(sellerPhoneError)"
                 :class="$style.input"
@@ -240,11 +240,11 @@
             </div>
 
             <div :class="$style.inputGroup">
-              <div :class="$style.inputLabel">Email</div>
+              <div :class="$style.inputLabel">{{ t('auth.email') }}</div>
               <Input
                 v-model="sellerEmail"
                 type="email"
-                placeholder="Email"
+                :placeholder="t('auth.email')"
                 :variant="sellerEmailError ? 'error' : 'default'"
                 :error="Boolean(sellerEmailError)"
                 :class="$style.input"
@@ -252,11 +252,11 @@
             </div>
             
             <div :class="$style.inputGroup">
-              <div :class="$style.inputLabel">Пароль</div>
+              <div :class="$style.inputLabel">{{ t('auth.password') }}</div>
               <Input
                 v-model="sellerPassword"
                 type="password"
-                placeholder="Пароль"
+                :placeholder="t('auth.password')"
                 :variant="sellerPasswordError ? 'error' : 'default'"
                 :error="Boolean(sellerPasswordError)"
                 showPasswordToggle
@@ -273,8 +273,8 @@
             :class="$style.loginButton"
             :disabled="isLoading"
           >
-            <span v-if="isLoading">Загрузка...</span>
-            <span v-else>{{ isRegisterMode ? 'Зарегистрироваться' : isSellerMode ? 'Зарегистрироваться как продавец' : 'Войти' }}</span>
+            <span v-if="isLoading">{{ t('auth.loading') }}</span>
+            <span v-else>{{ isRegisterMode ? t('auth.registerCustomer') : isSellerMode ? t('auth.registerSeller') : t('auth.login') }}</span>
           </Button>
         </form>
         
@@ -283,7 +283,7 @@
             :class="$style.linkButton"
             @click="toggleSellerMode"
           >
-            {{ isSellerMode ? 'Хочу стать покупателем' : 'Хочу стать продавцом' }}
+            {{ isSellerMode ? t('auth.becomeCustomer') : t('auth.becomeSeller') }}
           </a>
           
           <a
@@ -291,7 +291,7 @@
             :class="$style.linkButton"
             @click="handlePasswordRecovery"
           >
-            Восстановить пароль
+            {{ t('auth.recoverPassword') }}
           </a>
           
           <a
@@ -299,7 +299,7 @@
             :class="$style.linkButton"
             @click="handleRegister"
           >
-            Зарегистрироваться
+            {{ t('auth.register') }}
           </a>
         </div>
       </div>
@@ -312,6 +312,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '../../widgets';
 import { Input, Button, SettingsModal, RequisitesModal, SuccessAlert } from '../../shared/ui';
 import { loginUser, registerUser } from '@shared/api';
@@ -330,6 +331,7 @@ import settingsIcon from '@assets/settings.svg';
 import favouritesIcon from '@assets/favourutes.svg';
 import boxIcon from '@assets/box.svg';
 
+const { t } = useI18n();
 const router = useRouter();
 const user = useStore($user);
 
@@ -371,18 +373,18 @@ const getFavoritesText = (count: number): string => {
   const lastTwoDigits = count % 100;
   
   if (lastTwoDigits >= 11 && lastTwoDigits <= 19) {
-    return 'товаров';
+    return t('profile.items5');
   }
   
   if (lastDigit === 1) {
-    return 'товар';
+    return t('profile.items');
   }
   
   if (lastDigit >= 2 && lastDigit <= 4) {
-    return 'товара';
+    return t('profile.items2');
   }
   
-  return 'товаров';
+  return t('profile.items5');
 };
 
 // Вычисляемое свойство для определения роли пользователя
@@ -437,35 +439,35 @@ const sellerPasswordError = ref('');
 
 // Функции валидации
 const validateEmail = (email: string): string => {
-  if (!email) return 'Email обязателен';
+  if (!email) return t('validation.emailRequired');
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) return 'Некорректный формат email';
+  if (!emailRegex.test(email)) return t('validation.emailInvalid');
   return '';
 };
 
 const validatePhone = (phone: string): string => {
-  if (!phone) return 'Телефон обязателен';
+  if (!phone) return t('validation.phoneRequired');
   const phoneRegex = /^[\d\s\+\-\(\)]+$/;
   if (!phoneRegex.test(phone) || phone.replace(/\D/g, '').length < 10) {
-    return 'Некорректный формат телефона';
+    return t('validation.phoneInvalid');
   }
   return '';
 };
 
 const validatePassword = (password: string): string => {
-  if (!password) return 'Пароль обязателен';
-  if (password.length < 6) return 'Пароль должен содержать минимум 6 символов';
+  if (!password) return t('validation.passwordRequired');
+  if (password.length < 6) return t('validation.passwordMinLength');
   return '';
 };
 
 const validateName = (name: string): string => {
-  if (!name) return 'Имя обязательно';
-  if (name.length < 2) return 'Имя должно содержать минимум 2 символа';
+  if (!name) return t('validation.nameRequired');
+  if (name.length < 2) return t('validation.nameMinLength');
   return '';
 };
 
 const validateLogin = (login: string): string => {
-  if (!login) return 'Логин обязателен';
+  if (!login) return t('validation.loginRequired');
   return '';
 };
 
@@ -618,11 +620,11 @@ const handleLogin = async () => {
       } else {
         // Ошибка входа - показываем тост и делаем инпуты красными
         showToast({
-          message: 'Не удалось войти, проверьте правильность ввода логина и/или пароля',
+          message: t('validation.loginError'),
           type: 'error'
         });
-        loginError.value = 'Неверный логин или пароль';
-        passwordError.value = 'Неверный логин или пароль';
+        loginError.value = t('validation.invalidCredentials');
+        passwordError.value = t('validation.invalidCredentials');
       }
     }
   } catch (error) {
@@ -691,15 +693,15 @@ const handleLogout = () => {
 const recentlyViewedProducts = ref<Product[]>([
   {
     id: 1,
-    name: 'Кроссовки Nike Air Max',
+    name: t('mockData.mockProducts.nikeAirMax'),
     slug: 'nike-air-max',
     price: 12990,
     discount: 15,
     currency: 'RUB',
     images: ['https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop'],
-    description: 'Удобные кроссовки для повседневной носки',
-    category: [{ id: '1', name: 'Обувь' }],
-    tags: [{ id: 't1', name: 'Спорт' }],
+    description: t('mockData.mockDescriptions.comfortable'),
+    category: [{ id: '1', name: t('mockData.mockCategories.shoes') }],
+    tags: [{ id: 't1', name: t('mockData.mockTags.sport') }],
     sizes: ['40', '41', '42', '43'],
     stockStatus: 'in_stock',
     gender: 'unisex',
@@ -712,14 +714,14 @@ const recentlyViewedProducts = ref<Product[]>([
   },
   {
     id: 2,
-    name: 'Футболка Adidas',
+    name: t('mockData.mockProducts.adidasTshirt'),
     slug: 'adidas-tshirt',
     price: 2990,
     currency: 'RUB',
     images: ['https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop'],
-    description: 'Спортивная футболка из дышащей ткани',
-    category: [{ id: '2', name: 'Одежда' }],
-    tags: [{ id: 't2', name: 'Спорт' }],
+    description: t('mockData.mockDescriptions.sport'),
+    category: [{ id: '2', name: t('mockData.mockCategories.clothing') }],
+    tags: [{ id: 't2', name: t('mockData.mockTags.sport') }],
     sizes: ['S', 'M', 'L', 'XL'],
     stockStatus: 'in_stock',
     gender: 'unisex',
@@ -732,15 +734,15 @@ const recentlyViewedProducts = ref<Product[]>([
   },
   {
     id: 3,
-    name: 'Рюкзак Puma',
+    name: t('mockData.mockProducts.pumaBackpack'),
     slug: 'puma-backpack',
     price: 4990,
     discount: 10,
     currency: 'RUB',
     images: ['https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop'],
-    description: 'Вместительный рюкзак для спорта и путешествий',
-    category: [{ id: '3', name: 'Аксессуары' }],
-    tags: [{ id: 't3', name: 'Аксессуары' }],
+    description: t('mockData.mockDescriptions.spacious'),
+    category: [{ id: '3', name: t('mockData.mockCategories.accessories') }],
+    tags: [{ id: 't3', name: t('mockData.mockCategories.accessories') }],
     sizes: ['One Size'],
     stockStatus: 'in_stock',
     gender: 'unisex',

@@ -6,7 +6,7 @@
       <div :class="$style.container">
         <!-- Header with back button -->
         <div :class="$style.header">
-          <button :class="$style.backButton" @click="goBack" aria-label="Назад">
+          <button :class="$style.backButton" @click="goBack" :aria-label="t('common.back')">
             <img :src="arrowLeftIcon" alt="" :class="$style.backIcon" />
           </button>
         </div>
@@ -19,13 +19,13 @@
               :class="[$style.tab, { [$style.tabActive]: activeTab === 'purchases' }]"
               @click="activeTab = 'purchases'"
             >
-              Покупки
+              {{ t('favorites.purchases') }}
             </button>
             <button
               :class="[$style.tab, { [$style.tabActive]: activeTab === 'favorites' }]"
               @click="activeTab = 'favorites'"
             >
-              Избранное
+              {{ t('favorites.favorites') }}
             </button>
           </div>
         </div>
@@ -50,14 +50,14 @@
             </div>
             
             <div v-else :class="$style.emptyState">
-              <p :class="$style.emptyText">У вас пока нет избранных товаров</p>
+              <p :class="$style.emptyText">{{ t('favorites.noFavorites') }}</p>
             </div>
           </div>
 
           <!-- Purchases Tab -->
           <div v-if="activeTab === 'purchases'" :class="$style.tabContent">
             <div :class="$style.emptyState">
-              <p :class="$style.emptyText">У вас пока нет покупок</p>
+              <p :class="$style.emptyText">{{ t('favorites.noPurchases') }}</p>
             </div>
           </div>
         </div>
@@ -72,6 +72,7 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '../../widgets';
 import { ProductCard } from '@entities/product/ui';
 import { addItem } from '@entities/cart/cart.store';
@@ -79,6 +80,8 @@ import { $products, getProductsFx } from '@entities/product/product.store';
 import type { Product } from '@entities/product/product.types';
 import { getFavoriteProducts } from '@shared/utils/favorites';
 import arrowLeftIcon from '@assets/arrow_left_long.svg';
+
+const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();

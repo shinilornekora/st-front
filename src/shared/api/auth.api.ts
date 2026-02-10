@@ -1,5 +1,6 @@
 import { mockLogin, mockRegister } from './mockClient/auth.mock';
 import type { User } from '@entities/user/user.types';
+import { i18n } from '@shared/i18n';
 
 export interface LoginRequest {
   login: string;
@@ -52,7 +53,7 @@ export const loginUser = async (data: LoginRequest): Promise<ApiResponse<User>> 
     if (!response.ok) {
       return {
         success: false,
-        error: result.error || 'Ошибка авторизации'
+        error: result.error || i18n.global.t('errors.authError')
       };
     }
 
@@ -63,7 +64,7 @@ export const loginUser = async (data: LoginRequest): Promise<ApiResponse<User>> 
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Ошибка сети'
+      error: error instanceof Error ? error.message : i18n.global.t('errors.networkError')
     };
   }
 };
@@ -100,7 +101,7 @@ export const registerUser = async (data: RegisterRequest): Promise<ApiResponse<{
     if (!response.ok) {
       return {
         success: false,
-        error: result.error || 'Ошибка регистрации'
+        error: result.error || i18n.global.t('errors.registerError')
       };
     }
 
@@ -111,7 +112,7 @@ export const registerUser = async (data: RegisterRequest): Promise<ApiResponse<{
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Ошибка сети'
+      error: error instanceof Error ? error.message : i18n.global.t('errors.networkError')
     };
   }
 };

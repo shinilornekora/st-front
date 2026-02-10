@@ -4,9 +4,9 @@
 
 		<!-- Breadcrumbs -->
 		<div :class="$style.breadcrumbs">
-			<router-link to="/" :class="$style.breadcrumbLink">Главная страница</router-link>
+			<router-link to="/" :class="$style.breadcrumbLink">{{ t('common.homePage') }}</router-link>
 			<span :class="$style.breadcrumbSeparator">›</span>
-			<span :class="$style.breadcrumbCurrent">{{ product.name || 'Товар' }}</span>
+			<span :class="$style.breadcrumbCurrent">{{ product.name || t('product.product') }}</span>
 		</div>
 
 		<!-- Main Content -->
@@ -18,7 +18,7 @@
 					<div :class="$style.mainImageContainer">
 						<button
 							:class="[$style.favoriteBtn, isFavorite ? $style.favoriteBtnActive : '']"
-							aria-label="Добавить в избранное"
+							:aria-label="t('product.addToFavorites')"
 							@click="toggleFavoriteStatus"
 						>
 							<img
@@ -35,8 +35,8 @@
 								<path d="M30 70 Q50 55 70 70" stroke="currentColor" stroke-width="2" fill="none"/>
 							</svg>
 							<div :class="$style.leatherText">
-								<span>НАТУРАЛЬНАЯ</span>
-								<span>КОЖА</span>
+								<span>{{ t('product.naturalLeather').split(' ')[0] }}</span>
+								<span>{{ t('product.naturalLeather').split(' ')[1] }}</span>
 							</div>
 						</div>
 						<div :class="$style.mainImageWrapper">
@@ -72,13 +72,13 @@
 					<!-- Right Column: Product Info -->
 				<div :class="$style.productInfo">
 					<div :class="$style.topRow">
-						<span v-if="product.discount" :class="$style.badge">Распродажа</span>
+						<span v-if="product.discount" :class="$style.badge">{{ t('product.sale') }}</span>
 					</div>
 					
 					<div :class="$style.titleRow">
 						<h1 :class="$style.productTitle">{{ product.name }}</h1>
-						<button :class="[$style.shareBtn, { [$style.shareBtnClicked]: shareBtnClicked }]" aria-label="Поделиться" @click="copyCurrentUrl">
-							<img src="@assets/ghost_share.svg" alt="Share icon" :class="$style.shareIcon" />
+						<button :class="[$style.shareBtn, { [$style.shareBtnClicked]: shareBtnClicked }]" :aria-label="t('common.share')" @click="copyCurrentUrl">
+							<img src="@assets/ghost_share.svg" :alt="t('common.share')" :class="$style.shareIcon" />
 						</button>
 					</div>
 					
@@ -90,34 +90,34 @@
 					<button
 						:class="$style.discountLink"
 						@click="openDiscountModal"
-						aria-label="Запросить скидку"
+						:aria-label="t('product.requestDiscount')"
 					>
-						Хочу скидку
+						{{ t('product.wantDiscount') }}
 					</button>
 					
 					<div :class="$style.articleRow">
-						<span :class="$style.articleLabel">Артикул</span>
+						<span :class="$style.articleLabel">{{ t('product.article') }}</span>
 						<span :class="$style.articleValue">{{ product.article }}</span>
 					</div>
 
 					<div :class="$style.quantityBlock">
 						<button :class="$style.quantityBtn" @click="decreaseQuantity" :disabled="quantity <= 1">
-							<img src="@assets/minus_circle.svg" alt="Decrease quantity" :class="$style.quantityIcon" />
+							<img src="@assets/minus_circle.svg" :alt="t('product.decreaseQuantity')" :class="$style.quantityIcon" />
 						</button>
 						<input type="number" v-model.number="quantity" :class="$style.quantityInput" min="1" />
 						<button :class="$style.quantityBtn" @click="increaseQuantity">
-							<img src="@assets/plus_circle.svg" alt="Increase quantity" :class="$style.quantityIcon" />
+							<img src="@assets/plus_circle.svg" :alt="t('product.increaseQuantity')" :class="$style.quantityIcon" />
 						</button>
 					</div>
 
 					<button :class="$style.addToCartBtn" @click="addToCart">
-						В корзину
+						{{ t('product.addToCart') }}
 					</button>
 					
 					<!-- Characteristics Section -->
 					<section :class="$style.characteristicsSection">
-						<h2 :class="$style.sectionTitle">Характеристики и описание</h2>
-						<p :class="$style.sectionSubtitle">Основная информация</p>
+						<h2 :class="$style.sectionTitle">{{ t('product.characteristicsTitle') }}</h2>
+						<p :class="$style.sectionSubtitle">{{ t('product.mainInfo') }}</p>
 						
 						<div v-if="characteristics.length > 0" :class="$style.characteristicsTable">
 							<div v-for="(char, index) in characteristics" :key="index" :class="$style.characteristicRow">
@@ -133,7 +133,7 @@
 				<!-- Additional Info Section (Accordion) -->
 				<section :class="$style.additionalSection">
 					<button :class="$style.accordionHeader" @click="toggleAccordion">
-						<h2 :class="$style.sectionTitle">Дополнительная информация</h2>
+						<h2 :class="$style.sectionTitle">{{ t('product.additionalInfo') }}</h2>
 						<svg 
 							width="24" 
 							height="24" 
@@ -163,7 +163,7 @@
 
 			<!-- Similar Products Section -->
 			<section v-if="similarProducts.length === 0" :class="$style.similarSkeleton">
-				<h2 :class="$style.sectionTitle">Вам может понравиться:</h2>
+				<h2 :class="$style.sectionTitle">{{ t('product.youMayLike') }}</h2>
 				<div :class="$style.skeletonCards">
 					<div v-for="i in 5" :key="i" :class="$style.skeletonCard"></div>
 				</div>
@@ -171,7 +171,7 @@
 			
 			<Recommendations
 				v-else
-				title="Вам может понравиться:"
+				:title="t('product.youMayLike')"
 				:products="similarProducts"
 				@product-click="goToProduct"
 				@add-to-cart="addSimilarToCart"
@@ -188,14 +188,15 @@
 		/>
 		
 		<!-- Status Line -->
-		<StatusLine :show="showStatusLine" message="Ссылка на товар была успешно скопирована" />
-		<StatusLine :show="showDiscountStatusLine" message="Предложение о цене успешно направлено" />
+		<StatusLine :show="showStatusLine" :message="t('product.linkCopied')" />
+		<StatusLine :show="showDiscountStatusLine" :message="t('product.discountRequestSent')" />
 	</div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '@widgets/index';
 import { recommendations } from '@entities/product/ui';
 import { StatusLine, Skeleton, DiscountRequestModal } from '@shared/ui';
@@ -207,6 +208,8 @@ import { isUserAuthenticated } from '@shared/utils/auth';
 import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
 import heartIcon from '@assets/heart_icon.svg';
 import darkHeartIcon from '@assets/dark_heart_icon.svg';
+
+const { t } = useI18n();
 
 interface ProductRouterState {
   product?: Partial<Product>;
@@ -348,7 +351,16 @@ onMounted(async () => {
 				]);
 				
 				// Extract available colors from tags
-				const colorNames = ['черный', 'коричневый', 'бежевый', 'белый', 'синий', 'красный', 'серый', 'зеленый', 'бордовый', 'хаки', 'розовый', 'оранжевый', 'желтый'];
+				const colorNames = [
+					t('filters.colors.black'),
+					t('filters.colors.brown'),
+					t('filters.colors.beige'),
+					t('filters.colors.white'),
+					t('filters.colors.blue'),
+					t('filters.colors.red'),
+					t('filters.colors.gray'),
+					t('filters.colors.green')
+				];
 				availableColors.value = product.value.tags
 					.filter(tag => colorNames.includes(tag.name.toLowerCase()))
 					.map(tag => tag.name);
@@ -359,8 +371,12 @@ onMounted(async () => {
 				}
 				
 				// Generate characteristics based on product data
-				const material = product.value.tags.find(tag => tag.name.includes('кожа') || tag.name.includes('замша') || tag.name.includes('нубук'))?.name || 'натуральная кожа';
-				const color = selectedColor.value || product.value.tags.find(tag => colorNames.includes(tag.name))?.name || 'черный';
+				const material = product.value.tags.find(tag =>
+					tag.name.includes(t('mockData.materials.naturalLeather')) ||
+					tag.name.includes(t('mockData.materials.suede')) ||
+					tag.name.includes(t('mockData.materials.nubuck'))
+				)?.name || t('mockData.materials.naturalLeather');
+				const color = selectedColor.value || product.value.tags.find(tag => colorNames.includes(tag.name))?.name || t('filters.colors.black');
 				const brand = product.value.seller.name;
 				
 				// Import and generate characteristics

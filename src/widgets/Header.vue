@@ -1,15 +1,15 @@
 <template>
 	<header :class="[$style.header, { [$style.lightHeader]: lightHeader }]">
 		<div :class="$style.headerContent">
-			<router-link :class="$style.logoWrapper" to="/">
+			<router-link :class="$style.logoWrapper" :to="logoLink">
 				<img :src="logoSrc" alt="Stivalli" :class="$style.logo" />
-				<span v-if="userRole === 'partner'" :class="$style.partnersText">partner</span>
-				<span v-if="userRole === 'admin'" :class="$style.adminText">admin</span>
+				<span v-if="userRole === 'partner'" :class="$style.partnersText">{{ t('common.partner') }}</span>
+				<span v-if="userRole === 'admin'" :class="$style.adminText">{{ t('common.admin') }}</span>
 			</router-link>
 			<div v-if="!lightHeader && !hideSearch" :class="$style.searchWrapper">
 				<SearchField
 					v-model="searchQuery"
-					placeholder="Поиск по названию, бренду, цвету..."
+					:placeholder="t('common.search')"
 					:class="$style.search"
 					:initial-filters="initialFilters"
 					@submit="handleSearch"
@@ -20,7 +20,7 @@
 				<router-link
 					to="/profile"
 					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Profile') }]"
-					aria-label="Профиль"
+					:aria-label="t('common.profile')"
 				>
 					<img
 						:src="isRouteActive('Profile') ? profileFilledIcon : userCircleIcon"
@@ -31,7 +31,7 @@
 				<router-link
 					to="/cart"
 					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Cart') }]"
-					aria-label="Корзина"
+					:aria-label="t('common.cart')"
 				>
 					<div :class="$style.cartIconWrapper">
 						<img
@@ -45,7 +45,7 @@
 				<router-link
 					to="/notifications"
 					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Notifications') }]"
-					aria-label="Уведомления"
+					:aria-label="t('common.notifications')"
 				>
 					<img
 						:src="isRouteActive('Notifications') ? notificationFilledIcon : notificationIcon"
@@ -54,7 +54,7 @@
 					/>
 				</router-link>
 			</div>
-			<router-link v-if="lightHeader" to="/" :class="$style.closeBtn" aria-label="Закрыть">
+			<router-link v-if="lightHeader" to="/" :class="$style.closeBtn" :aria-label="t('common.close')">
 				<img :src="crossIcon" alt="" :class="$style.headerIcon" />
 			</router-link>
 		</div>
@@ -65,6 +65,7 @@
 import { ref, computed, onMounted, onUnmounted, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
+import { useI18n } from 'vue-i18n';
 import { $cart } from '@entities/cart/cart.store';
 import SearchField from '@shared/ui/SearchField.vue';
 import logoFull from '@assets/logo_full.svg';
@@ -77,11 +78,13 @@ import notificationIcon from '@assets/notification_icon.svg';
 import notificationFilledIcon from '@assets/notification_filled.svg';
 import crossIcon from '@assets/cross.svg';
 
+const { t } = useI18n();
+
 // Define props
 interface Props {
 	lightHeader?: boolean;
 	hideSearch?: boolean;
-	userRole?: 'customer' | 'partner' | 'admin' | null;
+	userRole?: 'customer' | 'partner' | 'admin' | 'CUSTOMER' | 'SELLER' | 'ADMIN' | null;
 	initialFilters?: any[];
 }
 
@@ -111,6 +114,17 @@ const cartItemsCount = computed(() => cart.value.items.length);
 
 const logoSrc = computed(() => {
 	return screenWidth.value < 1200 ? logo : logoFull;
+});
+
+const logoLink = computed(() => {
+	// Support both prop-based and actual role values
+	if (props.userRole === 'partner' || props.userRole === 'SELLER') {
+		return '/b2b';
+	}
+	if (props.userRole === 'admin' || props.userRole === 'ADMIN') {
+		return '/admin';
+	}
+	return '/';
 });
 
 // Check if a route is active

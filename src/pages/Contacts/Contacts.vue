@@ -2,15 +2,18 @@
   <div :class="$style.page">
     <Header />
     <main :class="$style.main">
-      <h1>Контакты</h1>
-      <p>Контактная информация будет размещена здесь.</p>
+      <h1>{{ t('pages.contactsTitle') }}</h1>
+      <p>{{ t('pages.contactsText') }}</p>
     </main>
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '@widgets';
+
+const { t } = useI18n();
 </script>
 
 <style module>

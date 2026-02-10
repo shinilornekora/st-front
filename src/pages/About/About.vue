@@ -2,15 +2,18 @@
   <div :class="$style.page">
     <Header />
     <main :class="$style.main">
-      <h1>О бренде Stivalli</h1>
-      <p>Информация о бренде Stivalli будет размещена здесь.</p>
+      <h1>{{ t('pages.aboutTitle') }}</h1>
+      <p>{{ t('pages.aboutText') }}</p>
     </main>
     <Footer />
   </div>
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '@widgets';
+
+const { t } = useI18n();
 </script>
 
 <style module>

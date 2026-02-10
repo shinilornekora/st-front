@@ -1,6 +1,7 @@
 import { createStore, createEvent, createEffect } from 'effector';
 import type { Product } from './product.types';
 import { getProducts } from '@shared/api';
+import { i18n } from '@shared/i18n';
 
 export const setProducts = createEvent<Product[]>();
 export const addProduct = createEvent<Product>();
@@ -10,7 +11,7 @@ export const getProductsFx = createEffect<void, Product[]>(async () => {
 	const response = await getProducts({ __mock: true });
 	
 	if (!response.success) {
-		throw new Error(response.error || 'Не удалось загрузить товары');
+		throw new Error(response.error || i18n.global.t('errors.loadProductsFailed'));
 	}
 	
 	return response.data || [];

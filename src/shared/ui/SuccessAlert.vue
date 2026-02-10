@@ -8,13 +8,13 @@
           <div :class="$style.alertTitle">{{ title }}</div>
           <div :class="$style.alertText">
             <slot>
-              <p>Ваша заявка в данный момент ожидает резолюции от администратора, пожалуйста, подождите.</p>
-              <p>После рассмотрения вашей заявки, на указанную электронную почту придет резолюция, после чего использовав ваши данные для входа, вы сможете войти в ваш аккаунт.</p>
-              <p>Если рассмотрение заявки занимает более трех дней, вы можете написать нам на почту, после чего мы проверим актуальный статус вашей заявки, и сообщим вам примерные сроки.</p>
+              <p>{{ $t('profile.applicationPendingText') }}</p>
+              <p>{{ $t('profile.applicationPendingText2') }}</p>
+              <p>{{ $t('profile.applicationPendingText3') }}</p>
             </slot>
           </div>
         </div>
-        <button :class="$style.alertClose" @click="handleClose" aria-label="Закрыть">
+        <button :class="$style.alertClose" @click="handleClose" :aria-label="t('modal.close')">
           <img :src="crossIcon" alt="" :class="$style.closeIcon" />
         </button>
       </div>
@@ -23,8 +23,11 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import successCheckIcon from '@assets/success_check.svg';
 import crossIcon from '@assets/cross.svg';
+
+const { t } = useI18n();
 
 defineProps<{
   modelValue: boolean;

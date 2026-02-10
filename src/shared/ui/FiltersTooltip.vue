@@ -2,7 +2,7 @@
 	<div :class="$style.tooltipContainer" ref="tooltipRef">
 		<div :class="$style.tooltip">
 			<div :class="$style.tooltipHeader">
-				<h4>Активные фильтры</h4>
+				<h4>{{ t('filters.activeFilters') }}</h4>
 			</div>
 			<div :class="$style.filtersList">
 				<div
@@ -15,7 +15,7 @@
 						:class="$style.removeBtn"
 						type="button"
 						@click="removeFilter(filter.id)"
-						aria-label="Удалить фильтр"
+						:aria-label="t('filters.removeFilter')"
 					>
 						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 							<line x1="18" y1="6" x2="6" y2="18"></line>
@@ -26,7 +26,7 @@
 			</div>
 			<div :class="$style.tooltipFooter">
 				<button :class="$style.clearAllBtn" type="button" @click="clearAllFilters">
-					Очистить все
+					{{ t('filters.clearAll') }}
 				</button>
 			</div>
 		</div>
@@ -35,6 +35,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 interface Filter {
 	id: string;

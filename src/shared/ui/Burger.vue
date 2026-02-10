@@ -2,7 +2,7 @@
 	<button
 		:class="$style.burger"
 		@click="$emit('click')"
-		aria-label="Открыть меню"
+		:aria-label="$t('ui.openMenu')"
 		type="button"
 	>
 		<span

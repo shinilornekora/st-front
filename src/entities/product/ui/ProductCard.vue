@@ -2,7 +2,7 @@
 	<article
 		:class="[$style.card, $style[type!], recommendation ? $style.recommendation : '']"
 		tabindex="0"
-		aria-label="Карточка товара"
+		:aria-label="t('product.card')"
 		@click="handleCardClick"
 	>
 		<div :class="$style.imageWrapper">
@@ -11,11 +11,11 @@
 				<button
 					:class="$style.heartBtn"
 					@click.stop="toggleHeart"
-					aria-label="Toggle favorite"
+					:aria-label="isFavorite ? t('product.removeFromFavorites') : t('product.addToFavorites')"
 				>
 					<img
 						:src="isFavorite ? darkHeartIcon : heartIcon"
-						alt="Heart icon"
+						:alt="isFavorite ? t('product.removeFromFavorites') : t('product.addToFavorites')"
 						:class="[$style.heartIcon, isFavorite ? $style.active : '']"
 					/>
 				</button>
@@ -31,7 +31,7 @@
 			<button
 				:class="$style.cartBtn"
 				@click.stop="handleAddToCart"
-				:aria-label="'Добавить в корзину'"
+				:aria-label="t('cart.addToCart')"
 			>
 				<img src="@assets/shopping_cart.svg" alt="" :class="$style.cartIcon" />
 			</button>
@@ -41,6 +41,7 @@
 <script setup lang="ts">
 	import { ref, onMounted, watch, computed } from 'vue';
 	import { useStore } from 'effector-vue/composition';
+	import { useI18n } from 'vue-i18n';
 	import type { Product } from '@entities/product/product.types';
 	import { $cart } from '@entities/cart/cart.store';
 	import theme from '@shared/ui/theme.module.css';
@@ -48,6 +49,8 @@
 	import darkHeartIcon from '@assets/dark_heart_icon.svg';
 	import { isUserAuthenticated } from '@shared/utils/auth';
 	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
+	
+	const { t } = useI18n();
 	
 	const props = defineProps<{
 		id?: number;

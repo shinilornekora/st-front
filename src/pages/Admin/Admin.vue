@@ -12,13 +12,13 @@
               :class="[$style.tab, { [$style.tabActive]: activeTab === 'sellers' }]"
               @click="activeTab = 'sellers'"
             >
-              Список продавцов
+              {{ t('admin.sellersList') }}
             </button>
             <button
               :class="[$style.tab, { [$style.tabActive]: activeTab === 'applications' }]"
               @click="activeTab = 'applications'"
             >
-              Список заявок
+              {{ t('admin.applicationsList') }}
             </button>
           </div>
         </div>
@@ -29,13 +29,13 @@
           <div v-if="activeTab === 'sellers'" :class="$style.tabContent">
             <!-- Loading State -->
             <div v-if="loading" :class="$style.loading">
-              <p>Загрузка данных...</p>
+              <p>{{ t('admin.loading') }}</p>
             </div>
 
             <!-- Error State -->
             <div v-else-if="error" :class="$style.error">
               <p>{{ error }}</p>
-              <button @click="loadDashboard" :class="$style.retryButton">Попробовать снова</button>
+              <button @click="loadDashboard" :class="$style.retryButton">{{ t('admin.retry') }}</button>
             </div>
 
             <!-- Content -->
@@ -45,15 +45,15 @@
                 <!-- Revenue Card -->
                 <div :class="$style.statCard">
                   <div :class="$style.statHeader">
-                    <h3 :class="$style.statTitle">Оборот</h3>
+                    <h3 :class="$style.statTitle">{{ t('admin.revenue') }}</h3>
                     <select :class="$style.periodSelect" v-model="revenuePeriod" @change="loadDashboard">
-                      <option value="month">Выбрать период</option>
-                      <option value="quarter">За квартал</option>
-                      <option value="year">За год</option>
+                      <option value="month">{{ t('admin.selectPeriod') }}</option>
+                      <option value="quarter">{{ t('admin.quarter') }}</option>
+                      <option value="year">{{ t('admin.year') }}</option>
                     </select>
                   </div>
                   <div :class="$style.statValue">{{ dashboard.revenue.total }}</div>
-                  <div :class="$style.statSubtext">{{ dashboard.revenue.itemsCount }} Товаров</div>
+                  <div :class="$style.statSubtext">{{ dashboard.revenue.itemsCount }} {{ t('admin.items') }}</div>
                   
                   <LineChart
                     :data="dashboard.revenue.chartData.data"
@@ -66,15 +66,15 @@
                 <!-- Growth Card -->
                 <div :class="$style.statCard">
                   <div :class="$style.statHeader">
-                    <h3 :class="$style.statTitle">Динамика развития</h3>
+                    <h3 :class="$style.statTitle">{{ t('admin.growth') }}</h3>
                     <select :class="$style.periodSelect" v-model="growthPeriod" @change="loadDashboard">
-                      <option value="month">Выбрать период</option>
-                      <option value="quarter">За квартал</option>
-                      <option value="year">За год</option>
+                      <option value="month">{{ t('admin.selectPeriod') }}</option>
+                      <option value="quarter">{{ t('admin.quarter') }}</option>
+                      <option value="year">{{ t('admin.year') }}</option>
                     </select>
                   </div>
                   <div :class="$style.statValue" style="color: #5fdbd1;">{{ dashboard.growth.percentage }}</div>
-                  <div :class="$style.statSubtext">{{ dashboard.growth.itemsCount }} Товаров</div>
+                  <div :class="$style.statSubtext">{{ dashboard.growth.itemsCount }} {{ t('admin.items') }}</div>
                   
                   <LineChart
                     :data="dashboard.growth.chartData.data"
@@ -90,9 +90,9 @@
                 <table :class="$style.sellersTable">
                   <thead>
                     <tr>
-                      <th>Имя производителя</th>
-                      <th>Оборот</th>
-                      <th>Динамика развития (с пред мес)</th>
+                      <th>{{ t('admin.sellerName') }}</th>
+                      <th>{{ t('admin.turnover') }}</th>
+                      <th>{{ t('admin.growthRate') }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -111,13 +111,13 @@
           <div v-if="activeTab === 'applications'" :class="$style.tabContent">
             <!-- Loading State -->
             <div v-if="applicationsLoading" :class="$style.loading">
-              <p>Загрузка заявок...</p>
+              <p>{{ t('admin.loadingApplications') }}</p>
             </div>
 
             <!-- Error State -->
             <div v-else-if="applicationsError" :class="$style.error">
               <p>{{ applicationsError }}</p>
-              <button @click="loadApplications" :class="$style.retryButton">Попробовать снова</button>
+              <button @click="loadApplications" :class="$style.retryButton">{{ t('admin.retry') }}</button>
             </div>
 
             <!-- Applications Table -->
@@ -125,9 +125,9 @@
               <table :class="$style.applicationsTable">
                 <thead>
                   <tr>
-                    <th>Имя производителя</th>
-                    <th>Телефонный номер</th>
-                    <th>Электронный адрес</th>
+                    <th>{{ t('admin.sellerName') }}</th>
+                    <th>{{ t('admin.phone') }}</th>
+                    <th>{{ t('admin.email') }}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -143,14 +143,14 @@
                           :class="$style.rejectButton"
                           :disabled="processingId === app.id"
                         >
-                          Отклонить
+                          {{ t('admin.reject') }}
                         </button>
                         <button
                           @click="handleApprove(app.id)"
                           :class="$style.approveButton"
                           :disabled="processingId === app.id"
                         >
-                          Принять
+                          {{ t('admin.accept') }}
                         </button>
                       </div>
                     </td>
@@ -161,7 +161,7 @@
 
             <!-- Empty State -->
             <div v-else :class="$style.placeholder">
-              Нет заявок для обработки
+              {{ t('admin.noApplications') }}
             </div>
           </div>
         </div>
@@ -174,10 +174,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '../../widgets';
 import { LineChart } from '../../shared/ui';
 import { getSellersDashboard, getApplications, updateApplicationStatus } from '../../shared/api';
 import type { SellersDashboard, Application } from '../../shared/api';
+
+const { t } = useI18n();
 
 const activeTab = ref<'sellers' | 'applications'>('sellers');
 
@@ -210,10 +213,10 @@ const loadDashboard = async () => {
     if (response.success && response.data) {
       dashboard.value = response.data;
     } else {
-      error.value = response.error || 'Не удалось загрузить данные';
+      error.value = response.error || t('errors.loadFailed');
     }
   } catch (err) {
-    error.value = 'Произошла ошибка при загрузке данных';
+    error.value = t('errors.networkError');
     console.error('Failed to load dashboard:', err);
   } finally {
     loading.value = false;
@@ -231,10 +234,10 @@ const loadApplications = async () => {
     if (response.success && response.data) {
       applications.value = response.data;
     } else {
-      applicationsError.value = response.error || 'Не удалось загрузить заявки';
+      applicationsError.value = response.error || t('errors.loadApplicationsFailed');
     }
   } catch (err) {
-    applicationsError.value = 'Произошла ошибка при загрузке заявок';
+    applicationsError.value = t('errors.applicationError');
     console.error('Failed to load applications:', err);
   } finally {
     applicationsLoading.value = false;
@@ -256,10 +259,10 @@ const handleApprove = async (id: number) => {
       // Remove from list after approval
       applications.value = applications.value.filter(app => app.id !== id);
     } else {
-      alert(response.error || 'Не удалось принять заявку');
+      alert(response.error || t('errors.approveFailed'));
     }
   } catch (err) {
-    alert('Произошла ошибка при обработке заявки');
+    alert(t('errors.approveError'));
     console.error('Failed to approve application:', err);
   } finally {
     processingId.value = null;
@@ -281,10 +284,10 @@ const handleReject = async (id: number) => {
       // Remove from list after rejection
       applications.value = applications.value.filter(app => app.id !== id);
     } else {
-      alert(response.error || 'Не удалось отклонить заявку');
+      alert(response.error || t('errors.rejectFailed'));
     }
   } catch (err) {
-    alert('Произошла ошибка при обработке заявки');
+    alert(t('errors.rejectError'));
     console.error('Failed to reject application:', err);
   } finally {
     processingId.value = null;

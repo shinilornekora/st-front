@@ -5,6 +5,7 @@
 
 import { mockClient } from './mockClient/client';
 import type { MockResponse } from './mockClient/client';
+import { i18n } from '@shared/i18n';
 
 // Types
 export interface Application {
@@ -75,7 +76,7 @@ export const getApplications = async (
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Ошибка сети',
+      error: error instanceof Error ? error.message : i18n.global.t('errors.networkError'),
     };
   }
 };
@@ -89,7 +90,9 @@ export const updateApplicationStatus = async (
   if (params.__mock) {
     return mockClient.post(
       (data) => ({
-        message: `Заявка ${data.status === 'approved' ? 'принята' : 'отклонена'}`,
+        message: data.status === 'approved'
+          ? i18n.global.t('messages.applicationApproved')
+          : i18n.global.t('messages.applicationRejected'),
       }),
       params
     );
@@ -114,7 +117,7 @@ export const updateApplicationStatus = async (
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Ошибка сети',
+      error: error instanceof Error ? error.message : i18n.global.t('errors.networkError'),
     };
   }
 };

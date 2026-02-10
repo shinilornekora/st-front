@@ -1,6 +1,7 @@
 import { mockGetProducts, mockGetProductById, mockGetSimilarProducts } from './mockClient/products.mock';
 import type { Product } from '@entities/product/product.types';
 import type { ApiResponse } from './auth.api';
+import { i18n } from '@shared/i18n';
 
 export interface GetProductsRequest {
   count?: number;
@@ -30,7 +31,7 @@ export const getProducts = async (params: GetProductsRequest = {}): Promise<ApiR
     if (!response.ok) {
       return {
         success: false,
-        error: result.error || 'Ошибка загрузки товаров'
+        error: result.error || i18n.global.t('errors.loadProductsFailed')
       };
     }
 
@@ -41,7 +42,7 @@ export const getProducts = async (params: GetProductsRequest = {}): Promise<ApiR
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Ошибка сети'
+      error: error instanceof Error ? error.message : i18n.global.t('errors.networkError')
     };
   }
 };
@@ -58,7 +59,7 @@ export const getProductById = async (params: GetProductByIdRequest): Promise<Api
     if (!response.ok) {
       return {
         success: false,
-        error: result.error || 'Товар не найден'
+        error: result.error || i18n.global.t('errors.productNotFound')
       };
     }
 
@@ -69,7 +70,7 @@ export const getProductById = async (params: GetProductByIdRequest): Promise<Api
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Ошибка сети'
+      error: error instanceof Error ? error.message : i18n.global.t('errors.networkError')
     };
   }
 };
@@ -86,7 +87,7 @@ export const getSimilarProducts = async (params: GetSimilarProductsRequest): Pro
     if (!response.ok) {
       return {
         success: false,
-        error: result.error || 'Ошибка загрузки похожих товаров'
+        error: result.error || i18n.global.t('errors.loadSimilarFailed')
       };
     }
 
@@ -97,7 +98,7 @@ export const getSimilarProducts = async (params: GetSimilarProductsRequest): Pro
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Ошибка сети'
+      error: error instanceof Error ? error.message : i18n.global.t('errors.networkError')
     };
   }
 };

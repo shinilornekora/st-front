@@ -1,20 +1,50 @@
 import type { Product } from '@entities/product/product.types';
+import { i18n } from '@shared/i18n';
 
-// Product name templates
-const productTypes = [
-  'Сандалии', 'Ботинки', 'Кроссовки', 'Туфли', 'Кеды', 'Мокасины', 
-  'Лоферы', 'Оксфорды', 'Дерби', 'Броги', 'Сникеры', 'Эспадрильи',
-  'Слипоны', 'Угги', 'Ботильоны', 'Полуботинки', 'Сапоги', 'Ботфорты'
+const t = i18n.global.t;
+
+// Product name templates - using translation keys
+const getProductTypes = () => [
+  t('mockData.productTypes.sandals'),
+  t('mockData.productTypes.boots'),
+  t('mockData.productTypes.sneakers'),
+  t('mockData.productTypes.shoes'),
+  t('mockData.productTypes.keds'),
+  t('mockData.productTypes.moccasins'),
+  t('mockData.productTypes.loafers'),
+  t('mockData.productTypes.oxfords'),
+  t('mockData.productTypes.derby'),
+  t('mockData.productTypes.brogues'),
+  t('mockData.productTypes.trainers'),
+  t('mockData.productTypes.espadrilles'),
+  t('mockData.productTypes.slipons'),
+  t('mockData.productTypes.uggs'),
+  t('mockData.productTypes.booties'),
+  t('mockData.productTypes.halfBoots'),
+  t('mockData.productTypes.highBoots'),
+  t('mockData.productTypes.overKneeBoots')
 ];
 
-const materials = [
-  'натуральная кожа', 'замша', 'нубук', 'текстиль', 'хлопок', 
-  'кожзам', 'эко-кожа', 'замшевый материал'
+const getMaterials = () => [
+  t('mockData.materials.naturalLeather'),
+  t('mockData.materials.suede'),
+  t('mockData.materials.nubuck'),
+  t('mockData.materials.textile'),
+  t('mockData.materials.cotton'),
+  t('mockData.materials.leatherette'),
+  t('mockData.materials.ecoLeather'),
+  t('mockData.materials.suedeMaterial')
 ];
 
-const colors = [
-  'черный', 'коричневый', 'бежевый', 'белый', 'синий', 'красный', 
-  'серый', 'зеленый', 'бордовый', 'темно-синий', 'кофейный'
+const getColors = () => [
+  t('filters.colors.black'),
+  t('filters.colors.brown'),
+  t('filters.colors.beige'),
+  t('filters.colors.white'),
+  t('filters.colors.blue'),
+  t('filters.colors.red'),
+  t('filters.colors.gray'),
+  t('filters.colors.green')
 ];
 
 const brands = [
@@ -81,25 +111,31 @@ const generateImages = (count: number = 3): string[] => {
 
 // Generate product characteristics
 const generateCharacteristics = (material: string, color: string, brand: string) => {
+  const genderOptions = [
+    t('mockData.characteristics.genderFemale'),
+    t('mockData.characteristics.genderMale'),
+    t('mockData.characteristics.genderUnisex')
+  ];
+  
   return [
-    { label: 'Цвет', value: color },
-    { label: 'Состав', value: `${material} 100%` },
-    { label: 'Пол', value: randomItem(['Женский', 'Мужской', 'Унисекс']) },
-    { label: 'Производитель', value: brand },
-    { label: 'Телефонный контакт', value: '+7 495 123 45 67' },
-    { label: 'Электронный адрес', value: `info@${brand.toLowerCase().replace(/\s+/g, '')}.ru` },
+    { label: t('mockData.characteristics.color'), value: color },
+    { label: t('mockData.characteristics.composition'), value: `${material} 100%` },
+    { label: t('mockData.characteristics.gender'), value: randomItem(genderOptions) },
+    { label: t('mockData.characteristics.manufacturer'), value: brand },
+    { label: t('mockData.characteristics.phoneContact'), value: '+7 495 123 45 67' },
+    { label: t('mockData.characteristics.emailAddress'), value: `info@${brand.toLowerCase().replace(/\s+/g, '')}.ru` },
   ];
 };
 
 // Generate additional product info
 const generateAdditionalInfo = () => {
   return [
-    { label: 'Материал подошвы обуви', value: randomItem(['ТЭП (термоэластопласт)', 'Резина', 'Полиуретан']) },
-    { label: 'Материал стельки', value: randomItem(['натуральная кожа', 'текстиль', 'комбинированный']) },
-    { label: 'Материал подкладки обуви', value: randomItem(['натуральная кожа', 'текстиль', 'кожзам']) },
-    { label: 'Полнота обуви (EUR)', value: randomItem(['F (6)', 'G (7)', 'H (8)']) },
-    { label: 'Вид застежки', value: randomItem(['пряжка', 'шнурки', 'молния', 'липучка']) },
-    { label: 'Комплектация', value: 'Обувь 1 пара в коробке' },
+    { label: t('mockData.characteristics.soleMaterial'), value: randomItem([t('mockData.soleMaterials.tep'), t('mockData.soleMaterials.rubber'), t('mockData.soleMaterials.polyurethane')]) },
+    { label: t('mockData.characteristics.insoleMaterial'), value: randomItem([t('mockData.materials.naturalLeather'), t('mockData.materials.textile'), t('mockData.combined')]) },
+    { label: t('mockData.characteristics.liningMaterial'), value: randomItem([t('mockData.materials.naturalLeather'), t('mockData.materials.textile'), t('mockData.materials.leatherette')]) },
+    { label: t('mockData.characteristics.width'), value: randomItem(['F (6)', 'G (7)', 'H (8)']) },
+    { label: t('mockData.characteristics.fastenerType'), value: randomItem([t('mockData.fasteners.buckle'), t('mockData.fasteners.laces'), t('mockData.fasteners.zipper'), t('mockData.fasteners.velcro')]) },
+    { label: t('mockData.characteristics.package'), value: t('mockData.characteristics.packageValue') },
   ];
 };
 
@@ -110,6 +146,10 @@ export const generateProduct = (id: number): Product => {
     const x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
   };
+  
+  const productTypes = getProductTypes();
+  const materials = getMaterials();
+  const colors = getColors();
   
   const typeIndex = Math.floor(random(id * 1) * productTypes.length);
   const materialIndex = Math.floor(random(id * 2) * materials.length);
@@ -160,14 +200,14 @@ export const generateProduct = (id: number): Product => {
   const genderOptions = ['male', 'female', 'unisex'];
   const gender = genderOptions[Math.floor(random(id * 13) * genderOptions.length)] as 'male' | 'female' | 'unisex';
   
-  // Generate gender-specific description
-  const genderText = gender === 'male' ? 'мужская' : gender === 'female' ? 'женская' : 'унисекс';
+  // Generate gender-specific description using translation
+  const genderText = t(`mockData.genderText.${gender}`);
   
   return {
     id,
     name: `${type!} ${brand!} ${color!}`,
     slug: `${type!.toLowerCase().replace(/\s+/g, '-')}-${brand!.toLowerCase()}-${id}`,
-    description: `Качественная ${genderText} обувь от бренда ${brand!}. Изготовлена из ${material!}. Идеально подходит для повседневной носки.`,
+    description: t('mockData.description', { gender: genderText, brand: brand!, material: material! }),
     price,
     discount,
     currency: '₽',

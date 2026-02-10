@@ -15,6 +15,8 @@
       
       <!-- Chart line -->
       <polyline
+        ref="chartLineRef"
+        :class="$style.chartLine"
         :points="linePoints"
         fill="none"
         :stroke="color"
@@ -26,11 +28,13 @@
       <!-- Data points -->
       <circle
         v-for="(point, index) in points"
-        :key="`point-${index}`"
+        :key="`point-${index}-${animationKey}`"
+        :class="$style.chartPoint"
         :cx="point.x"
         :cy="point.y"
         r="4"
         :fill="color"
+        :style="{ animationDelay: `${index * 0.05}s` }"
       />
     </svg>
     
@@ -50,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, watch, ref, onMounted, nextTick } from 'vue';
 
 interface Props {
   data: number[];
@@ -68,9 +72,49 @@ const props = withDefaults(defineProps<Props>(), {
   height: 200,
 });
 
+const chartLineRef = ref<SVGPolylineElement | null>(null);
+const animationKey = ref(0);
+
 const minValue = computed(() => Math.min(...props.data));
 const maxValue = computed(() => Math.max(...props.data));
 const range = computed(() => maxValue.value - minValue.value || 1);
+
+const animateLine = async () => {
+  await nextTick();
+  if (chartLineRef.value) {
+    const length = chartLineRef.value.getTotalLength();
+    
+    // Set up the animation
+    chartLineRef.value.style.strokeDasharray = `${length}`;
+    chartLineRef.value.style.strokeDashoffset = `${length}`;
+    
+    // Trigger animation
+    requestAnimationFrame(() => {
+      if (chartLineRef.value) {
+        chartLineRef.value.style.transition = 'stroke-dashoffset 0.8s ease-out';
+        chartLineRef.value.style.strokeDashoffset = '0';
+        
+        // Remove dasharray after animation completes to show solid line
+        setTimeout(() => {
+          if (chartLineRef.value) {
+            chartLineRef.value.style.strokeDasharray = 'none';
+            chartLineRef.value.style.transition = '';
+          }
+        }, 800);
+      }
+    });
+  }
+};
+
+// Watch for data changes to trigger animation
+watch(() => props.data, () => {
+  animationKey.value++;
+  animateLine();
+}, { deep: true });
+
+onMounted(() => {
+  animateLine();
+});
 
 const points = computed(() => {
   const segmentWidth = props.width / (props.data.length - 1 || 1);
@@ -99,6 +143,21 @@ const linePoints = computed(() => {
   width: 100%;
   height: 200px;
   margin-bottom: 8px;
+}
+
+.chartLine {
+  /* Animation is applied via JavaScript */
+}
+
+.chartPoint {
+  animation: fadeInPoint 0.3s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInPoint {
+  to {
+    opacity: 1;
+  }
 }
 
 .chartLabels {

@@ -3,13 +3,22 @@
     <div v-if="modelValue" :class="$style.modalBackdrop" @click="close">
       <div :class="$style.settingsModal" @click.stop>
         <div :class="$style.modalHeader">
-          <h2 :class="$style.modalTitle">Настройки</h2>
-          <button :class="$style.modalClose" @click="close" aria-label="Закрыть">
+          <h2 :class="$style.modalTitle">{{ t('settings.title') }}</h2>
+          <button :class="$style.modalClose" @click="close" :aria-label="t('common.close')">
             <img :src="crossIcon" alt="" :class="$style.closeIcon" />
           </button>
         </div>
         
         <div :class="$style.modalContent">
+          <!-- Language Setting -->
+          <div :class="$style.settingItem">
+            <div :class="$style.settingInfo">
+              <div :class="$style.settingLabel">{{ t('settings.language') }}</div>
+              <div :class="$style.settingDescription">{{ t('settings.languageDescription') }}</div>
+            </div>
+            <LanguageSwitcher />
+          </div>
+          
           <div v-for="setting in settings" :key="setting.id" :class="$style.settingItem">
             <div :class="$style.settingInfo">
               <div :class="$style.settingLabel">{{ setting.label }}</div>
@@ -22,15 +31,15 @@
         <div :class="$style.modalFooter">
           <div :class="$style.leftActions">
             <Button type="accent" @click="handleSave" :class="$style.saveButton">
-              Сохранить
+              {{ t('settings.save') }}
             </Button>
             <button :class="$style.logoutLink" @click="handleLogout">
               <img :src="quitIcon" alt="" :class="$style.logoutIcon" />
-              Выйти
+              {{ t('auth.logout') }}
             </button>
           </div>
           <button :class="$style.deleteLink" @click="handleDeleteAccount">
-            Удалить аккаунт
+            {{ t('settings.deleteAccount') }}
           </button>
         </div>
       </div>
@@ -40,10 +49,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import Switch from './Switch.vue';
 import Button from './Button.vue';
+import LanguageSwitcher from './LanguageSwitcher.vue';
 import crossIcon from '@assets/cross.svg';
 import quitIcon from '@assets/quit.svg';
+
+const { t } = useI18n();
 
 interface Setting {
   id: string;

@@ -10,22 +10,22 @@
         <div :class="$style.menuSections">
           <!-- Categories Section -->
           <div :class="$style.menuSection">
-            <h2 :class="$style.sectionTitle">Каталог</h2>
+            <h2 :class="$style.sectionTitle">{{ t('navigation.catalog') }}</h2>
             <div :class="$style.menuItems">
               <router-link to="/?category=new" :class="$style.menuItem">
-                <span :class="$style.itemText">Новинки</span>
+                <span :class="$style.itemText">{{ t('navigation.newArrivals') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
               <router-link to="/?category=women" :class="$style.menuItem">
-                <span :class="$style.itemText">Женщинам</span>
+                <span :class="$style.itemText">{{ t('navigation.women') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
               <router-link to="/?category=men" :class="$style.menuItem">
-                <span :class="$style.itemText">Мужчинам</span>
+                <span :class="$style.itemText">{{ t('navigation.men') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
               <router-link to="/?category=sale" :class="$style.menuItem">
-                <span :class="$style.itemText">Распродажа</span>
+                <span :class="$style.itemText">{{ t('navigation.sale') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
             </div>
@@ -33,18 +33,18 @@
           
           <!-- Customer Service Section -->
           <div :class="$style.menuSection">
-            <h2 :class="$style.sectionTitle">Покупателям</h2>
+            <h2 :class="$style.sectionTitle">{{ t('navigation.forCustomers') }}</h2>
             <div :class="$style.menuItems">
               <router-link to="/delivery" :class="$style.menuItem">
-                <span :class="$style.itemText">Доставка и оплата</span>
+                <span :class="$style.itemText">{{ t('navigation.deliveryAndPayment') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
               <router-link to="/returns" :class="$style.menuItem">
-                <span :class="$style.itemText">Обмен и возврат</span>
+                <span :class="$style.itemText">{{ t('navigation.exchangeAndReturn') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
               <router-link to="/faq" :class="$style.menuItem">
-                <span :class="$style.itemText">Вопросы и ответы (FAQ)</span>
+                <span :class="$style.itemText">{{ t('navigation.faqFull') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
             </div>
@@ -52,26 +52,26 @@
           
           <!-- Company Section -->
           <div :class="$style.menuSection">
-            <h2 :class="$style.sectionTitle">О компании</h2>
+            <h2 :class="$style.sectionTitle">{{ t('navigation.aboutCompany') }}</h2>
             <div :class="$style.menuItems">
               <router-link to="/about" :class="$style.menuItem">
-                <span :class="$style.itemText">О бренде Stivalli</span>
+                <span :class="$style.itemText">{{ t('navigation.aboutBrand') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
               <router-link to="/contacts" :class="$style.menuItem">
-                <span :class="$style.itemText">Контакты</span>
+                <span :class="$style.itemText">{{ t('navigation.contacts') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
               <router-link to="/partners" :class="$style.menuItem">
-                <span :class="$style.itemText">Партнерам (B2B)</span>
+                <span :class="$style.itemText">{{ t('navigation.partnersB2B') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
               <router-link to="/offer" :class="$style.menuItem">
-                <span :class="$style.itemText">Публичная оферта</span>
+                <span :class="$style.itemText">{{ t('navigation.publicOffer') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
               <router-link to="/privacy" :class="$style.menuItem">
-                <span :class="$style.itemText">Политика конфиденциальности</span>
+                <span :class="$style.itemText">{{ t('navigation.privacyPolicy') }}</span>
                 <span :class="$style.itemArrow">›</span>
               </router-link>
             </div>
@@ -84,7 +84,10 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '@widgets/index';
+
+const { t } = useI18n();
 </script>
 
 <style module>

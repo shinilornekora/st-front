@@ -2,12 +2,12 @@
 	<div
 		:class="[$style.carousel, $style[type]]"
 		tabindex="0"
-		aria-label="Галерея"
+		:aria-label="t('ui.gallery')"
 	>
 		<button
 			:class="$style.arrow"
 			@click="prev"
-			aria-label="Предыдущий"
+			:aria-label="t('ui.previous')"
 			:disabled="index <= 0"
 		>
 			‹
@@ -16,7 +16,7 @@
 		<button
 			:class="$style.arrow"
 			@click="next"
-			aria-label="Следующий"
+			:aria-label="t('ui.next')"
 			:disabled="index >= images.length - 1"
 		>
 			›
@@ -25,14 +25,18 @@
 </template>
 <script setup lang="ts">
 	import { ref } from 'vue';
+	import { useI18n } from 'vue-i18n';
 	import theme from './theme.module.css';
-	defineProps<{
+	
+	const { t } = useI18n();
+	
+	const props = defineProps<{
 		images: string[];
 		type?: 'main' | 'accent' | 'error' | 'success';
 	}>();
 	const index = ref(0);
 	function next() {
-		if (index.value < images.length - 1) index.value++;
+		if (index.value < props.images.length - 1) index.value++;
 	}
 	function prev() {
 		if (index.value > 0) index.value--;

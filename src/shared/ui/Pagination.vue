@@ -4,10 +4,10 @@
 			:class="[$style.paginationBtn, $style.paginationArrow]"
 			@click="goToPreviousPage"
 			:disabled="currentPage === 1"
-			aria-label="Previous page"
+			:aria-label="t('ui.previous')"
 		>
 			<img src="@assets/arrow_left.svg" alt="" :class="$style.arrowIcon" />
-			{{ previousText }}
+			{{ previousText || t('common.previous') }}
 		</button>
 		
 		<!-- Always show first page -->
@@ -53,9 +53,9 @@
 			:class="[$style.paginationBtn, $style.paginationArrow]"
 			@click="goToNextPage"
 			:disabled="currentPage === totalPages"
-			aria-label="Next page"
+			:aria-label="t('ui.next')"
 		>
-			{{ nextText }}
+			{{ nextText || t('common.next') }}
 			<img src="@assets/arrow_right.svg" alt="" :class="$style.arrowIcon" />
 		</button>
 	</nav>
@@ -63,6 +63,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const props = withDefaults(defineProps<{
 	currentPage: number;
@@ -73,8 +76,8 @@ const props = withDefaults(defineProps<{
 	scrollToTop?: boolean;
 }>(), {
 	maxVisiblePages: 5,
-	previousText: 'Previous',
-	nextText: 'Next',
+	previousText: undefined,
+	nextText: undefined,
 	scrollToTop: true,
 });
 

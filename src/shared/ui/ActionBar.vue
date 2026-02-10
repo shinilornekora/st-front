@@ -1,10 +1,10 @@
 <template>
-	<nav :class="[$style.bar, $style[type]]" aria-label="Панель действий">
+	<nav :class="[$style.bar, $style[type]]" :aria-label="t('ui.actionPanel')">
 		<button
 			v-if="showAdd"
 			:class="$style.btn"
 			@click="$emit('add')"
-			aria-label="Добавить"
+			:aria-label="t('common.add')"
 		>
 			➕
 		</button>
@@ -12,7 +12,7 @@
 			v-if="showEdit"
 			:class="$style.btn"
 			@click="$emit('edit')"
-			aria-label="Редактировать"
+			:aria-label="t('common.edit')"
 		>
 			✏️
 		</button>
@@ -20,7 +20,7 @@
 			v-if="showDelete"
 			:class="$style.btn"
 			@click="$emit('delete')"
-			aria-label="Удалить"
+			:aria-label="t('common.delete')"
 		>
 			🗑️
 		</button>
@@ -28,7 +28,10 @@
 	</nav>
 </template>
 <script setup lang="ts">
+	import { useI18n } from 'vue-i18n';
 	import theme from './theme.module.css';
+	
+	const { t } = useI18n();
 	defineProps<{
 		showAdd?: boolean;
 		showEdit?: boolean;

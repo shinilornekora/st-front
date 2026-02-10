@@ -5,8 +5,8 @@
         <!-- Main Requisites View -->
         <template v-if="!showAddForm">
           <div :class="$style.modalHeader">
-            <h2 :class="$style.modalTitle">Реквизиты</h2>
-            <button :class="$style.modalClose" @click="close" aria-label="Закрыть">
+            <h2 :class="$style.modalTitle">{{ t('modal.requisites') }}</h2>
+            <button :class="$style.modalClose" @click="close" :aria-label="t('modal.close')">
               <img :src="crossIcon" alt="" :class="$style.closeIcon" />
             </button>
           </div>
@@ -14,7 +14,7 @@
           <div :class="$style.modalContent">
             <button :class="$style.addButton" @click="handleAddRequisites">
               <img :src="docsIcon" alt="" :class="$style.addIcon" />
-              <span>Добавить реквизиты</span>
+              <span>{{ t('modal.addRequisites') }}</span>
             </button>
           </div>
         </template>
@@ -22,11 +22,11 @@
         <!-- Add Requisites Form -->
         <template v-else>
           <div :class="$style.modalHeader">
-            <button :class="$style.backButton" @click="handleBack" aria-label="Назад">
+            <button :class="$style.backButton" @click="handleBack" :aria-label="t('modal.back')">
               <img :src="arrowLeftIcon" alt="" :class="$style.backIcon" />
             </button>
-            <h2 :class="$style.modalTitle">Добавить реквизиты</h2>
-            <button :class="$style.modalClose" @click="close" aria-label="Закрыть">
+            <h2 :class="$style.modalTitle">{{ t('modal.addRequisites') }}</h2>
+            <button :class="$style.modalClose" @click="close" :aria-label="t('modal.close')">
               <img :src="crossIcon" alt="" :class="$style.closeIcon" />
             </button>
           </div>
@@ -34,7 +34,7 @@
           <div :class="$style.formContent">
             <form @submit.prevent="handleSubmit">
               <div :class="$style.formGroup">
-                <label :class="$style.formLabel">Выберете страну банка</label>
+                <label :class="$style.formLabel">{{ t('modal.selectCountry') }}</label>
                 <Select
                   v-model="formData.country"
                   placeholder="Value"
@@ -44,7 +44,7 @@
               </div>
 
               <div :class="$style.formGroup">
-                <label :class="$style.formLabel">Название реквизитов</label>
+                <label :class="$style.formLabel">{{ t('modal.requisitesName') }}</label>
                 <Input
                   v-model="formData.name"
                   placeholder="Value"
@@ -53,7 +53,7 @@
               </div>
 
               <div :class="$style.formGroup">
-                <label :class="$style.formLabel">БИК</label>
+                <label :class="$style.formLabel">{{ t('modal.bik') }}</label>
                 <Input
                   v-model="formData.bik"
                   placeholder="Value"
@@ -62,7 +62,7 @@
               </div>
 
               <div :class="$style.formGroup">
-                <label :class="$style.formLabel">Счёт получателя</label>
+                <label :class="$style.formLabel">{{ t('modal.accountNumber') }}</label>
                 <Input
                   v-model="formData.account"
                   placeholder="Value"
@@ -71,7 +71,7 @@
               </div>
 
               <div :class="$style.formGroup">
-                <label :class="$style.formLabel">ФИО (полностью</label>
+                <label :class="$style.formLabel">{{ t('modal.fullName') }}</label>
                 <Input
                   v-model="formData.fullName"
                   placeholder="Value"
@@ -86,7 +86,7 @@
                 size="large"
                 :class="$style.submitButton"
               >
-                Сохранить
+                {{ t('common.save') }}
               </Button>
             </form>
           </div>
@@ -97,11 +97,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 import crossIcon from '@assets/cross.svg';
 import docsIcon from '@assets/docs.svg';
 import arrowLeftIcon from '@assets/arrow_left_long.svg';
 import { Input, Select, Button } from './index';
+
+const { t } = useI18n();
 
 interface Props {
   modelValue: boolean;
@@ -127,12 +130,12 @@ const formData = ref<RequisitesFormData>({
   fullName: ''
 });
 
-const countryOptions = [
-  { value: 'ru', label: 'Россия' },
-  { value: 'by', label: 'Беларусь' },
-  { value: 'kz', label: 'Казахстан' },
-  { value: 'tr', label: 'Турция' },
-];
+const countryOptions = computed(() => [
+  { value: 'ru', label: t('modal.russia') },
+  { value: 'by', label: t('modal.belarus') },
+  { value: 'kz', label: t('modal.kazakhstan') },
+  { value: 'tr', label: t('modal.turkey') },
+]);
 
 // Reset form when modal closes
 watch(() => props.modelValue, (newValue) => {

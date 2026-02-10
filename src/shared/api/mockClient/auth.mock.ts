@@ -1,5 +1,6 @@
 import { mockClient } from './client';
 import type { User } from '@entities/user/user.types';
+import { i18n } from '@shared/i18n';
 
 const MOCK_USERS = {
   'seller@example.com': {
@@ -8,12 +9,12 @@ const MOCK_USERS = {
       id: 1,
       email: 'seller@example.com',
       role: 'SELLER' as const,
-      fullName: 'Иван Продавцов',
+      fullName: i18n.global.t('mockData.mockUsers.seller'),
       phone: '+79001234567',
       specificFields: {
         id: 1,
         userId: 1,
-        name: 'Магазин Обуви',
+        name: i18n.global.t('mockData.mockShop'),
         logo: undefined,
         phone: '+79001234567',
         email: 'seller@example.com',
@@ -29,7 +30,7 @@ const MOCK_USERS = {
       id: 2,
       email: 'customer@example.com',
       role: 'CUSTOMER' as const,
-      fullName: 'Мария Покупателева',
+      fullName: i18n.global.t('mockData.mockUsers.customer'),
       phone: '+79009876543',
       specificFields: {
         favoriteProducts: [1, 5, 10]
@@ -42,7 +43,7 @@ const MOCK_USERS = {
       id: 3,
       email: 'admin@example.com',
       role: 'ADMIN' as const,
-      fullName: 'Администратор Системы',
+      fullName: i18n.global.t('mockData.mockUsers.admin'),
       phone: '+79005555555',
       specificFields: {
         isRestrictedAdmin: false,
@@ -58,11 +59,11 @@ export const mockLogin = async (login: string, password: string) => {
       const userEntry = MOCK_USERS[credentials.login as keyof typeof MOCK_USERS];
 
       if (!userEntry) {
-        throw new Error('Пользователь с таким email не найден');
+        throw new Error('User with this email not found'); // errors.userNotFound
       }
 
       if (userEntry.password !== credentials.password) {
-        throw new Error('Неверный пароль');
+        throw new Error('Wrong password'); // errors.wrongPassword
       }
 
       return userEntry.user;
@@ -82,17 +83,17 @@ export const mockRegister = async (data: {
   return mockClient.post<{ message: string }, typeof data>(
     (registerData) => {
       if (MOCK_USERS[registerData.email as keyof typeof MOCK_USERS]) {
-        throw new Error('Пользователь с таким email уже существует');
+        throw new Error('User with this email already exists'); // errors.userExists
       }
 
       if (registerData.role === 'SELLER') {
         return {
-          message: 'Ваша заявка отправлена на рассмотрение администратору'
+          message: 'Your application has been submitted for administrator review' // messages.applicationSubmitted
         };
       }
 
       return {
-        message: 'Регистрация прошла успешно! Теперь вы можете войти в систему'
+        message: 'Registration successful! You can now log in' // messages.registrationSuccess
       };
     },
     data,

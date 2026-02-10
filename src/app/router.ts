@@ -16,6 +16,7 @@ import Contacts from '@pages/Contacts/Contacts.vue';
 import Partners from '@pages/Partners/Partners.vue';
 import Offer from '@pages/Offer/Offer.vue';
 import Privacy from '@pages/Privacy/Privacy.vue';
+import { $user } from '@entities/user/user.store';
 
 const routes = [
 	{
@@ -113,4 +114,27 @@ const routes = [
 export const router = createRouter({
 	history: createWebHistory(),
 	routes,
+});
+
+// Navigation guard для редиректа пользователей на их страницы
+router.beforeEach((to, from, next) => {
+	const user = $user.getState();
+	
+	// Если пользователь пытается попасть на главную страницу или каталог
+	if (to.path === '/' || to.path === '/catalog') {
+		if (user) {
+			// Редирект для SELLER (партнеров B2B)
+			if (user.role === 'SELLER') {
+				next('/b2b');
+				return;
+			}
+			// Редирект для ADMIN
+			if (user.role === 'ADMIN') {
+				next('/admin');
+				return;
+			}
+		}
+	}
+	
+	next();
 });

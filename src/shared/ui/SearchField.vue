@@ -10,7 +10,7 @@
 				:class="$style.input"
 				v-model="value"
 				:placeholder="placeholder"
-				aria-label="Поиск"
+				:aria-label="t('common.search')"
 				@focus="showPopup = true"
 				@keydown.enter.prevent="handleSubmit"
 			/>
@@ -40,7 +40,7 @@
 					@mouseenter="handleFiltersMouseEnter"
 					@mouseleave="handleFiltersMouseLeave"
 				>
-					<span :class="$style.filterCount">{{ activeFilters.length }} фильтров</span>
+					<span :class="$style.filterCount">{{ t('filters.filtersCount', { count: activeFilters.length }) }}</span>
 					<div :class="$style.ellipsis">...</div>
 				</div>
 			</div>
@@ -50,7 +50,7 @@
 				:class="$style.clearBtn"
 				type="button"
 				@click="clearAll"
-				aria-label="Очистить"
+				:aria-label="t('ui.clear')"
 			>
 				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<line x1="18" y1="6" x2="6" y2="18"></line>
@@ -58,7 +58,7 @@
 				</svg>
 			</button>
 			
-			<button :class="$style.searchBtn" type="submit" aria-label="Найти">
+			<button :class="$style.searchBtn" type="submit" :aria-label="t('common.find')">
 				<slot name="icon">
 					<img src="@assets/search.svg" alt="" :class="$style.searchIcon" />
 				</slot>
@@ -131,9 +131,12 @@
 </template>
 <script setup lang="ts">
 	import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
+	import { useI18n } from 'vue-i18n';
 	import FilterTooltip from './FilterTooltip.vue';
 	import FiltersTooltip from './FiltersTooltip.vue';
 	import theme from './theme.module.css';
+	
+	const { t } = useI18n();
 	
 	interface Filter {
 		id: 'size' | 'quantity' | 'price' | 'sex' | 'color';
@@ -181,19 +184,19 @@
 	const resizeObserver = ref<ResizeObserver | null>(null);
 	
 	// All available filters
-	const allFilters = ref<Filter[]>([
-		{ id: 'size', label: 'Размер' },
-		{ id: 'quantity', label: 'Количество' },
-		{ id: 'price', label: 'Цена' },
-		{ id: 'sex', label: 'М/Ж' },
-		{ id: 'color', label: 'Цвет' }
+	const allFilters = computed<Filter[]>(() => [
+		{ id: 'size', label: t('filters.size') },
+		{ id: 'quantity', label: t('filters.quantity') },
+		{ id: 'price', label: t('filters.price') },
+		{ id: 'sex', label: t('filters.sex') },
+		{ id: 'color', label: t('filters.color') }
 	]);
 	
 	// Search suggestions
-	const searchSuggestions = ref<string[]>([
-		'Кроссовки',
-		'Ботинки',
-		'Туфли',
+	const searchSuggestions = computed<string[]>(() => [
+		t('product.sneakers'),
+		t('product.boots'),
+		t('product.shoes'),
 	]);
 	
 	const selectSuggestion = (suggestion: string) => {
@@ -260,34 +263,24 @@
 		
 		switch (type) {
 			case 'size':
-				return `Размер: ${values.join(', ')}`;
+				return `${t('filters.size')}: ${values.join(', ')}`;
 			case 'quantity':
-				return values.includes('in_stock') ? 'В наличии' : 'Под заказ';
+				return values.includes('in_stock') ? t('filters.inStock') : t('filters.preOrder');
 			case 'price':
 				const [min, max] = values;
-				if (min && max) return `Цена: ${min}-${max}`;
-				if (min) return `Цена: от ${min}`;
-				if (max) return `Цена: до ${max}`;
-				return 'Цена';
+				if (min && max) return `${t('filters.price')}: ${min}-${max}`;
+				if (min) return `${t('filters.price')}: ${t('filters.from')} ${min}`;
+				if (max) return `${t('filters.price')}: ${t('filters.to')} ${max}`;
+				return t('filters.price');
 			case 'sex':
 				const sexLabels: Record<string, string> = {
-					'male': 'Мужской',
-					'female': 'Женский',
-					'unisex': 'Унисекс'
+					'male': t('filters.male'),
+					'female': t('filters.female'),
+					'unisex': t('filters.unisex')
 				};
 				return values.map(v => sexLabels[v] || v).join(', ');
 			case 'color':
-				const colorLabels: Record<string, string> = {
-					'black': 'Черный',
-					'white': 'Белый',
-					'brown': 'Коричневый',
-					'beige': 'Бежевый',
-					'gray': 'Серый',
-					'blue': 'Синий',
-					'red': 'Красный',
-					'green': 'Зеленый'
-				};
-				return values.map(v => colorLabels[v] || v).join(', ');
+				return values.map(v => t(`filters.colorsCapitalized.${v}`, v)).join(', ');
 			default:
 				return filter.label;
 		}

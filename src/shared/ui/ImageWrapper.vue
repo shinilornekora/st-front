@@ -12,10 +12,10 @@
 			@error="onError"
 		/>
 		<div v-else-if="type === 'error'" :class="$style.fallback">
-			Ошибка загрузки
+			{{ t('ui.loadingError') }}
 		</div>
 		<div v-else-if="type === 'loading'" :class="$style.fallback">
-			Загрузка...
+			{{ t('common.loading') }}
 		</div>
 		<slot v-else />
 		<figcaption v-if="caption" :class="$style.caption">
@@ -25,7 +25,11 @@
 </template>
 <script setup lang="ts">
 	import { ref } from 'vue';
+	import { useI18n } from 'vue-i18n';
 	import theme from './theme.module.css';
+	
+	const { t } = useI18n();
+	
 	defineProps<{
 		src?: string;
 		alt?: string;

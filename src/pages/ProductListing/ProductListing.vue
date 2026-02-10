@@ -50,8 +50,8 @@
 				:current-page="currentPage"
 				:total-pages="totalPages"
 				:max-visible-pages="7"
-				previous-text="Previous"
-				next-text="Next"
+				:previous-text="t('common.previous')"
+				:next-text="t('common.next')"
 				:scroll-to-top="false"
 				@page-change="handlePageChange"
 			/>
@@ -66,6 +66,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
+import { useI18n } from 'vue-i18n';
 import { $products, getProductsFx } from '@entities/product/product.store';
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
@@ -73,6 +74,8 @@ import Header from '@widgets/Header.vue';
 import Footer from '@widgets/Footer.vue';
 import { Pagination } from '@shared/ui';
 import ProductCard from '@entities/product/ui/ProductCard.vue';
+
+const { t } = useI18n();
 
 const router = useRouter();
 const route = useRoute();
@@ -91,13 +94,13 @@ watch(() => route.query.category, (newCategory) => {
 		if (newCategory === 'women') {
 			activeFilters.value = [{
 				id: 'sex',
-				label: 'Женский',
+				label: t('filters.female'),
 				values: ['female']
 			}];
 		} else if (newCategory === 'men') {
 			activeFilters.value = [{
 				id: 'sex',
-				label: 'Мужской',
+				label: t('filters.male'),
 				values: ['male']
 			}];
 		} else {
@@ -213,14 +216,14 @@ const filteredProducts = computed(() => {
 						// Check if product name, description or tags contain the color
 						return filter.values.some((color: string) => {
 							const colorNames: Record<string, string> = {
-								'black': 'черный',
-								'white': 'белый',
-								'brown': 'коричневый',
-								'beige': 'бежевый',
-								'gray': 'серый',
-								'blue': 'синий',
-								'red': 'красный',
-								'green': 'зеленый'
+								'black': t('filters.colors.black'),
+								'white': t('filters.colors.white'),
+								'brown': t('filters.colors.brown'),
+								'beige': t('filters.colors.beige'),
+								'gray': t('filters.colors.gray'),
+								'blue': t('filters.colors.blue'),
+								'red': t('filters.colors.red'),
+								'green': t('filters.colors.green')
 							};
 							const colorName = colorNames[color] || color;
 							return p.name.toLowerCase().includes(colorName) ||

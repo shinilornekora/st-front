@@ -3,8 +3,8 @@
     <div v-if="modelValue" :class="$style.modalBackdrop" @click="close">
       <div :class="$style.discountModal" @click.stop>
         <div :class="$style.modalHeader">
-          <h2 :class="$style.modalTitle">Хочу скидку</h2>
-          <button :class="$style.modalClose" @click="close" aria-label="Закрыть">
+          <h2 :class="$style.modalTitle">{{ t('modal.wantDiscount') }}</h2>
+          <button :class="$style.modalClose" @click="close" :aria-label="t('modal.close')">
             <img :src="crossIcon" alt="" :class="$style.closeIcon" />
           </button>
         </div>
@@ -12,11 +12,11 @@
         <div :class="$style.modalContent">
           <form @submit.prevent="handleSubmit">
             <div :class="$style.formGroup">
-              <label :class="$style.formLabel">Введите свою цену за товар</label>
+              <label :class="$style.formLabel">{{ t('modal.enterPrice') }}</label>
               <Input
                 v-model="discountAmount"
                 type="number"
-                placeholder="Введите желаемую скидку (%)"
+                :placeholder="t('modal.enterDiscount')"
                 :class="$style.formInput"
                 min="1"
                 max="100"
@@ -30,7 +30,7 @@
               size="large"
               :class="$style.submitButton"
             >
-              Отправить продавцу
+              {{ t('modal.sendToSeller') }}
             </Button>
           </form>
         </div>
@@ -41,8 +41,11 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import crossIcon from '@assets/cross.svg';
 import { Input, Button } from './index';
+
+const { t } = useI18n();
 
 interface Props {
   modelValue: boolean;

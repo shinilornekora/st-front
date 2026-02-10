@@ -2,6 +2,7 @@ import { createStore, createEvent, createEffect, sample } from 'effector';
 import type { Cart, CartItem } from './cart.types';
 import { isUserAuthenticated } from '@shared/utils/auth';
 import { showToast, hideToast } from '@shared/ui/toast.store';
+import { i18n } from '@shared/i18n';
 
 // Helper functions for localStorage
 const saveCartToLocalStorage = (cart: Cart) => {
@@ -96,7 +97,7 @@ const hideToastFx = createEffect(() => {
 // Show toast when item is added to cart
 sample({
 	clock: addItem,
-	fn: () => 'Товар успешно добавлен в корзину',
+	fn: () => i18n.global.t('messages.itemAddedToCart'),
 	target: showToast,
 });
 

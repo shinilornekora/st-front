@@ -5,6 +5,7 @@
 
 import { mockClient } from './mockClient/client';
 import type { MockResponse } from './mockClient/client';
+import { i18n } from '@shared/i18n';
 
 // Types
 export interface SellerStats {
@@ -40,7 +41,14 @@ export interface GetSellersDashboardRequest {
 
 // Mock data generator
 const generateMockDashboard = (period: string = 'month'): SellersDashboard => {
-  const monthLabels = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июнь'];
+  const monthLabels = [
+    i18n.global.t('mockData.months.jan'),
+    i18n.global.t('mockData.months.feb'),
+    i18n.global.t('mockData.months.mar'),
+    i18n.global.t('mockData.months.apr'),
+    i18n.global.t('mockData.months.may'),
+    i18n.global.t('mockData.months.jun')
+  ];
   const quarterLabels = ['Q1', 'Q2', 'Q3', 'Q4'];
   const yearLabels = ['2020', '2021', '2022', '2023', '2024', '2025'];
 
@@ -98,7 +106,7 @@ export const getSellersDashboard = async (
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Ошибка сети',
+      error: error instanceof Error ? error.message : i18n.global.t('errors.networkError'),
     };
   }
 };
