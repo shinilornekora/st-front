@@ -81,7 +81,7 @@ const route = useRoute();
 const searchQuery = ref('');
 const selectedCategory = ref<string | null>(null);
 const currentPage = ref(1);
-const itemsPerPage = 20;
+const itemsPerPage = 35;
 const activeFilters = ref<any[]>([]);
 
 // Watch for category changes in URL query params
