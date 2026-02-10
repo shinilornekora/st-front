@@ -247,6 +247,7 @@ export default {
     addProduct: 'Add product',
     editProduct: 'Edit product',
     deleteProduct: 'Delete product',
+    comparedToPrevious: 'compared to previous period',
   },
   validation: {
     emailRequired: 'Email is required',

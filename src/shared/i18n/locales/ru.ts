@@ -247,6 +247,7 @@ export default {
     addProduct: 'Добавить товар',
     editProduct: 'Редактировать товар',
     deleteProduct: 'Удалить товар',
+    comparedToPrevious: 'по сравнению с предыдущим периодом',
   },
   validation: {
     emailRequired: 'Email обязателен',

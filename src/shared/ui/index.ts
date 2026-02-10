@@ -18,6 +18,7 @@ export { default as RequiredMark } from './RequiredMark.vue';
 export { default as Tabs } from './Tabs.vue';
 export { default as Dropdown } from './Dropdown.vue';
 export { default as LineChart } from './LineChart.vue';
+export { default as MultiLineChart } from './MultiLineChart.vue';
 export { default as Accordion } from './Accordion.vue';
 export { default as Burger } from './Burger.vue';
 export { default as Tooltip } from './Tooltip.vue';

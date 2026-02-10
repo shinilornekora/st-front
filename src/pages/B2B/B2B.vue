@@ -41,9 +41,16 @@
                       <option value="year">{{ t('admin.year') }}</option>
                     </select>
                   </div>
-                  <div :class="$style.statValue">{{ analytics.revenue.total }}</div>
-                  <div :class="$style.statChange">{{ analytics.revenue.change }}</div>
+                  <div :class="$style.statValue">{{ revenueTotal }}</div>
+                  <div :class="$style.statChange">{{ revenueChange }} {{ t('b2b.comparedToPrevious') }}</div>
+                  <MultiLineChart
+                    v-if="selectedProductIds.length > 0"
+                    :key="`revenue-${revenuePeriod}-${selectedProductIds.join(',')}`"
+                    :datasets="revenueDatasets"
+                    :labels="analytics.revenue.chartData.labels"
+                  />
                   <LineChart
+                    v-else
                     :key="`revenue-${revenuePeriod}`"
                     :data="analytics.revenue.chartData.data"
                     :labels="analytics.revenue.chartData.labels"
@@ -62,9 +69,16 @@
                       <option value="year">{{ t('admin.year') }}</option>
                     </select>
                   </div>
-                  <div :class="$style.statValue">{{ analytics.productsSold.total }} {{ t('b2b.sold').split(' ')[1] }}</div>
-                  <div :class="$style.statChange">{{ analytics.productsSold.change }}</div>
+                  <div :class="$style.statValue">{{ productsSoldTotal }} {{ t('b2b.sold').split(' ')[1] }}</div>
+                  <div :class="$style.statChange">{{ productsSoldChange }} {{ t('b2b.comparedToPrevious') }}</div>
+                  <MultiLineChart
+                    v-if="selectedProductIds.length > 0"
+                    :key="`products-${productsPeriod}-${selectedProductIds.join(',')}`"
+                    :datasets="productsSoldDatasets"
+                    :labels="analytics.productsSold.chartData.labels"
+                  />
                   <LineChart
+                    v-else
                     :key="`products-${productsPeriod}`"
                     :data="analytics.productsSold.chartData.data"
                     :labels="analytics.productsSold.chartData.labels"
@@ -88,7 +102,12 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="product in analytics.products" :key="product.id" :class="$style.tr">
+                    <tr
+                      v-for="product in analytics.products"
+                      :key="product.id"
+                      :class="[$style.tr, { [$style.trSelected]: selectedProductIds.includes(product.id) }]"
+                      @click="toggleProduct(product.id)"
+                    >
                       <td :class="$style.td">
                         <div :class="$style.productCell">
                           <div :class="$style.productImage"></div>
@@ -169,12 +188,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '../../widgets';
-import { LineChart } from '@shared/ui';
+import { LineChart, MultiLineChart } from '@shared/ui';
 import { getAnalyticsDashboard, getSellerProducts } from '@shared/api';
-import type { AnalyticsDashboard, ProductListItem } from '@shared/api';
+import type { AnalyticsDashboard, ProductListItem, ChartData } from '@shared/api';
 
 const { t } = useI18n();
 const activeTab = ref<'analytics' | 'products'>('analytics');
@@ -191,6 +210,12 @@ const isLoading = ref(false);
 const products = ref<ProductListItem[]>([]);
 const isLoadingProducts = ref(false);
 
+// Selected products for filtering charts (multiple selection)
+const selectedProductIds = ref<number[]>([]);
+
+// Colors for different product lines
+const productColors = ['#5fdbd1', '#f59e0b', '#8b5cf6', '#ec4899', '#10b981', '#3b82f6'];
+
 // Load revenue analytics data
 const loadRevenueAnalytics = async () => {
   isLoading.value = true;
@@ -201,7 +226,6 @@ const loadRevenueAnalytics = async () => {
     });
     
     if (response.success && response.data && analytics.value) {
-      // Create a completely new object to trigger reactivity
       analytics.value = {
         revenue: response.data.revenue,
         productsSold: analytics.value.productsSold,
@@ -225,7 +249,6 @@ const loadProductsAnalytics = async () => {
     });
     
     if (response.success && response.data && analytics.value) {
-      // Create a completely new object to trigger reactivity
       analytics.value = {
         revenue: analytics.value.revenue,
         productsSold: response.data.productsSold,
@@ -286,6 +309,130 @@ const handleEdit = () => {
 const handleDelete = () => {
   console.log('Delete product clicked');
 };
+
+// Generate mock chart data for a specific product
+const generateProductChartData = (productId: number, period: string): number[] => {
+  let data = [15, 20, 25, 45, 35, 30];
+
+  if (period === 'quarter') {
+    data = [35, 50, 60, 70];
+  } else if (period === 'year') {
+    data = [80, 120, 160, 220, 280, 340];
+  }
+
+  // Vary data based on product ID
+  return data.map(value => value + (productId * 3));
+};
+
+// Toggle product selection
+const toggleProduct = (productId: number) => {
+  const index = selectedProductIds.value.indexOf(productId);
+  if (index > -1) {
+    // Remove if already selected - create new array to trigger reactivity
+    selectedProductIds.value = selectedProductIds.value.filter(id => id !== productId);
+  } else {
+    // Add if not selected - create new array to trigger reactivity
+    selectedProductIds.value = [...selectedProductIds.value, productId];
+  }
+};
+
+// Computed datasets for revenue chart
+const revenueDatasets = computed(() => {
+  if (!analytics.value) return [];
+  
+  return selectedProductIds.value.map((productId, index) => {
+    const product = analytics.value!.products.find(p => p.id === productId);
+    if (!product) return null;
+    
+    return {
+      label: product.name,
+      data: generateProductChartData(productId, revenuePeriod.value),
+      color: productColors[index % productColors.length],
+    };
+  }).filter(Boolean) as { label: string; data: number[]; color: string }[];
+});
+
+// Computed datasets for products sold chart
+const productsSoldDatasets = computed(() => {
+  if (!analytics.value) return [];
+  
+  return selectedProductIds.value.map((productId, index) => {
+    const product = analytics.value!.products.find(p => p.id === productId);
+    if (!product) return null;
+    
+    return {
+      label: product.name,
+      data: generateProductChartData(productId, productsPeriod.value),
+      color: productColors[index % productColors.length],
+    };
+  }).filter(Boolean) as { label: string; data: number[]; color: string }[];
+});
+
+// Computed total revenue
+const revenueTotal = computed(() => {
+  if (!analytics.value) return '0 ₽';
+  
+  if (selectedProductIds.value.length === 0) {
+    return analytics.value.revenue.total;
+  }
+  
+  const total = selectedProductIds.value.reduce((sum, productId) => {
+    const product = analytics.value!.products.find(p => p.id === productId);
+    return sum + (product?.revenue || 0);
+  }, 0);
+  
+  return `${total.toLocaleString('ru-RU')} ₽`;
+});
+
+// Computed revenue change
+const revenueChange = computed(() => {
+  if (!analytics.value) return '+0%';
+  
+  if (selectedProductIds.value.length === 0) {
+    return analytics.value.revenue.change;
+  }
+  
+  // Average change across selected products
+  const changes = selectedProductIds.value.map(productId => {
+    const product = analytics.value!.products.find(p => p.id === productId);
+    return parseFloat(product?.dynamics.replace(/[+%]/g, '') || '0');
+  });
+  
+  const avgChange = changes.reduce((a, b) => a + b, 0) / changes.length;
+  return `${avgChange > 0 ? '+' : ''}${avgChange.toFixed(1)}%`;
+});
+
+// Computed total products sold
+const productsSoldTotal = computed(() => {
+  if (!analytics.value) return 0;
+  
+  if (selectedProductIds.value.length === 0) {
+    return analytics.value.productsSold.total;
+  }
+  
+  return selectedProductIds.value.reduce((sum, productId) => {
+    const product = analytics.value!.products.find(p => p.id === productId);
+    return sum + (product?.sold || 0);
+  }, 0);
+});
+
+// Computed products sold change
+const productsSoldChange = computed(() => {
+  if (!analytics.value) return '+0%';
+  
+  if (selectedProductIds.value.length === 0) {
+    return analytics.value.productsSold.change;
+  }
+  
+  // Average change across selected products
+  const changes = selectedProductIds.value.map(productId => {
+    const product = analytics.value!.products.find(p => p.id === productId);
+    return parseFloat(product?.dynamics.replace(/[+%]/g, '') || '0');
+  });
+  
+  const avgChange = changes.reduce((a, b) => a + b, 0) / changes.length;
+  return `${avgChange > 0 ? '+' : ''}${avgChange.toFixed(1)}%`;
+});
 
 // Watch tab changes to load data
 watch(activeTab, (newTab) => {
@@ -469,12 +616,14 @@ onMounted(() => {
   font-size: 32px;
   font-weight: 700;
   color: #5fdbd1;
+  text-align: left;
   margin-bottom: 8px;
 }
 
 .statChange {
   font-size: 14px;
   color: var(--color-secondary);
+  text-align: left;
   margin-bottom: 16px;
 }
 
@@ -504,6 +653,7 @@ onMounted(() => {
 .tr {
   border-bottom: 1px solid #e5e5e5;
   transition: background 0.2s;
+  cursor: pointer;
 }
 
 .tr:last-child {
@@ -512,6 +662,14 @@ onMounted(() => {
 
 .tr:hover {
   background: #f9fafb;
+}
+
+.trSelected {
+  background: #e0f7f5 !important;
+}
+
+.trSelected:hover {
+  background: #d0f0ed !important;
 }
 
 .td {
@@ -666,10 +824,6 @@ onMounted(() => {
     padding: 6px 20px 48px;
   }
   
-  .statsGrid {
-    grid-template-columns: 1fr;
-  }
-  
   .actionControls {
     right: 20px;
   }
@@ -696,6 +850,7 @@ onMounted(() => {
   }
   
   .statsGrid {
+    grid-template-columns: 1fr;
     gap: 16px;
   }
   
