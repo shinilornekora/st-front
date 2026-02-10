@@ -1,6 +1,6 @@
 <template>
 	<article
-		:class="[$style.item, $style[type]]"
+		:class="[$style.item, type ? $style[type] : '']"
 		tabindex="0"
 		aria-label="Позиция в корзине"
 	>
@@ -18,8 +18,9 @@
 			<div :class="$style.topBlock">
 				<h4 :class="$style.title" @click="goToProduct" role="button" tabindex="0" @keydown.enter="goToProduct">{{ title || 'No title' }}</h4>
 				<div v-if="article" :class="$style.article">Артикул: {{ article }}</div>
+				<div v-if="selectedColor" :class="$style.colorInfo">Цвет: {{ selectedColor }}</div>
 			</div>
-			<div :class="bottomBlock">
+			<div :class="$style.bottomBlock">
 				<slot name="variations" />
 				<div :class="$style.price">
 					{{ formatPrice(price || 0) }} x {{ qty || 0 }} =
@@ -84,6 +85,7 @@
 		qty: number;
 		article?: string;
 		type?: 'selected' | 'error' | 'disabled';
+		selectedColor?: string;
 	}>();
 	
 	const emit = defineEmits(['remove', 'update-quantity', 'favourite', 'share', 'product-click']);
@@ -196,6 +198,17 @@
 		font-size: 12px;
 		color: var(--color-secondary);
 		margin-top: 2px;
+	}
+	.colorInfo {
+		font-size: 12px;
+		color: var(--color-secondary);
+		margin-top: 2px;
+		font-weight: 500;
+	}
+	.bottomBlock {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
 	}
 	.price {
 		font-size: 16px;

@@ -19,6 +19,7 @@
               :price="item.price"
               :qty="item.quantity"
               :article="item.product.article"
+              :selected-color="item.selectedColor"
               @remove="removeFromCart(item.id)"
               @update-quantity="updateQuantity"
               @favourite="addToFavourites(item)"
