@@ -27,7 +27,7 @@
           <!-- Analytics Tab -->
           <div v-if="activeTab === 'analytics'" :class="$style.tabContent">
             <div v-if="isLoading" :class="$style.loading">{{ t('b2b.loading') }}</div>
-            <div v-else-if="analytics">
+            <div v-else-if="revenueData && productsSoldData">
               <!-- Stats Cards -->
               <div :class="$style.statsGrid">
                 <!-- Revenue Card -->
@@ -42,20 +42,20 @@
                   </div>
                   <div :class="$style.statValue">{{ revenueTotal }}</div>
                   <div :class="$style.statChange">{{ revenueChange }} {{ t('b2b.comparedToPrevious') }}</div>
-                  <MultiLineChart
-                    v-if="selectedProductIds.length > 0"
-                    :key="`revenue-${revenuePeriod}-${selectedProductIds.join(',')}`"
-                    :datasets="revenueDatasets"
-                    :labels="analytics.revenue.chartData.labels"
-                  />
-                  <LineChart
-                    v-else
-                    :key="`revenue-${revenuePeriod}`"
-                    :data="analytics.revenue.chartData.data"
-                    :labels="analytics.revenue.chartData.labels"
-                    :legendLabel="t('b2b.sandals')"
-                    color="#5fdbd1"
-                  />
+                  <div :key="`revenue-chart-${revenueChartKey}`">
+                    <MultiLineChart
+                      v-if="selectedProductIds.length > 0"
+                      :datasets="revenueDatasets"
+                      :labels="revenueData.chartData.labels"
+                    />
+                    <LineChart
+                      v-else
+                      :data="revenueData.chartData.data"
+                      :labels="revenueData.chartData.labels"
+                      :legendLabel="t('b2b.sandals')"
+                      color="#5fdbd1"
+                    />
+                  </div>
                 </div>
 
                 <!-- Products Sold Card -->
@@ -70,20 +70,20 @@
                   </div>
                   <div :class="$style.statValue">{{ productsSoldTotal }} {{ t('b2b.sold').split(' ')[1] }}</div>
                   <div :class="$style.statChange">{{ productsSoldChange }} {{ t('b2b.comparedToPrevious') }}</div>
-                  <MultiLineChart
-                    v-if="selectedProductIds.length > 0"
-                    :key="`products-${productsPeriod}-${selectedProductIds.join(',')}`"
-                    :datasets="productsSoldDatasets"
-                    :labels="analytics.productsSold.chartData.labels"
-                  />
-                  <LineChart
-                    v-else
-                    :key="`products-${productsPeriod}`"
-                    :data="analytics.productsSold.chartData.data"
-                    :labels="analytics.productsSold.chartData.labels"
-                    :legendLabel="t('b2b.sandals')"
-                    color="#5fdbd1"
-                  />
+                  <div :key="`products-chart-${productsSoldChartKey}`">
+                    <MultiLineChart
+                      v-if="selectedProductIds.length > 0"
+                      :datasets="productsSoldDatasets"
+                      :labels="productsSoldData.chartData.labels"
+                    />
+                    <LineChart
+                      v-else
+                      :data="productsSoldData.chartData.data"
+                      :labels="productsSoldData.chartData.labels"
+                      :legendLabel="t('b2b.sandals')"
+                      color="#5fdbd1"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -102,7 +102,7 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="product in analytics.products"
+                      v-for="product in productsData"
                       :key="product.id"
                       :class="[$style.tr, { [$style.trSelected]: selectedProductIds.includes(product.id) }]"
                       @click="toggleProduct(product.id)"
@@ -160,10 +160,24 @@
               </div>
 
               <!-- Action Controls -->
-              <div :class="$style.actionControls">
+              <div
+                ref="actionControlsRef"
+                :class="[
+                  $style.actionControls,
+                  {
+                    [$style.actionControlsDragging]: isDragging,
+                    [$style.actionControlsHolding]: isHolding
+                  }
+                ]"
+                :style="actionControlsStyle"
+                @mousedown="handleMouseDown"
+                @touchstart="handleTouchStart"
+              >
+                <!-- Hold Progress Indicator -->
+                <div v-if="isHolding" :class="$style.holdProgress"></div>
                 <button
                   :class="$style.actionBtn"
-                  @click="handleAdd"
+                  @click="handleAddClick"
                   :aria-label="t('b2b.addProduct')"
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -174,7 +188,7 @@
                 </button>
                 <button
                   :class="[$style.actionBtn, { [$style.actionBtnDisabled]: !selectedProductId }]"
-                  @click="handleEdit"
+                  @click="handleEditClick"
                   :disabled="!selectedProductId"
                   :aria-label="t('b2b.editProduct')"
                 >
@@ -185,7 +199,7 @@
                 </button>
                 <button
                   :class="[$style.actionBtn, { [$style.actionBtnDisabled]: !selectedProductId }]"
-                  @click="handleDelete"
+                  @click="handleDeleteClick"
                   :disabled="!selectedProductId"
                   :aria-label="t('b2b.deleteProduct')"
                 >
@@ -214,13 +228,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue';
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
 import { useStore } from 'effector-vue/composition';
 import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '../../widgets';
 import { LineChart, MultiLineChart } from '@shared/ui';
 import { getAnalyticsDashboard, getSellerProducts } from '@shared/api';
-import type { AnalyticsDashboard, ProductListItem, ChartData } from '@shared/api';
+import type { AnalyticsDashboard, ProductListItem } from '@shared/api';
 import { $previewFormData, clearPreviewFormData } from '@entities/product/product.store';
 import AddProductModal from './AddProductModal.vue';
 import $style from './B2B.module.css';
@@ -229,13 +243,53 @@ const { t } = useI18n();
 const previewFormData = useStore($previewFormData);
 const activeTab = ref<'analytics' | 'products'>('analytics');
 
+// Dragging state
+const STORAGE_KEY = 'b2b-action-controls-position';
+const actionControlsRef = ref<HTMLElement | null>(null);
+const isDragging = ref(false);
+const isHolding = ref(false);
+const wasDragging = ref(false);
+const dragStartTimer = ref<number | null>(null);
+const dragPosition = ref({ x: 0, y: 0 });
+const dragOffset = ref({ x: 0, y: 0 });
+const hasCustomPosition = ref(false);
+
+// Load saved position from localStorage
+const loadSavedPosition = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const position = JSON.parse(saved);
+      dragPosition.value = position;
+      hasCustomPosition.value = true;
+    }
+  } catch (error) {
+    console.error('Failed to load saved position:', error);
+  }
+};
+
+// Save position to localStorage
+const savePosition = () => {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dragPosition.value));
+  } catch (error) {
+    console.error('Failed to save position:', error);
+  }
+};
+
 // Period selectors
 const revenuePeriod = ref('month');
 const productsPeriod = ref('month');
 
-// Analytics data
-const analytics = ref<AnalyticsDashboard | null>(null);
+// Analytics data - separated for independent reactivity
+const revenueData = ref<AnalyticsDashboard['revenue'] | null>(null);
+const productsSoldData = ref<AnalyticsDashboard['productsSold'] | null>(null);
+const productsData = ref<AnalyticsDashboard['products']>([]);
 const isLoading = ref(false);
+
+// Chart keys for forcing re-render only when needed
+const revenueChartKey = ref(0);
+const productsSoldChartKey = ref(0);
 
 // Products data
 const products = ref<ProductListItem[]>([]);
@@ -261,12 +315,11 @@ const loadRevenueAnalytics = async () => {
       __mock: true,
     });
     
-    if (response.success && response.data && analytics.value) {
-      analytics.value = {
-        revenue: response.data.revenue,
-        productsSold: analytics.value.productsSold,
-        products: analytics.value.products,
-      };
+    if (response.success && response.data) {
+      // Only update revenue data independently
+      revenueData.value = response.data.revenue;
+      // Increment key to force re-render of revenue chart only
+      revenueChartKey.value++;
     }
   } catch (error) {
     console.error('Failed to load revenue analytics:', error);
@@ -284,12 +337,11 @@ const loadProductsAnalytics = async () => {
       __mock: true,
     });
     
-    if (response.success && response.data && analytics.value) {
-      analytics.value = {
-        revenue: analytics.value.revenue,
-        productsSold: response.data.productsSold,
-        products: analytics.value.products,
-      };
+    if (response.success && response.data) {
+      // Only update productsSold data independently
+      productsSoldData.value = response.data.productsSold;
+      // Increment key to force re-render of products sold chart only
+      productsSoldChartKey.value++;
     }
   } catch (error) {
     console.error('Failed to load products analytics:', error);
@@ -308,7 +360,9 @@ const loadAnalytics = async () => {
     });
     
     if (response.success && response.data) {
-      analytics.value = response.data;
+      revenueData.value = response.data.revenue;
+      productsSoldData.value = response.data.productsSold;
+      productsData.value = response.data.products;
     }
   } catch (error) {
     console.error('Failed to load analytics:', error);
@@ -343,7 +397,37 @@ const selectProduct = (productId: number) => {
   }
 };
 
-// Action handlers
+// Action handlers with drag prevention
+const handleAddClick = (e: MouseEvent) => {
+  if (wasDragging.value) {
+    e.preventDefault();
+    e.stopPropagation();
+    wasDragging.value = false;
+    return;
+  }
+  handleAdd();
+};
+
+const handleEditClick = (e: MouseEvent) => {
+  if (wasDragging.value) {
+    e.preventDefault();
+    e.stopPropagation();
+    wasDragging.value = false;
+    return;
+  }
+  handleEdit();
+};
+
+const handleDeleteClick = (e: MouseEvent) => {
+  if (wasDragging.value) {
+    e.preventDefault();
+    e.stopPropagation();
+    wasDragging.value = false;
+    return;
+  }
+  handleDelete();
+};
+
 const handleAdd = () => {
   // Check if we have saved form data from preview
   if (previewFormData.value) {
@@ -416,6 +500,153 @@ const handleDelete = () => {
   selectedProductId.value = null;
 };
 
+// Dragging functionality
+const handleMouseDown = (e: MouseEvent) => {
+  e.preventDefault();
+  
+  // Show holding indicator
+  isHolding.value = true;
+  
+  // Start timer for 2 seconds
+  dragStartTimer.value = window.setTimeout(() => {
+    startDragging(e.clientX, e.clientY);
+  }, 2000);
+  
+  // Add listeners to cancel timer if mouse is released early
+  document.addEventListener('mouseup', cancelDragTimer);
+  document.addEventListener('mousemove', cancelDragTimer);
+};
+
+const handleTouchStart = (e: TouchEvent) => {
+  e.preventDefault();
+  
+  const touch = e.touches[0];
+  if (!touch) return;
+  
+  // Show holding indicator
+  isHolding.value = true;
+  
+  // Start timer for 2 seconds
+  dragStartTimer.value = window.setTimeout(() => {
+    startDragging(touch.clientX, touch.clientY);
+  }, 2000);
+  
+  // Add listeners to cancel timer if touch is released early
+  document.addEventListener('touchend', cancelDragTimer);
+  document.addEventListener('touchmove', cancelDragTimer);
+};
+
+const cancelDragTimer = () => {
+  if (dragStartTimer.value) {
+    clearTimeout(dragStartTimer.value);
+    dragStartTimer.value = null;
+  }
+  
+  // Hide holding indicator
+  isHolding.value = false;
+  
+  document.removeEventListener('mouseup', cancelDragTimer);
+  document.removeEventListener('mousemove', cancelDragTimer);
+  document.removeEventListener('touchend', cancelDragTimer);
+  document.removeEventListener('touchmove', cancelDragTimer);
+};
+
+const startDragging = (clientX: number, clientY: number) => {
+  if (!actionControlsRef.value) return;
+  
+  // Hide holding indicator and start dragging
+  isHolding.value = false;
+  isDragging.value = true;
+  wasDragging.value = true;
+  hasCustomPosition.value = true;
+  
+  const rect = actionControlsRef.value.getBoundingClientRect();
+  
+  // Calculate offset from click position to element position
+  dragOffset.value = {
+    x: clientX - rect.left,
+    y: clientY - rect.top,
+  };
+  
+  // Set initial position
+  dragPosition.value = {
+    x: rect.left,
+    y: rect.top,
+  };
+  
+  // Add move and end listeners
+  document.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('mouseup', handleMouseUp);
+  document.addEventListener('touchmove', handleTouchMove);
+  document.addEventListener('touchend', handleTouchEnd);
+};
+
+const handleMouseMove = (e: MouseEvent) => {
+  if (!isDragging.value) return;
+  
+  e.preventDefault();
+  
+  dragPosition.value = {
+    x: e.clientX - dragOffset.value.x,
+    y: e.clientY - dragOffset.value.y,
+  };
+};
+
+const handleTouchMove = (e: TouchEvent) => {
+  if (!isDragging.value) return;
+  
+  e.preventDefault();
+  
+  const touch = e.touches[0];
+  if (!touch) return;
+  
+  dragPosition.value = {
+    x: touch.clientX - dragOffset.value.x,
+    y: touch.clientY - dragOffset.value.y,
+  };
+};
+
+const handleMouseUp = () => {
+  stopDragging();
+};
+
+const handleTouchEnd = () => {
+  stopDragging();
+};
+
+const stopDragging = () => {
+  isDragging.value = false;
+  
+  // Save position to localStorage
+  savePosition();
+  
+  // Reset wasDragging flag after a short delay to allow click prevention
+  setTimeout(() => {
+    wasDragging.value = false;
+  }, 100);
+  
+  // Remove listeners
+  document.removeEventListener('mousemove', handleMouseMove);
+  document.removeEventListener('mouseup', handleMouseUp);
+  document.removeEventListener('touchmove', handleTouchMove);
+  document.removeEventListener('touchend', handleTouchEnd);
+};
+
+// Computed style for action controls
+const actionControlsStyle = computed(() => {
+  if (!hasCustomPosition.value) {
+    return undefined;
+  }
+  
+  return {
+    position: 'fixed' as const,
+    left: `${dragPosition.value.x}px`,
+    top: `${dragPosition.value.y}px`,
+    right: 'auto',
+    bottom: 'auto',
+  };
+});
+
 // Generate mock chart data for a specific product
 const generateProductChartData = (productId: number, period: string): number[] => {
   let data = [15, 20, 25, 45, 35, 30];
@@ -444,10 +675,10 @@ const toggleProduct = (productId: number) => {
 
 // Computed datasets for revenue chart
 const revenueDatasets = computed(() => {
-  if (!analytics.value) return [];
+  if (productsData.value.length === 0) return [];
   
   return selectedProductIds.value.map((productId, index) => {
-    const product = analytics.value!.products.find(p => p.id === productId);
+    const product = productsData.value.find(p => p.id === productId);
     if (!product) return null;
     
     return {
@@ -460,10 +691,10 @@ const revenueDatasets = computed(() => {
 
 // Computed datasets for products sold chart
 const productsSoldDatasets = computed(() => {
-  if (!analytics.value) return [];
+  if (productsData.value.length === 0) return [];
   
   return selectedProductIds.value.map((productId, index) => {
-    const product = analytics.value!.products.find(p => p.id === productId);
+    const product = productsData.value.find(p => p.id === productId);
     if (!product) return null;
     
     return {
@@ -476,14 +707,14 @@ const productsSoldDatasets = computed(() => {
 
 // Computed total revenue
 const revenueTotal = computed(() => {
-  if (!analytics.value) return '0 ₽';
+  if (!revenueData.value) return '0 ₽';
   
   if (selectedProductIds.value.length === 0) {
-    return analytics.value.revenue.total;
+    return revenueData.value.total;
   }
   
   const total = selectedProductIds.value.reduce((sum, productId) => {
-    const product = analytics.value!.products.find(p => p.id === productId);
+    const product = productsData.value.find(p => p.id === productId);
     return sum + (product?.revenue || 0);
   }, 0);
   
@@ -492,15 +723,15 @@ const revenueTotal = computed(() => {
 
 // Computed revenue change
 const revenueChange = computed(() => {
-  if (!analytics.value) return '+0%';
+  if (!revenueData.value) return '+0%';
   
   if (selectedProductIds.value.length === 0) {
-    return analytics.value.revenue.change;
+    return revenueData.value.change;
   }
   
   // Average change across selected products
   const changes = selectedProductIds.value.map(productId => {
-    const product = analytics.value!.products.find(p => p.id === productId);
+    const product = productsData.value.find(p => p.id === productId);
     return parseFloat(product?.dynamics.replace(/[+%]/g, '') || '0');
   });
   
@@ -510,29 +741,29 @@ const revenueChange = computed(() => {
 
 // Computed total products sold
 const productsSoldTotal = computed(() => {
-  if (!analytics.value) return 0;
+  if (!productsSoldData.value) return 0;
   
   if (selectedProductIds.value.length === 0) {
-    return analytics.value.productsSold.total;
+    return productsSoldData.value.total;
   }
   
   return selectedProductIds.value.reduce((sum, productId) => {
-    const product = analytics.value!.products.find(p => p.id === productId);
+    const product = productsData.value.find(p => p.id === productId);
     return sum + (product?.sold || 0);
   }, 0);
 });
 
 // Computed products sold change
 const productsSoldChange = computed(() => {
-  if (!analytics.value) return '+0%';
+  if (!productsSoldData.value) return '+0%';
   
   if (selectedProductIds.value.length === 0) {
-    return analytics.value.productsSold.change;
+    return productsSoldData.value.change;
   }
   
   // Average change across selected products
   const changes = selectedProductIds.value.map(productId => {
-    const product = analytics.value!.products.find(p => p.id === productId);
+    const product = productsData.value.find(p => p.id === productId);
     return parseFloat(product?.dynamics.replace(/[+%]/g, '') || '0');
   });
   
@@ -549,6 +780,9 @@ watch(activeTab, (newTab) => {
 
 onMounted(() => {
   loadAnalytics();
+  
+  // Load saved action controls position
+  loadSavedPosition();
   
   // Check if we're returning from preview with saved form data
   if (previewFormData.value) {
@@ -568,5 +802,21 @@ onMounted(() => {
       isAddModalOpen.value = true;
     }
   }
+});
+
+onUnmounted(() => {
+  // Clean up any active timers and listeners
+  if (dragStartTimer.value) {
+    clearTimeout(dragStartTimer.value);
+  }
+  
+  document.removeEventListener('mouseup', cancelDragTimer);
+  document.removeEventListener('mousemove', cancelDragTimer);
+  document.removeEventListener('touchend', cancelDragTimer);
+  document.removeEventListener('touchmove', cancelDragTimer);
+  document.removeEventListener('mousemove', handleMouseMove);
+  document.removeEventListener('mouseup', handleMouseUp);
+  document.removeEventListener('touchmove', handleTouchMove);
+  document.removeEventListener('touchend', handleTouchEnd);
 });
 </script>

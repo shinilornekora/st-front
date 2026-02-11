@@ -39,6 +39,9 @@ declare const styles: {
   readonly productsTableTrSelected: string;
   readonly productsTableTd: string;
   readonly actionControls: string;
+  readonly actionControlsDragging: string;
+  readonly actionControlsHolding: string;
+  readonly holdProgress: string;
   readonly actionBtn: string;
   readonly actionBtnDisabled: string;
 };
