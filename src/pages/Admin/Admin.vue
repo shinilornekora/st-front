@@ -6,7 +6,6 @@
       <div :class="$style.container">
         <!-- Tabs Navigation -->
         <div :class="$style.tabsWrapper">
-          <div :class="$style.tabsLine"></div>
           <div :class="$style.tabs">
             <button
               :class="[$style.tab, { [$style.tabActive]: activeTab === 'sellers' }]"
@@ -330,11 +329,6 @@ onMounted(() => {
 .tabsWrapper {
   position: relative;
   margin-bottom: 40px;
-  border-bottom: 1px solid #E5E7EB;
-}
-
-.tabsLine {
-  display: none;
 }
 
 .tabs {
@@ -346,34 +340,39 @@ onMounted(() => {
 .tab {
   background: none;
   border: none;
-  padding: 16px 0;
+  padding: 12px 0 8px 10px;
   font-size: 16px;
   font-weight: 400;
-  color: #9CA3AF;
+  color: var(--color-secondary);
   cursor: pointer;
   position: relative;
   transition: color 0.2s;
-  white-space: nowrap;
-  width: 410px;
+  margin-right: 0;
+  width: 200px;
   text-align: left;
 }
 
+.tab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 200px;
+  height: 2px;
+  background: #e5e5e5;
+  transition: background 0.2s;
+}
+
 .tab:hover {
-  color: #6B7280;
+  color: var(--color-primary);
 }
 
 .tabActive {
-  color: #1F2937;
-  font-weight: 400;
+  color: var(--color-dark);
+  font-weight: 500;
 }
 
 .tabActive::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 2px;
   background: var(--color-dark);
 }
 

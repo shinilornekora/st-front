@@ -27,7 +27,7 @@
 								:class="[$style.heartIcon, isFavorite ? $style.heartIconActive : '']"
 							/>
 						</button>
-						<div :class="$style.leatherBadge">
+						<div v-if="product.description?.toLowerCase().includes('кож') || product.description?.toLowerCase().includes('leather')" :class="$style.leatherBadge">
 							<svg width="40" height="40" viewBox="0 0 100 100" fill="none">
 								<rect x="10" y="10" width="80" height="80" rx="8" stroke="currentColor" stroke-width="3"/>
 								<path d="M30 30 Q50 45 70 30" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -83,8 +83,11 @@
 					</div>
 					
 					<div :class="$style.priceBlock">
-						<span :class="$style.currentPrice">{{ formatPrice(product.price) }}</span>
-						<span v-if="product.discount" :class="$style.oldPrice">{{ formatPrice(product.price / (1 - product.discount / 100)) }}</span>
+						<div v-if="!product.price && isLoading" :class="$style.skeletonPrice"></div>
+						<template v-else>
+							<span :class="$style.currentPrice">{{ formatPrice(product.price) }}</span>
+							<span v-if="product.discount" :class="$style.oldPrice">{{ formatPrice(product.price / (1 - product.discount / 100)) }}</span>
+						</template>
 					</div>
 					
 					<button
@@ -110,7 +113,12 @@
 						</button>
 					</div>
 
-					<button :class="$style.addToCartBtn" @click="addToCart">
+					<!-- Кнопка возврата к редактированию для превью -->
+					<button v-if="isPreviewMode" :class="$style.backToEditBtn" @click="backToEdit">
+						← Вернуться к редактированию
+					</button>
+					
+					<button v-else :class="$style.addToCartBtn" @click="addToCart">
 						{{ t('product.addToCart') }}
 					</button>
 					
@@ -196,6 +204,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { useStore } from 'effector-vue/composition';
 import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '@widgets/index';
 import { recommendations } from '@entities/product/ui';
@@ -204,6 +213,7 @@ const { Recommendations } = recommendations;
 import { addItem } from '@entities/cart/cart.store';
 import type { Product } from '@entities/product/product.types';
 import { getProductById, getSimilarProducts } from '@shared/api';
+import { $previewProduct, $previewFormData, clearPreviewProduct, clearPreviewFormData } from '@entities/product/product.store';
 import { isUserAuthenticated } from '@shared/utils/auth';
 import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
 import heartIcon from '@assets/heart_icon.svg';
@@ -217,8 +227,11 @@ interface ProductRouterState {
 
 const route = useRoute();
 const router = useRouter();
+const previewProduct = useStore($previewProduct);
+const previewFormData = useStore($previewFormData);
 
 const isLoading = ref(false);
+const isPreviewMode = ref(false);
 const quantity = ref(1);
 const currentImageIndex = ref(0);
 const isAccordionOpen = ref(false);
@@ -329,8 +342,30 @@ onMounted(async () => {
 	window.scrollTo({ top: 0, behavior: 'instant' });
 	
 	try {
-		// Load product data based on route.params.id
-		const productId = parseInt(route.params.id as string, 10);
+		const productIdParam = route.params.id as string;
+		
+		// Check if this is preview mode
+		if (productIdParam === 'preview' && previewProduct.value) {
+			isPreviewMode.value = true;
+			
+			// Use preview product from Effector store (create mutable copy)
+			product.value = { ...previewProduct.value } as Product;
+			
+			// Load mock characteristics for preview
+			const { mockData } = await import('../../shared/lib/mockData');
+			characteristics.value = mockData.generateCharacteristics(
+				'натуральная кожа',
+				'черный',
+				'Stivalli'
+			);
+			additionalInfo.value = mockData.generateAdditionalInfo();
+			
+			// Don't clear preview data yet - we need it for back navigation
+			return;
+		}
+		
+		// Normal product loading
+		const productId = parseInt(productIdParam, 10);
 		if (!isNaN(productId)) {
 			// If we don't have basic product data from router state, fetch it
 			if (!product.value.id || product.value.id !== productId) {
@@ -470,6 +505,16 @@ const handleDiscountSubmit = (data: { productId?: number; discountAmount: number
 	setTimeout(() => {
 		showDiscountStatusLine.value = false;
 	}, 2500);
+};
+
+const backToEdit = () => {
+	// Clear preview data
+	clearPreviewProduct();
+	
+	// Navigate back to B2B page
+	router.push('/b2b');
+	
+	// The form data will be restored in B2B page from $previewFormData store
 };
 </script>
 
@@ -912,6 +957,24 @@ const handleDiscountSubmit = (data: { productId?: number; discountAmount: number
 
 .addToCartBtn:hover {
 	background: var(--color-focus);
+}
+
+.backToEditBtn {
+	width: 100%;
+	padding: 16px;
+	background: var(--color-secondary);
+	color: var(--background-default);
+	border: none;
+	border-radius: 12px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.2s;
+	margin-top: 24px;
+}
+
+.backToEditBtn:hover {
+	background: var(--color-primary);
 }
 
 /* Characteristics Section */

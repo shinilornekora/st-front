@@ -13,7 +13,6 @@
 
         <!-- Tabs Navigation -->
         <div :class="$style.tabsWrapper">
-          <div :class="$style.tabsLine"></div>
           <div :class="$style.tabs">
             <button
               :class="[$style.tab, { [$style.tabActive]: activeTab === 'purchases' }]"
@@ -25,7 +24,7 @@
               :class="[$style.tab, { [$style.tabActive]: activeTab === 'favorites' }]"
               @click="activeTab = 'favorites'"
             >
-              {{ t('favorites.favorites') }}
+              {{ t('favorites.title') }}
             </button>
           </div>
         </div>
@@ -182,15 +181,6 @@ const handleAddToCart = (product: Product) => {
   margin-bottom: 40px;
 }
 
-.tabsLine {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #e5e5e5;
-}
-
 .tabs {
   display: flex;
   gap: 0;
@@ -200,14 +190,27 @@ const handleAddToCart = (product: Product) => {
 .tab {
   background: none;
   border: none;
-  padding: 16px 0;
+  padding: 12px 0 8px 10px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--color-secondary);
   cursor: pointer;
   position: relative;
   transition: color 0.2s;
-  margin-right: 48px;
+  margin-right: 0;
+  width: 200px;
+  text-align: left;
+}
+
+.tab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 200px;
+  height: 2px;
+  background: #e5e5e5;
+  transition: background 0.2s;
 }
 
 .tab:hover {
@@ -215,18 +218,12 @@ const handleAddToCart = (product: Product) => {
 }
 
 .tabActive {
-  color: var(--color-primary);
-  font-weight: 600;
+  color: var(--color-dark);
+  font-weight: 500;
 }
 
 .tabActive::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--color-accent);
+  background: var(--color-dark);
 }
 
 /* Content */

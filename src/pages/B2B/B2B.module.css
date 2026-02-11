@@ -22,15 +22,6 @@
   margin-bottom: 40px;
 }
 
-.tabsLine {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: #e5e5e5;
-}
-
 .tabs {
   display: flex;
   gap: 0;
@@ -40,14 +31,27 @@
 .tab {
   background: none;
   border: none;
-  padding: 16px 0;
+  padding: 12px 0 8px 10px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
   color: var(--color-secondary);
   cursor: pointer;
   position: relative;
   transition: color 0.2s;
-  margin-right: 48px;
+  margin-right: 0;
+  width: 200px;
+  text-align: left;
+}
+
+.tab::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 200px;
+  height: 2px;
+  background: #e5e5e5;
+  transition: background 0.2s;
 }
 
 .tab:hover {
@@ -55,18 +59,12 @@
 }
 
 .tabActive {
-  color: var(--color-primary);
-  font-weight: 600;
+  color: var(--color-dark);
+  font-weight: 500;
 }
 
 .tabActive::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--color-accent);
+  background: var(--color-dark);
 }
 
 /* Content */
@@ -297,6 +295,8 @@
 .productsTableTr {
   border-bottom: 1px solid #e5e5e5;
   transition: background 0.2s;
+  cursor: pointer;
+  background: var(--background-default) !important;
 }
 
 .productsTableTr:last-child {
@@ -304,7 +304,15 @@
 }
 
 .productsTableTr:hover {
-  background: #f9fafb;
+  background: #f9fafb !important;
+}
+
+.productsTableTrSelected {
+  background: #e0f7f5 !important;
+}
+
+.productsTableTrSelected:hover {
+  background: #d0f0ed !important;
 }
 
 .productsTableTd {
@@ -325,7 +333,6 @@
   background: var(--background-default);
   border: 1px solid #e5e5e5;
   border-radius: 100px;
-  padding: 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
@@ -362,6 +369,13 @@
 
 .actionBtn:active {
   transform: scale(0.95);
+}
+
+.actionBtn:disabled,
+.actionBtnDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .actionBtn svg {

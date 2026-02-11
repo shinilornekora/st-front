@@ -6,7 +6,6 @@
       <div :class="$style.container">
         <!-- Tabs Navigation -->
         <div :class="$style.tabsWrapper">
-          <div :class="$style.tabsLine"></div>
           <div :class="$style.tabs">
             <button
               :class="[$style.tab, { [$style.tabActive]: activeTab === 'analytics' }]"
@@ -146,7 +145,12 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="product in products" :key="product.id" :class="$style.productsTableTr">
+                    <tr
+                      v-for="product in products"
+                      :key="product.id"
+                      :class="[$style.productsTableTr, { [$style.productsTableTrSelected]: selectedProductId === product.id }]"
+                      @click="selectProduct(product.id)"
+                    >
                       <td :class="$style.productsTableTd">({{ t('b2b.articleShort') }} {{ product.article }})</td>
                       <td :class="$style.productsTableTd">{{ product.name }}</td>
                       <td :class="$style.productsTableTd">{{ product.price.toLocaleString('ru-RU', { minimumFractionDigits: 0 }) }}</td>
@@ -157,20 +161,34 @@
 
               <!-- Action Controls -->
               <div :class="$style.actionControls">
-                <button :class="$style.actionBtn" @click="handleAdd" :aria-label="t('b2b.addProduct')">
+                <button
+                  :class="$style.actionBtn"
+                  @click="handleAdd"
+                  :aria-label="t('b2b.addProduct')"
+                >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="3" y="3" width="18" height="18" rx="2" />
                     <line x1="12" y1="8" x2="12" y2="16" />
                     <line x1="8" y1="12" x2="16" y2="12" />
                   </svg>
                 </button>
-                <button :class="$style.actionBtn" @click="handleEdit" :aria-label="t('b2b.editProduct')">
+                <button
+                  :class="[$style.actionBtn, { [$style.actionBtnDisabled]: !selectedProductId }]"
+                  @click="handleEdit"
+                  :disabled="!selectedProductId"
+                  :aria-label="t('b2b.editProduct')"
+                >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                   </svg>
                 </button>
-                <button :class="$style.actionBtn" @click="handleDelete" :aria-label="t('b2b.deleteProduct')">
+                <button
+                  :class="[$style.actionBtn, { [$style.actionBtnDisabled]: !selectedProductId }]"
+                  @click="handleDelete"
+                  :disabled="!selectedProductId"
+                  :aria-label="t('b2b.deleteProduct')"
+                >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <polyline points="3 6 5 6 21 6" />
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
@@ -184,19 +202,31 @@
     </main>
     
     <Footer />
+    
+    <!-- Add/Edit Product Modal -->
+    <AddProductModal
+      :isOpen="isAddModalOpen"
+      :editData="editingProduct"
+      @close="handleModalClose"
+      @save="handleModalSave"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue';
+import { useStore } from 'effector-vue/composition';
 import { useI18n } from 'vue-i18n';
 import { Header, Footer } from '../../widgets';
 import { LineChart, MultiLineChart } from '@shared/ui';
 import { getAnalyticsDashboard, getSellerProducts } from '@shared/api';
 import type { AnalyticsDashboard, ProductListItem, ChartData } from '@shared/api';
+import { $previewFormData, clearPreviewFormData } from '@entities/product/product.store';
+import AddProductModal from './AddProductModal.vue';
 import $style from './B2B.module.css';
 
 const { t } = useI18n();
+const previewFormData = useStore($previewFormData);
 const activeTab = ref<'analytics' | 'products'>('analytics');
 
 // Period selectors
@@ -210,9 +240,14 @@ const isLoading = ref(false);
 // Products data
 const products = ref<ProductListItem[]>([]);
 const isLoadingProducts = ref(false);
+const selectedProductId = ref<number | null>(null);
 
 // Selected products for filtering charts (multiple selection)
 const selectedProductIds = ref<number[]>([]);
+
+// Modal state
+const isAddModalOpen = ref(false);
+const editingProduct = ref<any>(null);
 
 // Colors for different product lines
 const productColors = ['#5fdbd1', '#f59e0b', '#8b5cf6', '#ec4899', '#10b981', '#3b82f6'];
@@ -298,17 +333,87 @@ const loadProducts = async () => {
   }
 };
 
-// Action handlers (placeholders for now)
+// Select product
+const selectProduct = (productId: number) => {
+  if (selectedProductId.value === productId) {
+    // Deselect if clicking the same product
+    selectedProductId.value = null;
+  } else {
+    selectedProductId.value = productId;
+  }
+};
+
+// Action handlers
 const handleAdd = () => {
-  console.log('Add product clicked');
+  // Check if we have saved form data from preview
+  if (previewFormData.value) {
+    // Restore form data
+    editingProduct.value = previewFormData.value.editData || null;
+    isAddModalOpen.value = true;
+    
+    // Clear the saved form data
+    clearPreviewFormData();
+  } else {
+    editingProduct.value = null;
+    isAddModalOpen.value = true;
+  }
+};
+
+const handleModalClose = () => {
+  isAddModalOpen.value = false;
+  editingProduct.value = null;
+};
+
+const handleModalSave = (data: any) => {
+  console.log('Product data saved:', data);
+  
+  if (editingProduct.value) {
+    // Редактирование существующего товара
+    const index = products.value.findIndex(p => p.id === editingProduct.value?.id);
+    if (index !== -1 && products.value[index]) {
+      const currentProduct = products.value[index];
+      products.value[index] = {
+        id: currentProduct.id,
+        name: data.name || currentProduct.name,
+        article: data.article || currentProduct.article,
+        price: parseFloat(data.price) || currentProduct.price,
+      };
+      console.log('Product updated:', products.value[index]);
+    }
+  } else {
+    // Создаем новый товар для добавления в таблицу
+    const newProduct: ProductListItem = {
+      id: products.value.length + 1,
+      name: data.name || 'Новый товар',
+      article: data.article || 'ART-' + (products.value.length + 1),
+      price: parseFloat(data.price) || 0,
+    };
+    
+    // Добавляем товар в начало списка
+    products.value = [newProduct, ...products.value];
+    
+    console.log('Product added to list:', newProduct);
+  }
 };
 
 const handleEdit = () => {
-  console.log('Edit product clicked');
+  if (!selectedProductId.value) return;
+  
+  // Находим выбранный товар
+  const product = products.value.find(p => p.id === selectedProductId.value);
+  if (product) {
+    editingProduct.value = { ...product };
+    isAddModalOpen.value = true;
+  }
 };
 
 const handleDelete = () => {
-  console.log('Delete product clicked');
+  if (!selectedProductId.value) return;
+  console.log('Delete product clicked:', selectedProductId.value);
+  
+  // Удаляем товар из списка
+  products.value = products.value.filter(p => p.id !== selectedProductId.value);
+  selectedProductId.value = null;
 };
 
 // Generate mock chart data for a specific product
@@ -444,5 +549,24 @@ watch(activeTab, (newTab) => {
 
 onMounted(() => {
   loadAnalytics();
+  
+  // Check if we're returning from preview with saved form data
+  if (previewFormData.value) {
+    // Switch to products tab and open modal
+    activeTab.value = 'products';
+    
+    // Wait for products to load if needed
+    if (products.value.length === 0) {
+      loadProducts().then(() => {
+        // Open modal with restored data
+        editingProduct.value = previewFormData.value.editData || null;
+        isAddModalOpen.value = true;
+      });
+    } else {
+      // Open modal immediately
+      editingProduct.value = previewFormData.value.editData || null;
+      isAddModalOpen.value = true;
+    }
+  }
 });
 </script>

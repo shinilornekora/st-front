@@ -36,9 +36,11 @@ declare const styles: {
   readonly productsTable: string;
   readonly productsTableTh: string;
   readonly productsTableTr: string;
+  readonly productsTableTrSelected: string;
   readonly productsTableTd: string;
   readonly actionControls: string;
   readonly actionBtn: string;
+  readonly actionBtnDisabled: string;
 };
 
 export default styles;
