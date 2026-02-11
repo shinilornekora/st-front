@@ -181,7 +181,7 @@
       </div>
     </main>
     
-    <Footer />
+    <Footer :userRole="'partner'" />
     
     <!-- Add/Edit Product Modal -->
     <AddProductModal

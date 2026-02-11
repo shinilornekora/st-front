@@ -167,7 +167,7 @@
       </div>
     </main>
     
-    <Footer />
+    <Footer :userRole="'admin'" />
   </div>
 </template>
 

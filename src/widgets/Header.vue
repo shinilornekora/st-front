@@ -32,7 +32,7 @@
 				<router-link
 					v-if="userRole === 'partner' || userRole === 'SELLER'"
 					to="/b2b?tab=products"
-					:class="[$style.iconBtn, { [$style.active]: isRouteActive('B2B') && route.query.tab === 'products' }]"
+					:class="[$style.iconBtn, { [$style.active]: isB2BProductsTabActive }]"
 					:aria-label="t('b2b.productsList')"
 				>
 					<img
@@ -45,7 +45,7 @@
 				<router-link
 					v-else-if="userRole === 'admin' || userRole === 'ADMIN'"
 					to="/admin?tab=applications"
-					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Admin') && route.query.tab === 'applications' }]"
+					:class="[$style.iconBtn, { [$style.active]: isAdminApplicationsTabActive }]"
 					:aria-label="t('admin.applicationsList')"
 				>
 					<img
@@ -161,6 +161,16 @@ const logoLink = computed(() => {
 const isRouteActive = (routeName: string) => {
 	return route.name === routeName;
 };
+
+// Check if B2B products tab is active
+const isB2BProductsTabActive = computed(() => {
+	return route.name === 'B2B' && route.query.tab === 'products';
+});
+
+// Check if Admin applications tab is active
+const isAdminApplicationsTabActive = computed(() => {
+	return route.name === 'Admin' && route.query.tab === 'applications';
+});
 
 const handleSearch = ({ query }: { query: string }) => {
 	emit('search', query);
@@ -343,18 +353,20 @@ onUnmounted(() => {
 		flex-wrap: wrap;
 		padding: 0 16px;
 		margin-top: 12px;
+		justify-content: center;
 	}
 
 	.logoWrapper {
 		flex-shrink: 0;
 		gap: 6px;
+		margin-left: 0;
 	}
 
 	.logo {
 		height: 30px;
 		width: auto;
 		max-width: 120px;
-		margin-left: 24px;
+		margin-left: 0;
 	}
 
 	.partnersText,
@@ -368,7 +380,7 @@ onUnmounted(() => {
 		order: 3;
 		flex-basis: 100%;
 		max-width: none;
-		margin: 0;
+		margin: 6px 0 0 0;
 	}
 
 	.headerIcons {

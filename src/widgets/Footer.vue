@@ -48,7 +48,36 @@
 					:class="$style.mobileFooterIcon"
 				/>
 			</router-link>
-			<router-link to="/cart" :class="[$style.mobileFooterBtn, { [$style.active]: isRouteActive('Cart') }]">
+			<!-- B2B users see edit pencil icon that navigates to products tab -->
+			<router-link
+				v-if="userRole === 'partner' || userRole === 'SELLER'"
+				to="/b2b?tab=products"
+				:class="[$style.mobileFooterBtn, { [$style.active]: isB2BProductsTabActive }]"
+			>
+				<img
+					:src="editPencilIcon"
+					alt="Products"
+					:class="$style.mobileFooterIcon"
+				/>
+			</router-link>
+			<!-- Admin users see settings icon that navigates to applications tab -->
+			<router-link
+				v-else-if="userRole === 'admin' || userRole === 'ADMIN'"
+				to="/admin?tab=applications"
+				:class="[$style.mobileFooterBtn, { [$style.active]: isAdminApplicationsTabActive }]"
+			>
+				<img
+					:src="settingsIcon"
+					alt="Applications"
+					:class="$style.mobileFooterIcon"
+				/>
+			</router-link>
+			<!-- Regular users see cart icon -->
+			<router-link
+				v-else
+				to="/cart"
+				:class="[$style.mobileFooterBtn, { [$style.active]: isRouteActive('Cart') }]"
+			>
 				<img
 					:src="isRouteActive('Cart') ? cartFilledIcon : darkShoppingCartIcon"
 					alt="Cart"
@@ -78,6 +107,17 @@ import darkShoppingCartIcon from '@assets/dark_shopping_cart.svg';
 import cartFilledIcon from '@assets/cart_filled.svg';
 import notificationIcon from '@assets/notification_icon.svg';
 import notificationFilledIcon from '@assets/notification_filled.svg';
+import editPencilIcon from '@assets/edit_pencil.svg';
+import settingsIcon from '@assets/settings.svg';
+
+// Define props
+interface Props {
+	userRole?: 'customer' | 'partner' | 'admin' | 'CUSTOMER' | 'SELLER' | 'ADMIN' | null;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	userRole: null,
+});
 
 const { t } = useI18n();
 const route = useRoute();
@@ -91,6 +131,16 @@ const updateIsMobile = () => {
 const isRouteActive = (routeName: string) => {
 	return route.name === routeName;
 };
+
+// Check if B2B products tab is active
+const isB2BProductsTabActive = computed(() => {
+	return route.name === 'B2B' && route.query.tab === 'products';
+});
+
+// Check if Admin applications tab is active
+const isAdminApplicationsTabActive = computed(() => {
+	return route.name === 'Admin' && route.query.tab === 'applications';
+});
 
 onMounted(() => {
 	window.addEventListener('resize', updateIsMobile);
