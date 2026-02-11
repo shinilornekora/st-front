@@ -174,12 +174,14 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 import { Header, Footer } from '../../widgets';
 import { LineChart } from '../../shared/ui';
 import { getSellersDashboard, getApplications, updateApplicationStatus } from '../../shared/api';
 import type { SellersDashboard, Application } from '../../shared/api';
 
 const { t } = useI18n();
+const route = useRoute();
 
 const activeTab = ref<'sellers' | 'applications'>('sellers');
 
@@ -302,7 +304,14 @@ watch(activeTab, (newTab) => {
 
 // Load data on mount
 onMounted(() => {
-  loadDashboard();
+	// Check if tab query parameter is set
+	if (route.query.tab === 'applications') {
+		activeTab.value = 'applications';
+		// Load applications if navigating directly to applications tab
+		loadApplications();
+	} else {
+		loadDashboard();
+	}
 });
 </script>
 

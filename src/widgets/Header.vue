@@ -28,7 +28,35 @@
 						:class="$style.headerIcon"
 					/>
 				</router-link>
+				<!-- B2B users see edit pencil icon that navigates to products tab -->
 				<router-link
+					v-if="userRole === 'partner' || userRole === 'SELLER'"
+					to="/b2b?tab=products"
+					:class="[$style.iconBtn, { [$style.active]: isRouteActive('B2B') && route.query.tab === 'products' }]"
+					:aria-label="t('b2b.productsList')"
+				>
+					<img
+						:src="editPencilIcon"
+						alt=""
+						:class="$style.headerIcon"
+					/>
+				</router-link>
+				<!-- Admin users see settings icon that navigates to applications tab -->
+				<router-link
+					v-else-if="userRole === 'admin' || userRole === 'ADMIN'"
+					to="/admin?tab=applications"
+					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Admin') && route.query.tab === 'applications' }]"
+					:aria-label="t('admin.applicationsList')"
+				>
+					<img
+						:src="settingsIcon"
+						alt=""
+						:class="$style.headerIcon"
+					/>
+				</router-link>
+				<!-- Regular users see cart icon -->
+				<router-link
+					v-else
 					to="/cart"
 					:class="[$style.iconBtn, { [$style.active]: isRouteActive('Cart') }]"
 					:aria-label="t('common.cart')"
@@ -77,6 +105,8 @@ import cartFilledIcon from '@assets/cart_filled.svg';
 import notificationIcon from '@assets/notification_icon.svg';
 import notificationFilledIcon from '@assets/notification_filled.svg';
 import crossIcon from '@assets/cross.svg';
+import editPencilIcon from '@assets/edit_pencil.svg';
+import settingsIcon from '@assets/settings.svg';
 
 const { t } = useI18n();
 

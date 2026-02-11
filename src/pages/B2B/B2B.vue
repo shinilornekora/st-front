@@ -31,60 +31,26 @@
               <!-- Stats Cards -->
               <div :class="$style.statsGrid">
                 <!-- Revenue Card -->
-                <div :class="$style.statCard">
-                  <div :class="$style.statHeader">
-                    <h3 :class="$style.statTitle">{{ t('b2b.totalRevenue') }}</h3>
-                    <select :class="$style.periodSelect" v-model="revenuePeriod" @change="loadRevenueAnalytics">
-                      <option value="month">{{ t('admin.month') }}</option>
-                      <option value="quarter">{{ t('admin.quarter') }}</option>
-                      <option value="year">{{ t('admin.year') }}</option>
-                    </select>
-                  </div>
-                  <div :class="$style.statValue">{{ revenueTotal }}</div>
-                  <div :class="$style.statChange">{{ revenueChange }} {{ t('b2b.comparedToPrevious') }}</div>
-                  <div :key="`revenue-chart-${revenueChartKey}`">
-                    <MultiLineChart
-                      v-if="selectedProductIds.length > 0"
-                      :datasets="revenueDatasets"
-                      :labels="revenueData.chartData.labels"
-                    />
-                    <LineChart
-                      v-else
-                      :data="revenueData.chartData.data"
-                      :labels="revenueData.chartData.labels"
-                      :legendLabel="t('b2b.sandals')"
-                      color="#5fdbd1"
-                    />
-                  </div>
-                </div>
+                <RevenueChart
+                  :chartData="revenueData"
+                  :productsData="productsData"
+                  :selectedProductIds="selectedProductIds"
+                  :period="revenuePeriod"
+                  :productColors="productColors"
+                  @update:period="revenuePeriod = $event"
+                  @load-data="loadRevenueAnalytics"
+                />
 
                 <!-- Products Sold Card -->
-                <div :class="$style.statCard">
-                  <div :class="$style.statHeader">
-                    <h3 :class="$style.statTitle">{{ t('b2b.productsSold') }}</h3>
-                    <select :class="$style.periodSelect" v-model="productsPeriod" @change="loadProductsAnalytics">
-                      <option value="month">{{ t('admin.month') }}</option>
-                      <option value="quarter">{{ t('admin.quarter') }}</option>
-                      <option value="year">{{ t('admin.year') }}</option>
-                    </select>
-                  </div>
-                  <div :class="$style.statValue">{{ productsSoldTotal }} {{ t('b2b.sold').split(' ')[1] }}</div>
-                  <div :class="$style.statChange">{{ productsSoldChange }} {{ t('b2b.comparedToPrevious') }}</div>
-                  <div :key="`products-chart-${productsSoldChartKey}`">
-                    <MultiLineChart
-                      v-if="selectedProductIds.length > 0"
-                      :datasets="productsSoldDatasets"
-                      :labels="productsSoldData.chartData.labels"
-                    />
-                    <LineChart
-                      v-else
-                      :data="productsSoldData.chartData.data"
-                      :labels="productsSoldData.chartData.labels"
-                      :legendLabel="t('b2b.sandals')"
-                      color="#5fdbd1"
-                    />
-                  </div>
-                </div>
+                <ProductsSoldChart
+                  :chartData="productsSoldData"
+                  :productsData="productsData"
+                  :selectedProductIds="selectedProductIds"
+                  :period="productsPeriod"
+                  :productColors="productColors"
+                  @update:period="productsPeriod = $event"
+                  @load-data="loadProductsAnalytics"
+                />
               </div>
 
               <!-- Products Table -->
@@ -231,15 +197,18 @@
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue';
 import { useStore } from 'effector-vue/composition';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 import { Header, Footer } from '../../widgets';
-import { LineChart, MultiLineChart } from '@shared/ui';
 import { getAnalyticsDashboard, getSellerProducts } from '@shared/api';
 import type { AnalyticsDashboard, ProductListItem } from '@shared/api';
 import { $previewFormData, clearPreviewFormData } from '@entities/product/product.store';
 import AddProductModal from './AddProductModal.vue';
+import RevenueChart from './RevenueChart.vue';
+import ProductsSoldChart from './ProductsSoldChart.vue';
 import $style from './B2B.module.css';
 
 const { t } = useI18n();
+const route = useRoute();
 const previewFormData = useStore($previewFormData);
 const activeTab = ref<'analytics' | 'products'>('analytics');
 
@@ -287,10 +256,6 @@ const productsSoldData = ref<AnalyticsDashboard['productsSold'] | null>(null);
 const productsData = ref<AnalyticsDashboard['products']>([]);
 const isLoading = ref(false);
 
-// Chart keys for forcing re-render only when needed
-const revenueChartKey = ref(0);
-const productsSoldChartKey = ref(0);
-
 // Products data
 const products = ref<ProductListItem[]>([]);
 const isLoadingProducts = ref(false);
@@ -316,10 +281,7 @@ const loadRevenueAnalytics = async () => {
     });
     
     if (response.success && response.data) {
-      // Only update revenue data independently
       revenueData.value = response.data.revenue;
-      // Increment key to force re-render of revenue chart only
-      revenueChartKey.value++;
     }
   } catch (error) {
     console.error('Failed to load revenue analytics:', error);
@@ -338,10 +300,7 @@ const loadProductsAnalytics = async () => {
     });
     
     if (response.success && response.data) {
-      // Only update productsSold data independently
       productsSoldData.value = response.data.productsSold;
-      // Increment key to force re-render of products sold chart only
-      productsSoldChartKey.value++;
     }
   } catch (error) {
     console.error('Failed to load products analytics:', error);
@@ -647,20 +606,6 @@ const actionControlsStyle = computed(() => {
   };
 });
 
-// Generate mock chart data for a specific product
-const generateProductChartData = (productId: number, period: string): number[] => {
-  let data = [15, 20, 25, 45, 35, 30];
-
-  if (period === 'quarter') {
-    data = [35, 50, 60, 70];
-  } else if (period === 'year') {
-    data = [80, 120, 160, 220, 280, 340];
-  }
-
-  // Vary data based on product ID
-  return data.map(value => value + (productId * 3));
-};
-
 // Toggle product selection
 const toggleProduct = (productId: number) => {
   const index = selectedProductIds.value.indexOf(productId);
@@ -673,104 +618,6 @@ const toggleProduct = (productId: number) => {
   }
 };
 
-// Computed datasets for revenue chart
-const revenueDatasets = computed(() => {
-  if (productsData.value.length === 0) return [];
-  
-  return selectedProductIds.value.map((productId, index) => {
-    const product = productsData.value.find(p => p.id === productId);
-    if (!product) return null;
-    
-    return {
-      label: product.name,
-      data: generateProductChartData(productId, revenuePeriod.value),
-      color: productColors[index % productColors.length],
-    };
-  }).filter(Boolean) as { label: string; data: number[]; color: string }[];
-});
-
-// Computed datasets for products sold chart
-const productsSoldDatasets = computed(() => {
-  if (productsData.value.length === 0) return [];
-  
-  return selectedProductIds.value.map((productId, index) => {
-    const product = productsData.value.find(p => p.id === productId);
-    if (!product) return null;
-    
-    return {
-      label: product.name,
-      data: generateProductChartData(productId, productsPeriod.value),
-      color: productColors[index % productColors.length],
-    };
-  }).filter(Boolean) as { label: string; data: number[]; color: string }[];
-});
-
-// Computed total revenue
-const revenueTotal = computed(() => {
-  if (!revenueData.value) return '0 ₽';
-  
-  if (selectedProductIds.value.length === 0) {
-    return revenueData.value.total;
-  }
-  
-  const total = selectedProductIds.value.reduce((sum, productId) => {
-    const product = productsData.value.find(p => p.id === productId);
-    return sum + (product?.revenue || 0);
-  }, 0);
-  
-  return `${total.toLocaleString('ru-RU')} ₽`;
-});
-
-// Computed revenue change
-const revenueChange = computed(() => {
-  if (!revenueData.value) return '+0%';
-  
-  if (selectedProductIds.value.length === 0) {
-    return revenueData.value.change;
-  }
-  
-  // Average change across selected products
-  const changes = selectedProductIds.value.map(productId => {
-    const product = productsData.value.find(p => p.id === productId);
-    return parseFloat(product?.dynamics.replace(/[+%]/g, '') || '0');
-  });
-  
-  const avgChange = changes.reduce((a, b) => a + b, 0) / changes.length;
-  return `${avgChange > 0 ? '+' : ''}${avgChange.toFixed(1)}%`;
-});
-
-// Computed total products sold
-const productsSoldTotal = computed(() => {
-  if (!productsSoldData.value) return 0;
-  
-  if (selectedProductIds.value.length === 0) {
-    return productsSoldData.value.total;
-  }
-  
-  return selectedProductIds.value.reduce((sum, productId) => {
-    const product = productsData.value.find(p => p.id === productId);
-    return sum + (product?.sold || 0);
-  }, 0);
-});
-
-// Computed products sold change
-const productsSoldChange = computed(() => {
-  if (!productsSoldData.value) return '+0%';
-  
-  if (selectedProductIds.value.length === 0) {
-    return productsSoldData.value.change;
-  }
-  
-  // Average change across selected products
-  const changes = selectedProductIds.value.map(productId => {
-    const product = productsData.value.find(p => p.id === productId);
-    return parseFloat(product?.dynamics.replace(/[+%]/g, '') || '0');
-  });
-  
-  const avgChange = changes.reduce((a, b) => a + b, 0) / changes.length;
-  return `${avgChange > 0 ? '+' : ''}${avgChange.toFixed(1)}%`;
-});
-
 // Watch tab changes to load data
 watch(activeTab, (newTab) => {
   if (newTab === 'products' && products.value.length === 0) {
@@ -779,29 +626,38 @@ watch(activeTab, (newTab) => {
 });
 
 onMounted(() => {
-  loadAnalytics();
-  
-  // Load saved action controls position
-  loadSavedPosition();
-  
-  // Check if we're returning from preview with saved form data
-  if (previewFormData.value) {
-    // Switch to products tab and open modal
-    activeTab.value = 'products';
-    
-    // Wait for products to load if needed
-    if (products.value.length === 0) {
-      loadProducts().then(() => {
-        // Open modal with restored data
-        editingProduct.value = previewFormData.value.editData || null;
-        isAddModalOpen.value = true;
-      });
-    } else {
-      // Open modal immediately
-      editingProduct.value = previewFormData.value.editData || null;
-      isAddModalOpen.value = true;
-    }
-  }
+	loadAnalytics();
+	
+	// Load saved action controls position
+	loadSavedPosition();
+	
+	// Check if tab query parameter is set
+	if (route.query.tab === 'products') {
+		activeTab.value = 'products';
+		// Load products if navigating directly to products tab
+		if (products.value.length === 0) {
+			loadProducts();
+		}
+	}
+	
+	// Check if we're returning from preview with saved form data
+	if (previewFormData.value) {
+		// Switch to products tab and open modal
+		activeTab.value = 'products';
+		
+		// Wait for products to load if needed
+		if (products.value.length === 0) {
+			loadProducts().then(() => {
+				// Open modal with restored data
+				editingProduct.value = previewFormData.value.editData || null;
+				isAddModalOpen.value = true;
+			});
+		} else {
+			// Open modal immediately
+			editingProduct.value = previewFormData.value.editData || null;
+			isAddModalOpen.value = true;
+		}
+	}
 });
 
 onUnmounted(() => {
