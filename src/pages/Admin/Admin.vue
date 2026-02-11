@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.page">
-    <Header :userRole="'admin'" />
+    <Header :userRole="'admin'" @search="handleSearch" />
     
     <main :class="$style.main">
       <div :class="$style.container">
@@ -131,7 +131,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="app in applications" :key="app.id">
+                  <tr v-for="app in filteredApplications" :key="app.id">
                     <td>{{ app.name }}</td>
                     <td>{{ app.phone }}</td>
                     <td>{{ app.email }}</td>
@@ -172,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
 import { Header, Footer } from '../../widgets';
@@ -184,6 +184,7 @@ const { t } = useI18n();
 const route = useRoute();
 
 const activeTab = ref<'sellers' | 'applications'>('sellers');
+const searchQuery = ref('');
 
 // Sellers State
 const loading = ref(false);
@@ -199,6 +200,27 @@ const applicationsLoading = ref(false);
 const applicationsError = ref<string | null>(null);
 const applications = ref<Application[]>([]);
 const processingId = ref<number | null>(null);
+
+// Filtered applications based on search query
+const filteredApplications = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return applications.value;
+  }
+  
+  const query = searchQuery.value.toLowerCase().trim();
+  return applications.value.filter(app => {
+    return (
+      app.name.toLowerCase().includes(query) ||
+      app.phone.toLowerCase().includes(query) ||
+      app.email.toLowerCase().includes(query)
+    );
+  });
+});
+
+// Handle search from header
+const handleSearch = (query: string) => {
+  searchQuery.value = query;
+};
 
 // Load dashboard data
 const loadDashboard = async () => {

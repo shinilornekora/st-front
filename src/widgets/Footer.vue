@@ -50,7 +50,7 @@
 			</router-link>
 			<!-- B2B users see edit pencil icon that navigates to products tab -->
 			<router-link
-				v-if="userRole === 'partner' || userRole === 'SELLER'"
+				v-if="effectiveUserRole === 'partner' || effectiveUserRole === 'SELLER'"
 				to="/b2b?tab=products"
 				:class="[$style.mobileFooterBtn, { [$style.active]: isB2BProductsTabActive }]"
 			>
@@ -62,7 +62,7 @@
 			</router-link>
 			<!-- Admin users see settings icon that navigates to applications tab -->
 			<router-link
-				v-else-if="userRole === 'admin' || userRole === 'ADMIN'"
+				v-else-if="effectiveUserRole === 'admin' || effectiveUserRole === 'ADMIN'"
 				to="/admin?tab=applications"
 				:class="[$style.mobileFooterBtn, { [$style.active]: isAdminApplicationsTabActive }]"
 			>
@@ -98,7 +98,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { useStore } from 'effector-vue/composition';
 import { useI18n } from 'vue-i18n';
+import { $user } from '@entities/user/user.store';
 import userCircleIcon from '@assets/user_circle.svg';
 import profileFilledIcon from '@assets/profile_filled.svg';
 import hamburgerIcon from '@assets/hamburger.svg';
@@ -121,7 +123,22 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { t } = useI18n();
 const route = useRoute();
+const user = useStore($user);
 const isMobile = ref(window.innerWidth <= 768);
+
+// Compute effective user role from prop or user store
+const effectiveUserRole = computed(() => {
+	if (props.userRole) {
+		return props.userRole;
+	}
+	if (user.value?.role === 'SELLER') {
+		return 'SELLER';
+	}
+	if (user.value?.role === 'ADMIN') {
+		return 'ADMIN';
+	}
+	return null;
+});
 
 const updateIsMobile = () => {
 	isMobile.value = window.innerWidth <= 768;

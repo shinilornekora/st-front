@@ -67,7 +67,7 @@
 		
 		<!-- Popup with filters and suggestions -->
 		<Transition name="popup">
-			<div v-if="showPopup && !hideFilters" :class="$style.popup">
+			<div v-if="showPopup && !hideFilters && !hidePopup" :class="$style.popup">
 				<!-- Filter labels at top -->
 				<div :class="$style.popupSection">
 					<div :class="$style.filterLabels">
@@ -153,9 +153,11 @@
 		hideFilters?: boolean;
 		modelValue?: string;
 		initialFilters?: AppliedFilter[];
+		hidePopup?: boolean;
 	}>(), {
 		type: 'main',
 		initialFilters: () => [],
+		hidePopup: false,
 	});
 	
 	const emit = defineEmits(['submit', 'update:modelValue', 'filterChange']);

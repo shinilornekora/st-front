@@ -3,8 +3,8 @@
 		<div :class="$style.headerContent">
 			<router-link :class="$style.logoWrapper" :to="logoLink">
 				<img :src="logoSrc" alt="Stivalli" :class="$style.logo" />
-				<span v-if="userRole === 'partner'" :class="$style.partnersText">{{ t('common.partner') }}</span>
-				<span v-if="userRole === 'admin'" :class="$style.adminText">{{ t('common.admin') }}</span>
+				<span v-if="effectiveUserRole === 'partner' || effectiveUserRole === 'SELLER'" :class="$style.partnersText">{{ t('common.partner') }}</span>
+				<span v-if="effectiveUserRole === 'admin' || effectiveUserRole === 'ADMIN'" :class="$style.adminText">{{ t('common.admin') }}</span>
 			</router-link>
 			<div v-if="!lightHeader && !hideSearch" :class="$style.searchWrapper">
 				<SearchField
@@ -12,6 +12,7 @@
 					:placeholder="t('common.search')"
 					:class="$style.search"
 					:initial-filters="initialFilters"
+					:hide-popup="effectiveUserRole === 'SELLER' || effectiveUserRole === 'ADMIN' || effectiveUserRole === 'partner' || effectiveUserRole === 'admin'"
 					@submit="handleSearch"
 					@filterChange="handleFilterChange"
 				/>
@@ -30,7 +31,7 @@
 				</router-link>
 				<!-- B2B users see edit pencil icon that navigates to products tab -->
 				<router-link
-					v-if="userRole === 'partner' || userRole === 'SELLER'"
+					v-if="effectiveUserRole === 'partner' || effectiveUserRole === 'SELLER'"
 					to="/b2b?tab=products"
 					:class="[$style.iconBtn, { [$style.active]: isB2BProductsTabActive }]"
 					:aria-label="t('b2b.productsList')"
@@ -43,7 +44,7 @@
 				</router-link>
 				<!-- Admin users see settings icon that navigates to applications tab -->
 				<router-link
-					v-else-if="userRole === 'admin' || userRole === 'ADMIN'"
+					v-else-if="effectiveUserRole === 'admin' || effectiveUserRole === 'ADMIN'"
 					to="/admin?tab=applications"
 					:class="[$style.iconBtn, { [$style.active]: isAdminApplicationsTabActive }]"
 					:aria-label="t('admin.applicationsList')"
@@ -95,6 +96,7 @@ import { useRoute } from 'vue-router';
 import { useStore } from 'effector-vue/composition';
 import { useI18n } from 'vue-i18n';
 import { $cart } from '@entities/cart/cart.store';
+import { $user } from '@entities/user/user.store';
 import SearchField from '@shared/ui/SearchField.vue';
 import logoFull from '@assets/logo_full.svg';
 import logo from '@assets/logo.svg';
@@ -129,9 +131,27 @@ const route = useRoute();
 const searchQuery = ref('');
 const screenWidth = ref(window.innerWidth);
 const cart = useStore($cart);
+const user = useStore($user);
+
+// Compute effective user role from prop or user store
+const effectiveUserRole = computed(() => {
+	if (props.userRole) {
+		return props.userRole;
+	}
+	if (user.value?.role === 'SELLER') {
+		return 'SELLER';
+	}
+	if (user.value?.role === 'ADMIN') {
+		return 'ADMIN';
+	}
+	return null;
+});
 
 // Define emits
-const emit = defineEmits(['search', 'filter']);
+const emit = defineEmits<{
+	search: [query: string];
+	filter: [filters: any[]];
+}>();
 
 // Force reactivity with watchEffect
 watchEffect(() => {
@@ -148,10 +168,11 @@ const logoSrc = computed(() => {
 
 const logoLink = computed(() => {
 	// Support both prop-based and actual role values
-	if (props.userRole === 'partner' || props.userRole === 'SELLER') {
+	const role = effectiveUserRole.value;
+	if (role === 'partner' || role === 'SELLER') {
 		return '/b2b';
 	}
-	if (props.userRole === 'admin' || props.userRole === 'ADMIN') {
+	if (role === 'admin' || role === 'ADMIN') {
 		return '/admin';
 	}
 	return '/';
@@ -172,7 +193,9 @@ const isAdminApplicationsTabActive = computed(() => {
 	return route.name === 'Admin' && route.query.tab === 'applications';
 });
 
-const handleSearch = ({ query }: { query: string }) => {
+const handleSearch = (data: { query: string } | string) => {
+	// Handle both object and string formats
+	const query = typeof data === 'string' ? data : data.query;
 	emit('search', query);
 };
 

@@ -169,21 +169,23 @@
 				</div>
 			</div>
 
-			<!-- Similar Products Section -->
-			<section v-if="similarProducts.length === 0" :class="$style.similarSkeleton">
-				<h2 :class="$style.sectionTitle">{{ t('product.youMayLike') }}</h2>
-				<div :class="$style.skeletonCards">
-					<div v-for="i in 5" :key="i" :class="$style.skeletonCard"></div>
-				</div>
-			</section>
-			
-			<Recommendations
-				v-else
-				:title="t('product.youMayLike')"
-				:products="similarProducts"
-				@product-click="goToProduct"
-				@add-to-cart="addSimilarToCart"
-			/>
+			<!-- Similar Products Section (hidden in preview mode) -->
+			<template v-if="!isPreviewMode">
+				<section v-if="similarProducts.length === 0" :class="$style.similarSkeleton">
+					<h2 :class="$style.sectionTitle">{{ t('product.youMayLike') }}</h2>
+					<div :class="$style.skeletonCards">
+						<div v-for="i in 5" :key="i" :class="$style.skeletonCard"></div>
+					</div>
+				</section>
+				
+				<Recommendations
+					v-else
+					:title="t('product.youMayLike')"
+					:products="similarProducts"
+					@product-click="goToProduct"
+					@add-to-cart="addSimilarToCart"
+				/>
+			</template>
 		</main>
 
 		<Footer />

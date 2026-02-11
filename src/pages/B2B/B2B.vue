@@ -1,6 +1,6 @@
 <template>
   <div :class="$style.page">
-    <Header :userRole="'partner'" />
+    <Header :userRole="'partner'" @search="handleSearch" />
     
     <main :class="$style.main">
       <div :class="$style.container">
@@ -112,7 +112,7 @@
                   </thead>
                   <tbody>
                     <tr
-                      v-for="product in products"
+                      v-for="product in filteredProducts"
                       :key="product.id"
                       :class="[$style.productsTableTr, { [$style.productsTableTrSelected]: selectedProductId === product.id }]"
                       @click="selectProduct(product.id)"
@@ -260,6 +260,28 @@ const isLoading = ref(false);
 const products = ref<ProductListItem[]>([]);
 const isLoadingProducts = ref(false);
 const selectedProductId = ref<number | null>(null);
+const searchQuery = ref('');
+
+// Filtered products based on search query
+const filteredProducts = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return products.value;
+  }
+  
+  const query = searchQuery.value.toLowerCase().trim();
+  return products.value.filter(product => {
+    return (
+      product.name.toLowerCase().includes(query) ||
+      product.article.toLowerCase().includes(query) ||
+      product.price.toString().includes(query)
+    );
+  });
+});
+
+// Handle search from header
+const handleSearch = (query: string) => {
+  searchQuery.value = query;
+};
 
 // Selected products for filtering charts (multiple selection)
 const selectedProductIds = ref<number[]>([]);
