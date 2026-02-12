@@ -2,7 +2,7 @@
 	<span :class="$style.wrap">
 		<button
 			v-if="showEdit"
-			:class="[$style.btn, $style.edit, $style[type]]"
+			:class="[$style.btn, $style.edit, type ? $style[type] : '']"
 			:aria-label="t('common.edit')"
 			@click="$emit('edit')"
 		>
@@ -10,7 +10,7 @@
 		</button>
 		<button
 			v-if="showDelete"
-			:class="[$style.btn, $style.delete, $style[type]]"
+			:class="[$style.btn, $style.delete, type ? $style[type] : '']"
 			:aria-label="t('common.delete')"
 			@click="$emit('delete')"
 		>
@@ -27,6 +27,11 @@
 		showEdit?: boolean;
 		showDelete?: boolean;
 		type?: 'main' | 'accent' | 'success' | 'error' | 'warning';
+	}>();
+
+	defineEmits<{
+		edit: [];
+		delete: [];
 	}>();
 </script>
 <style module>

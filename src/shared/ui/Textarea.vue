@@ -26,6 +26,10 @@
 		required?: boolean;
 		rows?: number;
 	}>();
+
+	defineEmits<{
+		'update:modelValue': [value: string];
+	}>();
 </script>
 
 <style module>

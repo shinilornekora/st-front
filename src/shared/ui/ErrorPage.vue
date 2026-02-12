@@ -1,5 +1,5 @@
 <template>
-	<section :class="[$style.page, $style[type]]" role="alert">
+	<section :class="[$style.page, type ? $style[type] : '']" role="alert">
 		<h1 :class="$style.title">
 			<slot name="title">{{ $t('common.error') }}</slot>
 		</h1>
@@ -24,6 +24,10 @@
 			| 'success'
 			| 'warning';
 		cta?: string;
+	}>();
+
+	defineEmits<{
+		cta: [];
 	}>();
 </script>
 <style module>

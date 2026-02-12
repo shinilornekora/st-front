@@ -20,6 +20,10 @@
 
 	const { t } = useI18n();
 	defineProps<{ removable?: boolean }>();
+
+	defineEmits<{
+		remove: [];
+	}>();
 </script>
 <style module>
 	@import './theme.module.css';

@@ -204,7 +204,9 @@
 			hidePopup?: boolean;
 		}>(),
 		{
+			placeholder: '',
 			type: 'main',
+			modelValue: '',
 			initialFilters: () => [],
 			hidePopup: false,
 		},

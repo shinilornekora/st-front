@@ -28,7 +28,11 @@
 			 */
 			backgroundColor?: string;
 		}>(),
-		{ primary: false },
+		{
+			primary: false,
+			size: undefined,
+			backgroundColor: undefined,
+		},
 	);
 
 	const emit = defineEmits<{

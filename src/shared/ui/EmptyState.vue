@@ -1,5 +1,5 @@
 <template>
-	<section :class="[$style.empty, $style[type]]" role="status">
+	<section :class="[$style.empty, type ? $style[type] : '']" role="status">
 		<img v-if="img" :src="img" :alt="alt" :class="$style.img" />
 		<div :class="$style.text"><slot /></div>
 		<button v-if="cta" :class="$style.cta" @click="$emit('cta')">
@@ -14,6 +14,10 @@
 		alt?: string;
 		cta?: string;
 		type?: 'main' | 'accent' | 'error' | 'success' | 'warning';
+	}>();
+
+	defineEmits<{
+		cta: [];
 	}>();
 </script>
 <style module>

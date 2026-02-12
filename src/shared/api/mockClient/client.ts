@@ -5,7 +5,7 @@
 
 import { i18n } from '@shared/i18n';
 
-export interface MockResponse<T = any> {
+export interface MockResponse<T = unknown> {
 	success: boolean;
 	data?: T;
 	error?: string;
@@ -86,7 +86,7 @@ class MockApiClient {
 		return this.request(handler, config);
 	}
 
-	async post<T, D = any>(
+	async post<T, D = unknown>(
 		handler: (data: D) => T | Promise<T>,
 		data: D,
 		config?: MockConfig,
@@ -94,7 +94,7 @@ class MockApiClient {
 		return this.request(() => handler(data), config);
 	}
 
-	async put<T, D = any>(
+	async put<T, D = unknown>(
 		handler: (data: D) => T | Promise<T>,
 		data: D,
 		config?: MockConfig,
@@ -109,7 +109,7 @@ class MockApiClient {
 		return this.request(handler, config);
 	}
 
-	async patch<T, D = any>(
+	async patch<T, D = unknown>(
 		handler: (data: D) => T | Promise<T>,
 		data: D,
 		config?: MockConfig,

@@ -11,6 +11,7 @@ const meta = {
 	 */
 	title: 'Example/Header',
 	component: MyHeader,
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	render: (args: any) => ({
 		components: { MyHeader },
 		setup() {

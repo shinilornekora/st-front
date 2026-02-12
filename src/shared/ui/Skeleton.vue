@@ -16,6 +16,8 @@
 		{
 			type: 'text',
 			size: 'm',
+			width: undefined,
+			height: undefined,
 		},
 	);
 </script>

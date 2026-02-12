@@ -88,6 +88,10 @@
 		showPasswordToggle?: boolean;
 	}>();
 
+	defineEmits<{
+		'update:modelValue': [value: string];
+	}>();
+
 	const passwordVisible = ref(false);
 
 	const computedType = computed(() => {

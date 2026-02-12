@@ -8,7 +8,7 @@ export const addProduct = createEvent<Product>();
 export const updateProduct = createEvent<Product>();
 export const setPreviewProduct = createEvent<Product | null>();
 export const clearPreviewProduct = createEvent();
-export const setPreviewFormData = createEvent<any>();
+export const setPreviewFormData = createEvent<Record<string, unknown>>();
 export const clearPreviewFormData = createEvent();
 
 export const getProductsFx = createEffect<void, Product[]>(async () => {
@@ -35,6 +35,8 @@ export const $previewProduct = createStore<Product | null>(null)
 	.on(setPreviewProduct, (_, product) => product)
 	.on(clearPreviewProduct, () => null);
 
-export const $previewFormData = createStore<any>(null)
+export const $previewFormData = createStore<Record<string, unknown> | null>(
+	null,
+)
 	.on(setPreviewFormData, (_, data) => data)
 	.on(clearPreviewFormData, () => null);

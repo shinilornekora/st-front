@@ -26,6 +26,10 @@
 		disabled?: boolean;
 		required?: boolean;
 	}>();
+
+	defineEmits<{
+		'update:modelValue': [value: boolean];
+	}>();
 </script>
 
 <style module>

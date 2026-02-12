@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-	import { defineProps, defineEmits, useAttrs } from 'vue';
+	import { useAttrs } from 'vue';
 	import theme from './theme.module.css';
 
 	const props = defineProps({
@@ -30,7 +30,10 @@
 			default: 'button',
 		},
 		disabled: Boolean,
-		ariaLabel: String,
+		ariaLabel: {
+			type: String,
+			default: '',
+		},
 	});
 	const emit = defineEmits(['click']);
 	const onClick = (e: MouseEvent) => {

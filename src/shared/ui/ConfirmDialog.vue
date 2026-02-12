@@ -1,6 +1,6 @@
 <template>
 	<div :class="$style.overlay" role="dialog" aria-modal="true">
-		<div :class="[$style.dialog, $style[type]]">
+		<div :class="[$style.dialog, type ? $style[type] : '']">
 			<div :class="$style.text"><slot /></div>
 			<footer :class="$style.actions">
 				<button :class="$style.btn" @click="$emit('confirm')">
@@ -21,6 +21,11 @@
 
 	defineProps<{
 		type?: 'main' | 'accent' | 'success' | 'warning' | 'error';
+	}>();
+
+	defineEmits<{
+		confirm: [];
+		cancel: [];
 	}>();
 </script>
 <style module>

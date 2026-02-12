@@ -1,5 +1,8 @@
 <template>
-	<nav :class="[$style.bar, $style[type]]" :aria-label="t('ui.actionPanel')">
+	<nav
+		:class="[$style.bar, type ? $style[type] : '']"
+		:aria-label="t('ui.actionPanel')"
+	>
 		<button
 			v-if="showAdd"
 			:class="$style.btn"
@@ -37,6 +40,12 @@
 		showEdit?: boolean;
 		showDelete?: boolean;
 		type?: 'main' | 'accent' | 'success' | 'error' | 'warning';
+	}>();
+
+	defineEmits<{
+		add: [];
+		edit: [];
+		delete: [];
 	}>();
 </script>
 <style module>

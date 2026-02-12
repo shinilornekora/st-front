@@ -31,6 +31,10 @@
 		label?: string;
 		disabled?: boolean;
 	}>();
+
+	defineEmits<{
+		'update:modelValue': [value: number];
+	}>();
 </script>
 
 <style module>

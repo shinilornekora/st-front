@@ -52,7 +52,10 @@
 				| 'large',
 			default: 'm',
 		},
-		label: String,
+		label: {
+			type: String,
+			default: '',
+		},
 	});
 	const emit = defineEmits(['click']);
 	const $attrs = useAttrs();

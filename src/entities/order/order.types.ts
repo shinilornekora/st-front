@@ -9,5 +9,5 @@ export interface Order {
 	status: OrderStatus;
 	customer: { id: number; fullName: string; email: string; phone: string };
 	seller: { id: number; name: string };
-	paymentInfo?: any;
+	paymentInfo?: Record<string, unknown>;
 }
