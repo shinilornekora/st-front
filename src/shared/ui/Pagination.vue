@@ -139,22 +139,25 @@
 	});
 
 	const showStartEllipsis = computed(() => {
+		const firstMiddle = middlePages.value[0];
 		return (
 			props.totalPages > props.maxVisiblePages &&
 			props.currentPage > Math.floor(props.maxVisiblePages / 2) + 1 &&
 			middlePages.value.length > 0 &&
-			middlePages.value[0] > 2
+			firstMiddle !== undefined &&
+			firstMiddle > 2
 		);
 	});
 
 	const showEndEllipsis = computed(() => {
+		const lastMiddle = middlePages.value[middlePages.value.length - 1];
 		return (
 			props.totalPages > props.maxVisiblePages &&
 			props.currentPage <
 				props.totalPages - Math.floor(props.maxVisiblePages / 2) &&
 			middlePages.value.length > 0 &&
-			middlePages.value[middlePages.value.length - 1] <
-				props.totalPages - 1
+			lastMiddle !== undefined &&
+			lastMiddle < props.totalPages - 1
 		);
 	});
 

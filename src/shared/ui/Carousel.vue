@@ -1,6 +1,6 @@
 <template>
 	<div
-		:class="[$style.carousel, $style[type]]"
+		:class="[$style.carousel, type && $style[type]]"
 		tabindex="0"
 		:aria-label="t('ui.gallery')"
 	>
@@ -26,7 +26,6 @@
 <script setup lang="ts">
 	import { ref } from 'vue';
 	import { useI18n } from 'vue-i18n';
-	import theme from './theme.module.css';
 
 	const { t } = useI18n();
 

@@ -5,7 +5,6 @@
 	></span>
 </template>
 <script setup lang="ts">
-	import theme from './theme.module.css';
 	withDefaults(
 		defineProps<{
 			type?: 'text' | 'circle' | 'rect';

@@ -15,7 +15,6 @@
 </template>
 
 <script setup lang="ts">
-	import theme from './theme.module.css';
 	defineProps<{ tabs: { label: string; value: string }[]; active: string }>();
 
 	defineEmits<{

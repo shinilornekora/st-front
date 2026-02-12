@@ -949,10 +949,6 @@
 		showSettingsModal.value = true;
 	};
 
-	const closeSettingsModal = () => {
-		showSettingsModal.value = false;
-	};
-
 	const handleSaveSettings = (settings: any[]) => {
 		console.log('Save settings:', settings);
 		// TODO: Сохранить настройки в localStorage или отправить на сервер

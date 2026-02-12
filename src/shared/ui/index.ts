@@ -1,4 +1,3 @@
-import theme from './theme.module.css';
 export { default as Button } from './Button.vue';
 export { default as IconButton } from './IconButton.vue';
 export { default as Link } from './Link.vue';
@@ -46,4 +45,3 @@ export { default as Pagination } from './Pagination.vue';
 export { default as StatusLine } from './StatusLine.vue';
 export { default as SuccessAlert } from './SuccessAlert.vue';
 export { default as DiscountRequestModal } from './DiscountRequestModal.vue';
-export { theme };

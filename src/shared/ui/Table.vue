@@ -1,5 +1,5 @@
 <template>
-	<table :class="[$style.table, $style[type]]" role="table">
+	<table :class="[$style.table, type && $style[type]]" role="table">
 		<thead>
 			<tr>
 				<th
@@ -29,9 +29,8 @@
 </template>
 <script setup lang="ts">
 	import { ref, computed } from 'vue';
-	import theme from './theme.module.css';
 	type Row = Record<string, any> & { id: string | number };
-	defineProps<{
+	const props = defineProps<{
 		headers: { key: string; label: string }[];
 		items: Row[];
 		emptyText?: string;
@@ -45,12 +44,14 @@
 	}
 	const sorted = computed(() => {
 		if (sortKey.value < 0) return props.items;
-		const k = props.headers[sortKey.value].key;
+		const header = props.headers[sortKey.value];
+		if (!header) return props.items;
+		const k = header.key;
 		return [...props.items].sort(
 			(a, b) => (a[k] > b[k] ? 1 : -1) * (sortAsc.value ? 1 : -1),
 		);
 	});
-	const ariaSort = (idx: number): string =>
+	const ariaSort = (idx: number): 'none' | 'ascending' | 'descending' =>
 		sortKey.value !== idx
 			? 'none'
 			: sortAsc.value

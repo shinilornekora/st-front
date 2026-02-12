@@ -1,5 +1,5 @@
 <template>
-	<div :class="[$style.alert, $style[type]]" :role="role">
+	<div :class="[$style.alert, type && $style[type]]" :role="role">
 		<slot name="icon">
 			<span :class="$style.icon"></span>
 		</slot>
@@ -7,7 +7,6 @@
 	</div>
 </template>
 <script setup lang="ts">
-	import theme from './theme.module.css';
 	const props = defineProps<{
 		type?: 'info' | 'success' | 'warning' | 'error';
 	}>();

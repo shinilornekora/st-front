@@ -31,8 +31,6 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue';
-	import theme from './theme.module.css';
 
 	type Option = { value: string | number; label: string };
 	const props = defineProps<{

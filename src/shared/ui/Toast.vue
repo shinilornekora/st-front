@@ -3,7 +3,7 @@
 		<div
 			v-for="item in toasts"
 			:key="item.id"
-			:class="[$style.toast, $style[item.type]]"
+			:class="[$style.toast, item.type && $style[item.type]]"
 		>
 			{{ item.text }}
 			<button
@@ -19,7 +19,6 @@
 <script setup lang="ts">
 	import { ref } from 'vue';
 	import { useI18n } from 'vue-i18n';
-	import theme from './theme.module.css';
 
 	const { t } = useI18n();
 

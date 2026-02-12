@@ -1,12 +1,11 @@
 <template>
-	<aside :class="[$style.full, $style[type]]" aria-busy="true" role="alert">
+	<aside :class="[$style.full, type && $style[type]]" aria-busy="true" role="alert">
 		<span :class="$style.inner">
 			<slot><span :class="$style.spinner" /></slot>
 		</span>
 	</aside>
 </template>
 <script setup lang="ts">
-	import theme from './theme.module.css';
 	defineProps<{
 		type?: 'main' | 'accent' | 'success' | 'warning' | 'error';
 	}>();

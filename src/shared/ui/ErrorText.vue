@@ -5,7 +5,6 @@
 </template>
 
 <script setup lang="ts">
-	import theme from './theme.module.css';
 </script>
 
 <style module>

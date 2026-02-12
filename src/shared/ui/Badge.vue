@@ -1,10 +1,9 @@
 <template>
-	<span :class="[$style.badge, $style[type]]" role="status">
+	<span :class="[$style.badge, type && $style[type]]" role="status">
 		<slot />
 	</span>
 </template>
 <script setup lang="ts">
-	import theme from './theme.module.css';
 	defineProps<{ type?: 'success' | 'warning' | 'error' | 'info' }>();
 </script>
 <style module>

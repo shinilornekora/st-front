@@ -117,7 +117,7 @@ export const router = createRouter({
 });
 
 // Navigation guard для редиректа пользователей на их страницы
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
 	const user = $user.getState();
 
 	// Если пользователь пытается попасть на главную страницу или каталог

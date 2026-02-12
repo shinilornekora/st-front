@@ -58,15 +58,11 @@
 	</article>
 </template>
 <script setup lang="ts">
-	import { ref, onMounted, watch, computed } from 'vue';
-	import { useStore } from 'effector-vue/composition';
+	import { ref, onMounted, watch } from 'vue';
 	import { useI18n } from 'vue-i18n';
 	import type { Product } from '@entities/product/product.types';
-	import { $cart } from '@entities/cart/cart.store';
-	import theme from '@shared/ui/theme.module.css';
 	import heartIcon from '@assets/heart_icon.svg';
 	import darkHeartIcon from '@assets/dark_heart_icon.svg';
-	import { isUserAuthenticated } from '@shared/utils/auth';
 	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
 
 	const { t } = useI18n();
@@ -88,13 +84,6 @@
 	const emit = defineEmits(['add-to-cart', 'click', 'favourite']);
 
 	const isFavorite = ref(false);
-	const cart = useStore($cart);
-
-	// Check if product is in cart
-	const isInCart = computed(() => {
-		if (!props.id) return false;
-		return cart.value.items.some((item) => item.id === props.id);
-	});
 
 	// Check if product is favorite on mount
 	onMounted(() => {

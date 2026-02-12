@@ -108,10 +108,8 @@
 <script setup lang="ts">
 	import { ref, onMounted, watch } from 'vue';
 	import { useI18n } from 'vue-i18n';
-	import theme from '@shared/ui/theme.module.css';
 	import heartIcon from '@assets/favourite.svg';
 	import filledHeartIcon from '@assets/filled_heart.svg';
-	import { isUserAuthenticated } from '@shared/utils/auth';
 	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
 
 	const { t } = useI18n();
@@ -136,7 +134,6 @@
 	]);
 
 	const isFavorite = ref(false);
-	const shareBtnClicked = ref(false);
 
 	// Check if product is favorite on mount
 	onMounted(() => {
@@ -179,15 +176,6 @@
 		emit('product-click', props.id);
 	};
 
-	const handleShare = () => {
-		// Add click animation to button
-		shareBtnClicked.value = true;
-		setTimeout(() => {
-			shareBtnClicked.value = false;
-		}, 200);
-
-		emit('share');
-	};
 </script>
 <style module>
 	@import '@shared/ui/theme.module.css';

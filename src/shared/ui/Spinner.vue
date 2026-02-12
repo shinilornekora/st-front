@@ -1,12 +1,11 @@
 <template>
 	<span
-		:class="[$style.spinner, $style[type]]"
+		:class="[$style.spinner, type && $style[type]]"
 		:aria-label="ariaLabel"
 		role="status"
 	/>
 </template>
 <script setup lang="ts">
-	import theme from './theme.module.css';
 	defineProps<{
 		type?:
 			| 'main'

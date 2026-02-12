@@ -1,5 +1,5 @@
 <template>
-	<section :class="[$style.filter, $style[type]]" role="region">
+	<section :class="[$style.filter, type && $style[type]]" role="region">
 		<header v-if="$slots.header" :class="$style.header">
 			<slot name="header" />
 		</header>
@@ -7,13 +7,12 @@
 	</section>
 </template>
 <script setup lang="ts">
-	import theme from './theme.module.css';
 	defineProps<{
 		type?: 'main' | 'accent' | 'error' | 'success' | 'warning';
 	}>();
 </script>
 <style module>
-	@import './theme.module.css';
+	@import '@shared/ui/theme.module.css';
 	.filter {
 		background: var(--color-hover);
 		border-radius: 8px;

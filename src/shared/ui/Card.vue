@@ -1,5 +1,5 @@
 <template>
-	<section :class="[$style.card, $style[type]]" role="region">
+	<section :class="[$style.card, type && $style[type]]" role="region">
 		<div :class="$style.heartContainer">
 			<IconButton
 				size="24"
@@ -18,7 +18,6 @@
 </template>
 <script setup lang="ts">
 	import { ref } from 'vue';
-	import theme from './theme.module.css';
 	import IconButton from './IconButton.vue';
 	import heartIcon from '@assets/heart_icon.svg';
 	import darkHeartIcon from '@assets/dark_heart_icon.svg';

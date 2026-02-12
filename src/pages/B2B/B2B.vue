@@ -875,7 +875,7 @@
 				loadProducts().then(() => {
 					// Open modal with restored data
 					editingProduct.value =
-						previewFormData.value.editData || null;
+						previewFormData.value?.editData || null;
 					isAddModalOpen.value = true;
 				});
 			} else {

@@ -181,7 +181,6 @@
 	} from 'vue';
 	import { useI18n } from 'vue-i18n';
 	import { FilterTooltip, FiltersTooltip } from '@features/filters';
-	import theme from './theme.module.css';
 
 	const { t } = useI18n();
 
@@ -233,9 +232,8 @@
 	const showPopup = ref(false);
 	const activeTooltip = ref<string | null>(null);
 	const containerRef = ref<HTMLElement | null>(null);
-	const filterLabelRefs = ref<HTMLElement[]>([]);
 	const showFiltersTooltip = ref(false);
-	const filtersTooltipTimeout = ref<NodeJS.Timeout | null>(null);
+	const filtersTooltipTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 	const shouldCompressFilters = ref(false);
 	const formRef = ref<HTMLElement | null>(null);
 	const filterChipsRef = ref<HTMLElement | null>(null);

@@ -17,7 +17,6 @@
 
 <script setup lang="ts">
 	import { useAttrs } from 'vue';
-	import theme from './theme.module.css';
 
 	const props = defineProps({
 		size: {

@@ -185,7 +185,7 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, reactive, watch } from 'vue';
+	import { reactive, watch } from 'vue';
 	import { useRouter } from 'vue-router';
 	import { Input, Select } from '@shared/ui';
 	import {

@@ -16,12 +16,9 @@
 </template>
 
 <script setup lang="ts">
-	import { computed } from 'vue';
 	import { useStore } from 'effector-vue/composition';
-	import { useI18n } from 'vue-i18n';
 	import { $locale, setLocale, type Locale } from '@shared/i18n/locale.store';
 
-	const { locale } = useI18n();
 	const currentLocale = useStore($locale);
 
 	const languages = [

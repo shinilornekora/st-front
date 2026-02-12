@@ -21,7 +21,6 @@
 
 <script setup lang="ts">
 	import { ref } from 'vue';
-	import theme from './theme.module.css';
 	const props = defineProps<{
 		label?: string;
 		multiple?: boolean;

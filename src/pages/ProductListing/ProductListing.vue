@@ -49,9 +49,9 @@
 								)
 							: undefined
 					"
-					:product="product"
+					:product="product as Product"
 					@click="goToProduct"
-					@add-to-cart="addToCart(product)"
+					@add-to-cart="addToCart(product as Product)"
 				/>
 			</div>
 

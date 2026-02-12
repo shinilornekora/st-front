@@ -24,7 +24,6 @@
 
 <script setup lang="ts">
 	import { ref } from 'vue';
-	import theme from './theme.module.css';
 	const expanded = ref(false);
 	const headerId = `acc-head-${Math.random().toString(36).slice(2, 7)}`;
 	const panelId = `acc-panel-${Math.random().toString(36).slice(2, 7)}`;

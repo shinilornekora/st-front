@@ -1,6 +1,6 @@
 <template>
 	<figure
-		:class="[$style.wrapper, $style[type]]"
+		:class="[$style.wrapper, type && $style[type]]"
 		:data-ratio="ratio"
 		role="figure"
 	>
@@ -26,7 +26,6 @@
 <script setup lang="ts">
 	import { ref } from 'vue';
 	import { useI18n } from 'vue-i18n';
-	import theme from './theme.module.css';
 
 	const { t } = useI18n();
 

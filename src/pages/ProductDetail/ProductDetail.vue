@@ -404,16 +404,14 @@
 	import { useI18n } from 'vue-i18n';
 	import { Header, Footer } from '@widgets/index';
 	import { recommendations } from '@entities/product/ui';
-	import { StatusLine, Skeleton, DiscountRequestModal } from '@shared/ui';
+	import { StatusLine, DiscountRequestModal } from '@shared/ui';
 	const { Recommendations } = recommendations;
 	import { addItem } from '@entities/cart/cart.store';
 	import type { Product } from '@entities/product/product.types';
 	import { getProductById, getSimilarProducts } from '@shared/api';
 	import {
 		$previewProduct,
-		$previewFormData,
 		clearPreviewProduct,
-		clearPreviewFormData,
 	} from '@entities/product/product.store';
 	import { isUserAuthenticated } from '@shared/utils/auth';
 	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
@@ -429,7 +427,6 @@
 	const route = useRoute();
 	const router = useRouter();
 	const previewProduct = useStore($previewProduct);
-	const previewFormData = useStore($previewFormData);
 
 	const isLoading = ref(false);
 	const isPreviewMode = ref(false);

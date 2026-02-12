@@ -127,7 +127,7 @@
 <script setup lang="ts">
 	import { ref, reactive, computed, watch } from 'vue';
 	import { useI18n } from 'vue-i18n';
-	import Tooltip from './Tooltip.vue';
+	import Tooltip from '@shared/ui/Tooltip.vue';
 
 	const { t } = useI18n();
 

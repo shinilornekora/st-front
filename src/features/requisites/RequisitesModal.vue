@@ -147,7 +147,9 @@
 	import crossIcon from '@assets/cross.svg';
 	import docsIcon from '@assets/docs.svg';
 	import arrowLeftIcon from '@assets/arrow_left_long.svg';
-	import { Input, Select, Button } from './index';
+	import Input from '@shared/ui/Input.vue';
+	import Select from '@shared/ui/Select.vue';
+	import Button from '@shared/ui/Button.vue';
 
 	const { t } = useI18n();
 
@@ -229,7 +231,7 @@
 </script>
 
 <style module>
-	@import './theme.module.css';
+	@import '@shared/ui/theme.module.css';
 
 	.modalBackdrop {
 		position: fixed;

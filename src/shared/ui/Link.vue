@@ -12,8 +12,7 @@
 </template>
 
 <script setup lang="ts">
-	import { defineProps, useAttrs } from 'vue';
-	import theme from './theme.module.css';
+	import { useAttrs } from 'vue';
 
 	defineProps<{
 		href?: string;
@@ -23,7 +22,7 @@
 		target?: '_blank' | '_self' | '_parent' | '_top';
 	}>();
 	const $attrs = useAttrs();
-	const onClick = ($event: MouseEvent) => {
+	const onClick = () => {
 		// Можно прокинуть кастомное поведение
 	};
 </script>
