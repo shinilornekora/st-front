@@ -6,20 +6,20 @@ import en from './locales/en';
 const savedLocale = localStorage.getItem('locale') || 'ru';
 
 export const i18n = createI18n({
-  legacy: false,
-  locale: savedLocale,
-  fallbackLocale: 'ru',
-  messages: {
-    ru,
-    en,
-  },
+	legacy: false,
+	locale: savedLocale,
+	fallbackLocale: 'ru',
+	messages: {
+		ru,
+		en,
+	},
 });
 
 export const setLocale = (locale: 'ru' | 'en') => {
-  i18n.global.locale.value = locale;
-  localStorage.setItem('locale', locale);
+	i18n.global.locale.value = locale;
+	localStorage.setItem('locale', locale);
 };
 
 export const getLocale = (): string => {
-  return i18n.global.locale.value;
+	return i18n.global.locale.value;
 };

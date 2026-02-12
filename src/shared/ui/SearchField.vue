@@ -14,9 +14,13 @@
 				@focus="showPopup = true"
 				@keydown.enter.prevent="handleSubmit"
 			/>
-			
+
 			<!-- Active filters as chips inside search -->
-			<div v-if="activeFilters.length > 0" ref="filterChipsRef" :class="$style.filterChips">
+			<div
+				v-if="activeFilters.length > 0"
+				ref="filterChipsRef"
+				:class="$style.filterChips"
+			>
 				<!-- Show all filters if they fit, otherwise show compressed view -->
 				<template v-if="!shouldCompressFilters">
 					<button
@@ -27,7 +31,14 @@
 						@click="removeFilter(filter.id)"
 					>
 						{{ filter.label }}
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<line x1="18" y1="6" x2="6" y2="18"></line>
 							<line x1="6" y1="6" x2="18" y2="18"></line>
 						</svg>
@@ -40,11 +51,15 @@
 					@mouseenter="handleFiltersMouseEnter"
 					@mouseleave="handleFiltersMouseLeave"
 				>
-					<span :class="$style.filterCount">{{ t('filters.filtersCount', { count: activeFilters.length }) }}</span>
+					<span :class="$style.filterCount">{{
+						t('filters.filtersCount', {
+							count: activeFilters.length,
+						})
+					}}</span>
 					<div :class="$style.ellipsis">...</div>
 				</div>
 			</div>
-			
+
 			<button
 				v-if="value || activeFilters.length > 0"
 				:class="$style.clearBtn"
@@ -52,22 +67,40 @@
 				@click="clearAll"
 				:aria-label="t('ui.clear')"
 			>
-				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<line x1="18" y1="6" x2="6" y2="18"></line>
 					<line x1="6" y1="6" x2="18" y2="18"></line>
 				</svg>
 			</button>
-			
-			<button :class="$style.searchBtn" type="submit" :aria-label="t('common.find')">
+
+			<button
+				:class="$style.searchBtn"
+				type="submit"
+				:aria-label="t('common.find')"
+			>
 				<slot name="icon">
-					<img src="@assets/search.svg" alt="" :class="$style.searchIcon" />
+					<img
+						src="@assets/search.svg"
+						alt=""
+						:class="$style.searchIcon"
+					/>
 				</slot>
 			</button>
 		</form>
-		
+
 		<!-- Popup with filters and suggestions -->
 		<Transition name="popup">
-			<div v-if="showPopup && !hideFilters && !hidePopup" :class="$style.popup">
+			<div
+				v-if="showPopup && !hideFilters && !hidePopup"
+				:class="$style.popup"
+			>
 				<!-- Filter labels at top -->
 				<div :class="$style.popupSection">
 					<div :class="$style.filterLabels">
@@ -88,14 +121,16 @@
 							<FilterTooltip
 								v-if="activeTooltip === filter.id"
 								:filter-type="filter.id"
-								:current-values="getCurrentFilterValues(filter.id)"
+								:current-values="
+									getCurrentFilterValues(filter.id)
+								"
 								@apply="handleFilterApply"
 								@close="closeTooltip"
 							/>
 						</div>
 					</div>
 				</div>
-				
+
 				<!-- Search field suggestions below -->
 				<div :class="$style.popupSection">
 					<div :class="$style.suggestions">
@@ -106,8 +141,14 @@
 							type="button"
 							@click="selectSuggestion(suggestion)"
 						>
-							<span :class="$style.suggestionText">{{ suggestion }}</span>
-							<img src="@assets/search.svg" alt="" :class="$style.searchIcon" />
+							<span :class="$style.suggestionText">{{
+								suggestion
+							}}</span>
+							<img
+								src="@assets/search.svg"
+								alt=""
+								:class="$style.searchIcon"
+							/>
 						</button>
 					</div>
 				</div>
@@ -130,50 +171,63 @@
 	</div>
 </template>
 <script setup lang="ts">
-	import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
+	import {
+		ref,
+		computed,
+		onMounted,
+		onUnmounted,
+		nextTick,
+		watch,
+	} from 'vue';
 	import { useI18n } from 'vue-i18n';
-	import FilterTooltip from './FilterTooltip.vue';
-	import FiltersTooltip from './FiltersTooltip.vue';
+	import { FilterTooltip, FiltersTooltip } from '@features/filters';
 	import theme from './theme.module.css';
-	
+
 	const { t } = useI18n();
-	
+
 	interface Filter {
 		id: 'size' | 'quantity' | 'price' | 'sex' | 'color';
 		label: string;
 	}
-	
+
 	interface AppliedFilter extends Filter {
 		values: string[];
 	}
-	
-	const props = withDefaults(defineProps<{
-		placeholder?: string;
-		type?: 'main' | 'accent';
-		hideFilters?: boolean;
-		modelValue?: string;
-		initialFilters?: AppliedFilter[];
-		hidePopup?: boolean;
-	}>(), {
-		type: 'main',
-		initialFilters: () => [],
-		hidePopup: false,
-	});
-	
+
+	const props = withDefaults(
+		defineProps<{
+			placeholder?: string;
+			type?: 'main' | 'accent';
+			hideFilters?: boolean;
+			modelValue?: string;
+			initialFilters?: AppliedFilter[];
+			hidePopup?: boolean;
+		}>(),
+		{
+			type: 'main',
+			initialFilters: () => [],
+			hidePopup: false,
+		},
+	);
+
 	const emit = defineEmits(['submit', 'update:modelValue', 'filterChange']);
-	
+
 	const value = computed({
 		get: () => props.modelValue || '',
-		set: (val) => emit('update:modelValue', val)
+		set: (val) => emit('update:modelValue', val),
 	});
 	const activeFilters = ref<AppliedFilter[]>(props.initialFilters || []);
-	
+
 	// Watch for initialFilters changes and update activeFilters
-	watch(() => props.initialFilters, (newFilters) => {
-		if (newFilters && newFilters.length > 0) {
-			activeFilters.value = [...newFilters];
-		}
-	}, { deep: true });
+	watch(
+		() => props.initialFilters,
+		(newFilters) => {
+			if (newFilters && newFilters.length > 0) {
+				activeFilters.value = [...newFilters];
+			}
+		},
+		{ deep: true },
+	);
 	const showPopup = ref(false);
 	const activeTooltip = ref<string | null>(null);
 	const containerRef = ref<HTMLElement | null>(null);
@@ -184,35 +238,35 @@
 	const formRef = ref<HTMLElement | null>(null);
 	const filterChipsRef = ref<HTMLElement | null>(null);
 	const resizeObserver = ref<ResizeObserver | null>(null);
-	
+
 	// All available filters
 	const allFilters = computed<Filter[]>(() => [
 		{ id: 'size', label: t('filters.size') },
 		{ id: 'quantity', label: t('filters.quantity') },
 		{ id: 'price', label: t('filters.price') },
 		{ id: 'sex', label: t('filters.sex') },
-		{ id: 'color', label: t('filters.color') }
+		{ id: 'color', label: t('filters.color') },
 	]);
-	
+
 	// Search suggestions
 	const searchSuggestions = computed<string[]>(() => [
 		t('product.sneakers'),
 		t('product.boots'),
 		t('product.shoes'),
 	]);
-	
+
 	const selectSuggestion = (suggestion: string) => {
 		value.value = suggestion;
 		showPopup.value = false;
 		// Immediately trigger search with the selected suggestion
 		emit('submit', { query: suggestion, filters: activeFilters.value });
 	};
-	
+
 	const handleSubmit = () => {
 		showPopup.value = false;
 		emit('submit', { query: value.value, filters: activeFilters.value });
 	};
-	
+
 	const openFilterTooltip = (filter: Filter) => {
 		// Close any existing tooltip first
 		activeTooltip.value = null;
@@ -221,30 +275,40 @@
 			activeTooltip.value = filter.id;
 		}, 10);
 	};
-	
+
 	const closeTooltip = () => {
 		activeTooltip.value = null;
 	};
-	
-	const handleFilterApply = (filterData: { type: string; values: string[] }) => {
+
+	const handleFilterApply = (filterData: {
+		type: string;
+		values: string[];
+	}) => {
 		// Remove existing filter of the same type if it exists
-		activeFilters.value = activeFilters.value.filter(f => f.id !== filterData.type);
-		
+		activeFilters.value = activeFilters.value.filter(
+			(f) => f.id !== filterData.type,
+		);
+
 		// Add the new filter only if it has values
 		if (filterData.values.length > 0) {
-			const filter = allFilters.value.find(f => f.id === filterData.type);
+			const filter = allFilters.value.find(
+				(f) => f.id === filterData.type,
+			);
 			if (filter) {
-				const label = getFilterLabel(filterData.type, filterData.values);
+				const label = getFilterLabel(
+					filterData.type,
+					filterData.values,
+				);
 				activeFilters.value.push({
 					...filter,
 					values: filterData.values,
-					label
+					label,
 				});
 			}
 		}
-		
+
 		emit('filterChange', activeFilters.value);
-		
+
 		// Once compressed, keep compressed - don't try to expand again
 		// This prevents visual glitches when adding filters to compressed state
 		if (shouldCompressFilters.value || activeFilters.value.length > 2) {
@@ -255,48 +319,56 @@
 				checkFiltersCompression();
 			});
 		}
-		
+
 		// Don't close tooltip for immediate feedback - let user continue selecting
 	};
-	
+
 	const getFilterLabel = (type: string, values: string[]): string => {
-		const filter = allFilters.value.find(f => f.id === type);
+		const filter = allFilters.value.find((f) => f.id === type);
 		if (!filter) return '';
-		
+
 		switch (type) {
 			case 'size':
 				return `${t('filters.size')}: ${values.join(', ')}`;
 			case 'quantity':
-				return values.includes('in_stock') ? t('filters.inStock') : t('filters.preOrder');
+				return values.includes('in_stock')
+					? t('filters.inStock')
+					: t('filters.preOrder');
 			case 'price':
 				const [min, max] = values;
 				if (min && max) return `${t('filters.price')}: ${min}-${max}`;
-				if (min) return `${t('filters.price')}: ${t('filters.from')} ${min}`;
-				if (max) return `${t('filters.price')}: ${t('filters.to')} ${max}`;
+				if (min)
+					return `${t('filters.price')}: ${t('filters.from')} ${min}`;
+				if (max)
+					return `${t('filters.price')}: ${t('filters.to')} ${max}`;
 				return t('filters.price');
 			case 'sex':
 				const sexLabels: Record<string, string> = {
-					'male': t('filters.male'),
-					'female': t('filters.female'),
-					'unisex': t('filters.unisex')
+					male: t('filters.male'),
+					female: t('filters.female'),
+					unisex: t('filters.unisex'),
 				};
-				return values.map(v => sexLabels[v] || v).join(', ');
+				return values.map((v) => sexLabels[v] || v).join(', ');
 			case 'color':
-				return values.map(v => t(`filters.colorsCapitalized.${v}`, v)).join(', ');
+				return values
+					.map((v) => t(`filters.colorsCapitalized.${v}`, v))
+					.join(', ');
 			default:
 				return filter.label;
 		}
 	};
-	
+
 	const getCurrentFilterValues = (filterId: string): string[] => {
-		const filter = activeFilters.value.find(f => f.id === filterId);
+		const filter = activeFilters.value.find((f) => f.id === filterId);
 		return filter ? filter.values : [];
 	};
-	
+
 	const removeFilter = (filterId: string) => {
-		activeFilters.value = activeFilters.value.filter(f => f.id !== filterId);
+		activeFilters.value = activeFilters.value.filter(
+			(f) => f.id !== filterId,
+		);
 		emit('filterChange', activeFilters.value);
-		
+
 		// Only check if we should decompress if we have few filters left
 		// This prevents visual glitches when removing filters from compressed state
 		if (activeFilters.value.length <= 2) {
@@ -304,13 +376,13 @@
 				checkFiltersCompression();
 			});
 		}
-		
+
 		// Close tooltip if no filters left
 		if (activeFilters.value.length === 0) {
 			showFiltersTooltip.value = false;
 		}
 	};
-	
+
 	const clearAll = () => {
 		emit('update:modelValue', '');
 		activeFilters.value = [];
@@ -327,7 +399,11 @@
 
 	// Check if filters should be compressed based on available space
 	const checkFiltersCompression = () => {
-		if (!formRef.value || !filterChipsRef.value || activeFilters.value.length === 0) {
+		if (
+			!formRef.value ||
+			!filterChipsRef.value ||
+			activeFilters.value.length === 0
+		) {
 			shouldCompressFilters.value = false;
 			return;
 		}
@@ -335,14 +411,15 @@
 		// Get the form width and filter chips width
 		const formWidth = formRef.value.offsetWidth;
 		const filterChipsWidth = filterChipsRef.value.offsetWidth;
-		
+
 		// More aggressive compression - compress if filter chips take more than 40% of the form width
 		// Also compress if we have more than 2 filters regardless of width
 		const compressionThreshold = formWidth * 0.4;
 		const shouldCompressByWidth = filterChipsWidth > compressionThreshold;
 		const shouldCompressByCount = activeFilters.value.length > 2;
-		
-		shouldCompressFilters.value = shouldCompressByWidth || shouldCompressByCount;
+
+		shouldCompressFilters.value =
+			shouldCompressByWidth || shouldCompressByCount;
 	};
 
 	// Handle mouse enter on compressed filters
@@ -397,34 +474,37 @@
 
 		// Observe the filter chips container
 		resizeObserver.value.observe(filterChipsRef.value);
-		
+
 		// Also observe the form to detect width changes
 		if (formRef.value) {
 			resizeObserver.value.observe(formRef.value);
 		}
 	};
-	
+
 	// Close popup when clicking outside
 	const handleClickOutside = (event: MouseEvent) => {
-		if (containerRef.value && !containerRef.value.contains(event.target as Node)) {
+		if (
+			containerRef.value &&
+			!containerRef.value.contains(event.target as Node)
+		) {
 			showPopup.value = false;
 			activeTooltip.value = null;
 		}
 	};
-	
+
 	onMounted(() => {
 		document.addEventListener('click', handleClickOutside);
-		
+
 		// Set up resize observer after DOM is ready
 		nextTick(() => {
 			setupResizeObserver();
 			checkFiltersCompression();
 		});
 	});
-	
+
 	onUnmounted(() => {
 		document.removeEventListener('click', handleClickOutside);
-		
+
 		// Clean up resize observer
 		if (resizeObserver.value) {
 			resizeObserver.value.disconnect();
@@ -433,7 +513,7 @@
 </script>
 <style module>
 	@import './theme.module.css';
-	
+
 	.searchContainer {
 		position: relative;
 		display: flex;
@@ -442,7 +522,7 @@
 		max-height: 40px;
 		gap: 12px;
 	}
-	
+
 	.form {
 		display: flex;
 		align-items: center;
@@ -451,28 +531,30 @@
 		border: 2px solid #e5e7eb;
 		border-radius: 24px;
 		padding: 0px 16px;
-		transition: border-color 0.2s, box-shadow 0.2s;
+		transition:
+			border-color 0.2s,
+			box-shadow 0.2s;
 		flex-wrap: nowrap;
 		max-width: 575px !important;
 		min-height: 40px;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 		/* Remove overflow: hidden to ensure background is visible */
 	}
-	
+
 	.form:focus-within {
 		border-color: var(--color-accent);
 		box-shadow: 0 0 0 3px rgba(95, 219, 209, 0.1);
 	}
-	
+
 	.main {
 		/* Remove background and border color for main type, keep it white */
 	}
-	
+
 	.accent {
 		background: var(--color-accent);
 		border-color: var(--color-accent);
 	}
-	
+
 	.input {
 		border: none;
 		background: none;
@@ -483,11 +565,11 @@
 		min-width: 120px;
 		color: var(--color-primary);
 	}
-	
+
 	.input::placeholder {
 		color: #9ca3af;
 	}
-	
+
 	.filterChips {
 		display: flex;
 		gap: 6px;
@@ -497,7 +579,7 @@
 		min-width: 0;
 		overflow: hidden;
 	}
-	
+
 	.filterChip {
 		display: flex;
 		align-items: center;
@@ -509,22 +591,24 @@
 		font-size: 13px;
 		color: var(--color-primary);
 		cursor: pointer;
-		transition: background 0.2s, border-color 0.2s;
+		transition:
+			background 0.2s,
+			border-color 0.2s;
 		white-space: nowrap;
 		flex-shrink: 0;
 	}
-	
+
 	.filterChip:hover {
 		background: #e5e7eb;
 		border-color: #9ca3af;
 	}
-	
+
 	.filterChip svg {
 		width: 12px;
 		height: 12px;
 		stroke-width: 2.5;
 	}
-	
+
 	.clearBtn {
 		background: none;
 		border: none;
@@ -537,11 +621,11 @@
 		transition: color 0.2s;
 		flex-shrink: 0;
 	}
-	
+
 	.clearBtn:hover {
 		color: var(--color-primary);
 	}
-	
+
 	.searchBtn {
 		background: none;
 		border: none;
@@ -554,16 +638,16 @@
 		transition: color 0.2s;
 		flex-shrink: 0;
 	}
-	
+
 	.searchBtn:hover {
 		color: var(--color-accent);
 	}
-	
+
 	.searchIcon {
 		width: 16px;
 		height: 16px;
 	}
-	
+
 	/* Popup */
 	.popup {
 		position: absolute;
@@ -576,26 +660,26 @@
 		z-index: 1000;
 		border: 1px solid #e5e7eb;
 	}
-	
+
 	.popupSection {
 		padding: 16px;
 	}
-	
+
 	.popupSection:not(:last-child) {
 		border-bottom: 1px solid #e5e7eb;
 	}
-	
+
 	/* Filter labels */
 	.filterLabels {
 		display: flex;
 		gap: 12px;
 		flex-wrap: wrap;
 	}
-	
+
 	.filterLabelWrapper {
 		position: relative;
 	}
-	
+
 	.filterLabel {
 		background: #f3f4f6;
 		border: none;
@@ -607,19 +691,19 @@
 		transition: all 0.2s;
 		white-space: nowrap;
 	}
-	
+
 	.filterLabel:hover {
 		background: #e5e7eb;
 		color: var(--color-primary);
 	}
-	
+
 	/* Search suggestions */
 	.suggestions {
 		display: flex;
 		flex-direction: column;
 		gap: 4px;
 	}
-	
+
 	.suggestionItem {
 		display: flex;
 		align-items: center;
@@ -634,38 +718,38 @@
 		border-radius: 8px;
 		text-align: left;
 	}
-	
+
 	.suggestionItem:hover {
 		background: #f9fafb;
 	}
-	
+
 	.suggestionText {
 		flex: 1;
 	}
-	
+
 	.suggestionItem .searchIcon {
 		width: 18px;
 		height: 18px;
 		color: #9ca3af;
 		flex-shrink: 0;
 	}
-	
+
 	/* Popup transition */
 	.popup-enter-active,
 	.popup-leave-active {
 		transition: all 0.2s ease;
 	}
-	
+
 	.popup-enter-from {
 		opacity: 0;
 		transform: translateY(-8px);
 	}
-	
+
 	.popup-leave-to {
 		opacity: 0;
 		transform: translateY(-8px);
 	}
-	
+
 	/* Responsive */
 	@media (max-width: 768px) {
 		.form {
@@ -676,17 +760,17 @@
 		.form {
 			max-width: 100% !important;
 		}
-		
+
 		.input {
 			font-size: 14px;
 			min-width: 80px;
 		}
-		
+
 		.filterChip {
 			font-size: 12px;
 			padding: 3px 8px;
 		}
-		
+
 		.suggestedChip {
 			font-size: 13px;
 			padding: 5px 12px;
@@ -705,7 +789,9 @@
 		font-size: 13px;
 		color: var(--color-primary);
 		cursor: pointer;
-		transition: background 0.2s, border-color 0.2s;
+		transition:
+			background 0.2s,
+			border-color 0.2s;
 		white-space: nowrap;
 		flex-shrink: 0;
 	}

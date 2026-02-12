@@ -10,7 +10,10 @@ const savedLocale = (localStorage.getItem('locale') as Locale) || 'ru';
 export const setLocale = createEvent<Locale>();
 
 // Store
-export const $locale = createStore<Locale>(savedLocale).on(setLocale, (_, locale) => {
-  setI18nLocale(locale);
-  return locale;
-});
+export const $locale = createStore<Locale>(savedLocale).on(
+	setLocale,
+	(_, locale) => {
+		setI18nLocale(locale);
+		return locale;
+	},
+);

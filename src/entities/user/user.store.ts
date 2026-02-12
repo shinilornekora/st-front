@@ -6,49 +6,55 @@ export const setUser = createEvent<User | null>();
 export const resetUser = createEvent();
 
 // Эффекты (моки)
-export const loginFx = createEffect<{ email: string; password: string }, User>(async ({ email }) => {
-	// mock user
-	return {
-		id: 1,
-		email,
-		role: 'CUSTOMER',
-		fullName: 'Demo Customer',
-		phone: '+71234567890',
-		specificFields: { favoriteProducts: [100, 101] },
-	};
-});
+export const loginFx = createEffect<{ email: string; password: string }, User>(
+	async ({ email }) => {
+		// mock user
+		return {
+			id: 1,
+			email,
+			role: 'CUSTOMER',
+			fullName: 'Demo Customer',
+			phone: '+71234567890',
+			specificFields: { favoriteProducts: [100, 101] },
+		};
+	},
+);
 
-export const updateProfileFx = createEffect<Partial<User>, User>(async (fields) => {
-	// В норме: api, сейчас mock
-	return {
-		id: 1,
-		email: fields.email ?? 'demo@mail.com',
-		role: 'CUSTOMER',
-		fullName: fields.fullName ?? 'Demo Customer',
-		phone: fields.phone ?? '+71234567890',
-		specificFields: fields.specificFields ?? { favoriteProducts: [100] },
-	};
-});
+export const updateProfileFx = createEffect<Partial<User>, User>(
+	async (fields) => {
+		// В норме: api, сейчас mock
+		return {
+			id: 1,
+			email: fields.email ?? 'demo@mail.com',
+			role: 'CUSTOMER',
+			fullName: fields.fullName ?? 'Demo Customer',
+			phone: fields.phone ?? '+71234567890',
+			specificFields: fields.specificFields ?? {
+				favoriteProducts: [100],
+			},
+		};
+	},
+);
 
 // Эффект для инициализации пользователя из localStorage
 export const initUserFx = createEffect<void, User | null>(async () => {
 	try {
 		// Проверяем cookie аутентификации
-		const hasAuthCookie = document.cookie.split(';').some(cookie =>
-			cookie.trim().startsWith('gtrh=1')
-		);
-		
+		const hasAuthCookie = document.cookie
+			.split(';')
+			.some((cookie) => cookie.trim().startsWith('gtrh=1'));
+
 		if (!hasAuthCookie) {
 			return null;
 		}
-		
+
 		// Пытаемся восстановить данные пользователя из localStorage
 		const userDataStr = localStorage.getItem('user');
 		if (userDataStr) {
 			const userData = JSON.parse(userDataStr);
 			return userData;
 		}
-		
+
 		// Если данных нет в localStorage, но есть cookie, возвращаем mock пользователя
 		// В реальном приложении здесь был бы запрос к API для получения данных пользователя
 		return {

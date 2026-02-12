@@ -7,7 +7,11 @@
 		aria-modal="true"
 	>
 		<aside :class="$style.drawer">
-			<button :class="$style.close" @click="close" :aria-label="t('common.close')">
+			<button
+				:class="$style.close"
+				@click="close"
+				:aria-label="t('common.close')"
+			>
 				×
 			</button>
 			<slot />
@@ -17,7 +21,7 @@
 <script setup lang="ts">
 	import { useI18n } from 'vue-i18n';
 	import theme from './theme.module.css';
-	
+
 	const { t } = useI18n();
 	const props = defineProps<{ open: boolean }>();
 	const emit = defineEmits(['close']);

@@ -4,8 +4,13 @@ import type { SellerApplication } from './sellerApplication.types';
 export const setApplications = createEvent<SellerApplication[]>();
 export const addApplication = createEvent<SellerApplication>();
 
-export const getApplicationsFx = createEffect<void, SellerApplication[]>(async () => []);
-export const addApplicationFx = createEffect<SellerApplication, SellerApplication>(async (app) => app);
+export const getApplicationsFx = createEffect<void, SellerApplication[]>(
+	async () => [],
+);
+export const addApplicationFx = createEffect<
+	SellerApplication,
+	SellerApplication
+>(async (app) => app);
 
 export const $applications = createStore<SellerApplication[]>([])
 	.on(setApplications, (_, list) => list)

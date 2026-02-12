@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 	import { useAttrs } from 'vue';
-	
+
 	const props = defineProps({
 		typeAttr: {
 			type: String as () => 'button' | 'submit' | 'reset',
@@ -42,7 +42,16 @@
 		},
 		disabled: Boolean,
 		primary: Boolean,
-		size: { type: String as () => 's' | 'm' | 'l' | 'small' | 'medium' | 'large', default: 'm' },
+		size: {
+			type: String as () =>
+				| 's'
+				| 'm'
+				| 'l'
+				| 'small'
+				| 'medium'
+				| 'large',
+			default: 'm',
+		},
 		label: String,
 	});
 	const emit = defineEmits(['click']);

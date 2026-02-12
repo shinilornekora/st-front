@@ -27,9 +27,9 @@
 	import { ref } from 'vue';
 	import { useI18n } from 'vue-i18n';
 	import theme from './theme.module.css';
-	
+
 	const { t } = useI18n();
-	
+
 	defineProps<{
 		src?: string;
 		alt?: string;
@@ -49,12 +49,12 @@
 		position: relative;
 		overflow: hidden;
 	}
-	.wrapper[data-ratio="1x1"] {
+	.wrapper[data-ratio='1x1'] {
 		aspect-ratio: 1/1;
 		width: 120px;
 		height: 120px;
 	}
-	.wrapper[data-ratio="3x4"] {
+	.wrapper[data-ratio='3x4'] {
 		aspect-ratio: 3/4;
 		width: 90px;
 		height: 120px;

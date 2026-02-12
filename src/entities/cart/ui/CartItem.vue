@@ -16,9 +16,21 @@
 		/>
 		<div :class="$style.info">
 			<div :class="$style.topBlock">
-				<h4 :class="$style.title" @click="goToProduct" role="button" tabindex="0" @keydown.enter="goToProduct">{{ title || 'No title' }}</h4>
-				<div v-if="article" :class="$style.article">{{ t('cart.article') }}: {{ article }}</div>
-				<div v-if="selectedColor" :class="$style.colorInfo">{{ t('cart.color') }}: {{ selectedColor }}</div>
+				<h4
+					:class="$style.title"
+					@click="goToProduct"
+					role="button"
+					tabindex="0"
+					@keydown.enter="goToProduct"
+				>
+					{{ title || 'No title' }}
+				</h4>
+				<div v-if="article" :class="$style.article">
+					{{ t('cart.article') }}: {{ article }}
+				</div>
+				<div v-if="selectedColor" :class="$style.colorInfo">
+					{{ t('cart.color') }}: {{ selectedColor }}
+				</div>
 			</div>
 			<div :class="$style.bottomBlock">
 				<slot name="variations" />
@@ -27,22 +39,38 @@
 					<b>{{ formatPrice((price || 0) * (qty || 0)) }}</b>
 				</div>
 				<div :class="$style.actions">
-					<button :class="$style.actionBtn" @click="toggleHeart" :aria-label="t('cart.addToFavorites')">
+					<button
+						:class="$style.actionBtn"
+						@click="toggleHeart"
+						:aria-label="t('cart.addToFavorites')"
+					>
 						<img
 							:src="isFavorite ? filledHeartIcon : heartIcon"
 							alt="Heart icon"
 							:class="$style.actionIcon"
 						/>
 					</button>
-					<button :class="$style.actionBtn" @click="$emit('share')" :aria-label="t('cart.share')">
-						<img src="@assets/share.svg" alt="Share" :class="$style.actionIcon" />
+					<button
+						:class="$style.actionBtn"
+						@click="$emit('share')"
+						:aria-label="t('cart.share')"
+					>
+						<img
+							src="@assets/share.svg"
+							alt="Share"
+							:class="$style.actionIcon"
+						/>
 					</button>
 					<button
 						:class="$style.remove"
 						@click="$emit('remove')"
 						:aria-label="t('cart.removeFromCart')"
 					>
-						<img src="@assets/trash.svg" alt="Remove" :class="$style.actionIcon" />
+						<img
+							src="@assets/trash.svg"
+							alt="Remove"
+							:class="$style.actionIcon"
+						/>
 					</button>
 				</div>
 			</div>
@@ -55,7 +83,11 @@
 					:disabled="qty <= 1"
 					:aria-label="t('cart.decreaseQuantity')"
 				>
-					<img src="@assets/minus_circle.svg" alt="Decrease quantity" :class="$style.quantityIcon" />
+					<img
+						src="@assets/minus_circle.svg"
+						alt="Decrease quantity"
+						:class="$style.quantityIcon"
+					/>
 				</button>
 				<span :class="$style.quantity">{{ qty || 0 }}</span>
 				<button
@@ -63,7 +95,11 @@
 					@click="increaseQuantity"
 					:aria-label="t('cart.increaseQuantity')"
 				>
-					<img src="@assets/plus_circle.svg" alt="Increase quantity" :class="$style.quantityIcon" />
+					<img
+						src="@assets/plus_circle.svg"
+						alt="Increase quantity"
+						:class="$style.quantityIcon"
+					/>
 				</button>
 			</div>
 		</div>
@@ -77,9 +113,9 @@
 	import filledHeartIcon from '@assets/filled_heart.svg';
 	import { isUserAuthenticated } from '@shared/utils/auth';
 	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
-	
+
 	const { t } = useI18n();
-	
+
 	const props = defineProps<{
 		id: number;
 		image?: string;
@@ -90,57 +126,66 @@
 		type?: 'selected' | 'error' | 'disabled';
 		selectedColor?: string;
 	}>();
-	
-	const emit = defineEmits(['remove', 'update-quantity', 'favourite', 'share', 'product-click']);
-	
+
+	const emit = defineEmits([
+		'remove',
+		'update-quantity',
+		'favourite',
+		'share',
+		'product-click',
+	]);
+
 	const isFavorite = ref(false);
 	const shareBtnClicked = ref(false);
-	
+
 	// Check if product is favorite on mount
 	onMounted(() => {
 		// Use localStorage for all users (TODO: integrate with API for authenticated users)
 		isFavorite.value = isProductFavorite(props.id);
 	});
-	
+
 	// Watch for id changes
-	watch(() => props.id, (newId) => {
-		if (newId) {
-			// Use localStorage for all users (TODO: integrate with API for authenticated users)
-			isFavorite.value = isProductFavorite(newId);
-		}
-	});
-	
+	watch(
+		() => props.id,
+		(newId) => {
+			if (newId) {
+				// Use localStorage for all users (TODO: integrate with API for authenticated users)
+				isFavorite.value = isProductFavorite(newId);
+			}
+		},
+	);
+
 	const toggleHeart = () => {
 		// Use localStorage for all users (TODO: integrate with API for authenticated users)
 		isFavorite.value = toggleFavorite(props.id);
 		emit('favourite');
 	};
-	
+
 	const formatPrice = (price: number) => {
 		return `${price.toLocaleString('ru-RU')} ₽`;
 	};
-	
+
 	const decreaseQuantity = () => {
 		if (props.qty > 1) {
 			emit('update-quantity', { id: props.id, quantity: props.qty - 1 });
 		}
 	};
-	
+
 	const increaseQuantity = () => {
 		emit('update-quantity', { id: props.id, quantity: props.qty + 1 });
 	};
-	
+
 	const goToProduct = () => {
 		emit('product-click', props.id);
 	};
-	
+
 	const handleShare = () => {
 		// Add click animation to button
 		shareBtnClicked.value = true;
 		setTimeout(() => {
 			shareBtnClicked.value = false;
 		}, 200);
-		
+
 		emit('share');
 	};
 </script>
@@ -295,12 +340,12 @@
 		height: 28px;
 		transition: all 0.2s;
 	}
-	
+
 	.actionBtnClicked {
 		transform: scale(0.9);
 	}
 
-	@media(max-width: 1024px) {
+	@media (max-width: 1024px) {
 		.controls {
 			align-self: flex-start;
 			margin-top: 8px;

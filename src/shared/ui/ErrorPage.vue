@@ -1,6 +1,8 @@
 <template>
 	<section :class="[$style.page, $style[type]]" role="alert">
-		<h1 :class="$style.title"><slot name="title">{{ $t('common.error') }}</slot></h1>
+		<h1 :class="$style.title">
+			<slot name="title">{{ $t('common.error') }}</slot>
+		</h1>
 		<p :class="$style.desc">
 			<slot name="desc">{{ $t('ui.errorOccurred') }}</slot>
 		</p>

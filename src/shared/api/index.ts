@@ -4,56 +4,45 @@
  */
 
 // Auth API
-export {
-  loginUser,
-  registerUser
-} from './auth.api';
+export { loginUser, registerUser } from './auth.api';
 export type { LoginRequest, RegisterRequest, ApiResponse } from './auth.api';
 
 // Products API
 export {
-  getProducts,
-  getProductById,
-  getSimilarProducts
+	getProducts,
+	getProductById,
+	getSimilarProducts,
 } from './products.api';
 export type {
-  GetProductsRequest,
-  GetProductByIdRequest,
-  GetSimilarProductsRequest
+	GetProductsRequest,
+	GetProductByIdRequest,
+	GetSimilarProductsRequest,
 } from './products.api';
 
 // Sellers API
-export {
-  getSellersDashboard
-} from './sellers.api';
+export { getSellersDashboard } from './sellers.api';
 export type {
-  SellerStats,
-  ChartData,
-  SellersDashboard,
-  GetSellersDashboardRequest
+	SellerStats,
+	ChartData,
+	SellersDashboard,
+	GetSellersDashboardRequest,
 } from './sellers.api';
 
 // Applications API
-export {
-  getApplications,
-  updateApplicationStatus
-} from './applications.api';
+export { getApplications, updateApplicationStatus } from './applications.api';
 export type {
-  Application,
-  GetApplicationsRequest,
-  UpdateApplicationStatusRequest
+	Application,
+	GetApplicationsRequest,
+	UpdateApplicationStatusRequest,
 } from './applications.api';
 
 // Analytics API
-export {
-  getAnalyticsDashboard,
-  getSellerProducts
-} from './analytics.api';
+export { getAnalyticsDashboard, getSellerProducts } from './analytics.api';
 export type {
-  AnalyticsDashboard,
-  ProductAnalytics,
-  ProductListItem,
-  GetAnalyticsDashboardRequest
+	AnalyticsDashboard,
+	ProductAnalytics,
+	ProductListItem,
+	GetAnalyticsDashboardRequest,
 } from './analytics.api';
 
 // В будущем здесь будут другие API модули:

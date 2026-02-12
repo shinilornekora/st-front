@@ -1,7 +1,7 @@
 import { createStore, createEvent, createEffect, sample } from 'effector';
 import type { Cart, CartItem } from './cart.types';
 import { isUserAuthenticated } from '@shared/utils/auth';
-import { showToast, hideToast } from '@shared/ui/toast.store';
+import { showToast, hideToast } from '@shared/model';
 import { i18n } from '@shared/i18n';
 
 // Helper functions for localStorage
@@ -36,7 +36,7 @@ export const getCartFx = createEffect<void, Cart>(() => {
 	if (savedCart) {
 		return savedCart;
 	}
-	
+
 	// Return empty cart if no saved cart
 	return {
 		items: [],
@@ -46,7 +46,11 @@ export const getCartFx = createEffect<void, Cart>(() => {
 });
 
 // Initial cart state - try to load from localStorage or use empty cart
-const initialCart = loadCartFromLocalStorage() || { items: [], total: 0, currency: 'RUB' };
+const initialCart = loadCartFromLocalStorage() || {
+	items: [],
+	total: 0,
+	currency: 'RUB',
+};
 
 export const $cart = createStore<Cart>(initialCart)
 	.on(setCart, (_, c) => {
@@ -55,25 +59,33 @@ export const $cart = createStore<Cart>(initialCart)
 	})
 	.on(addItem, (state, item) => {
 		// Check if item with same id AND selectedColor exists
-		const exists = state.items.find(i => i.id === item.id && i.selectedColor === item.selectedColor);
+		const exists = state.items.find(
+			(i) => i.id === item.id && i.selectedColor === item.selectedColor,
+		);
 		let items = exists
-			? state.items.map(i => (i.id === item.id && i.selectedColor === item.selectedColor ? { ...i, quantity: i.quantity + item.quantity } : i))
+			? state.items.map((i) =>
+					i.id === item.id && i.selectedColor === item.selectedColor
+						? { ...i, quantity: i.quantity + item.quantity }
+						: i,
+				)
 			: [...state.items, item];
 		const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
 		const newCart = { ...state, items, total };
 		saveCartToLocalStorage(newCart);
-		
+
 		return newCart;
 	})
 	.on(removeItem, (state, id) => {
-		const items = state.items.filter(i => i.id !== id);
+		const items = state.items.filter((i) => i.id !== id);
 		const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
 		const newCart = { ...state, items, total };
 		saveCartToLocalStorage(newCart);
 		return newCart;
 	})
 	.on(updateQty, (state, { id, quantity }) => {
-		const items = state.items.map(i => (i.id === id ? { ...i, quantity } : i));
+		const items = state.items.map((i) =>
+			i.id === id ? { ...i, quantity } : i,
+		);
 		const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
 		const newCart = { ...state, items, total };
 		saveCartToLocalStorage(newCart);
@@ -83,7 +95,6 @@ export const $cart = createStore<Cart>(initialCart)
 		saveCartToLocalStorage(cart);
 		return cart;
 	});
-
 
 // Effect to hide toast after delay
 const hideToastFx = createEffect(() => {

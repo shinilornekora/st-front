@@ -1,6 +1,10 @@
 <template>
 	<article
-		:class="[$style.card, $style[type!], recommendation ? $style.recommendation : '']"
+		:class="[
+			$style.card,
+			$style[type!],
+			recommendation ? $style.recommendation : '',
+		]"
 		tabindex="0"
 		:aria-label="t('product.card')"
 		@click="handleCardClick"
@@ -11,12 +15,23 @@
 				<button
 					:class="$style.heartBtn"
 					@click.stop="toggleHeart"
-					:aria-label="isFavorite ? t('product.removeFromFavorites') : t('product.addToFavorites')"
+					:aria-label="
+						isFavorite
+							? t('product.removeFromFavorites')
+							: t('product.addToFavorites')
+					"
 				>
 					<img
 						:src="isFavorite ? darkHeartIcon : heartIcon"
-						:alt="isFavorite ? t('product.removeFromFavorites') : t('product.addToFavorites')"
-						:class="[$style.heartIcon, isFavorite ? $style.active : '']"
+						:alt="
+							isFavorite
+								? t('product.removeFromFavorites')
+								: t('product.addToFavorites')
+						"
+						:class="[
+							$style.heartIcon,
+							isFavorite ? $style.active : '',
+						]"
 					/>
 				</button>
 			</div>
@@ -33,7 +48,11 @@
 				@click.stop="handleAddToCart"
 				:aria-label="t('cart.addToCart')"
 			>
-				<img src="@assets/shopping_cart.svg" alt="" :class="$style.cartIcon" />
+				<img
+					src="@assets/shopping_cart.svg"
+					alt=""
+					:class="$style.cartIcon"
+				/>
 			</button>
 		</div>
 	</article>
@@ -49,9 +68,9 @@
 	import darkHeartIcon from '@assets/dark_heart_icon.svg';
 	import { isUserAuthenticated } from '@shared/utils/auth';
 	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
-	
+
 	const { t } = useI18n();
-	
+
 	const props = defineProps<{
 		id?: number;
 		image?: string;
@@ -65,58 +84,61 @@
 		recommendation?: boolean;
 		product?: Product;
 	}>();
-	
+
 	const emit = defineEmits(['add-to-cart', 'click', 'favourite']);
-	
+
 	const isFavorite = ref(false);
 	const cart = useStore($cart);
-	
+
 	// Check if product is in cart
 	const isInCart = computed(() => {
 		if (!props.id) return false;
-		return cart.value.items.some(item => item.id === props.id);
+		return cart.value.items.some((item) => item.id === props.id);
 	});
-	
+
 	// Check if product is favorite on mount
 	onMounted(() => {
 		if (props.id) {
 			isFavorite.value = isProductFavorite(props.id);
 		}
 	});
-	
+
 	// Watch for id changes
-	watch(() => props.id, (newId) => {
-		if (newId) {
-			isFavorite.value = isProductFavorite(newId);
-		}
-	});
-	
+	watch(
+		() => props.id,
+		(newId) => {
+			if (newId) {
+				isFavorite.value = isProductFavorite(newId);
+			}
+		},
+	);
+
 	const toggleHeart = () => {
 		if (!props.id) return;
-		
+
 		// Use localStorage for all users (both authenticated and non-authenticated)
 		// TODO: In the future, authenticated users should call 'add_favourite' API endpoint
 		isFavorite.value = toggleFavorite(props.id);
-		
+
 		// Emit the favourite event
 		emit('favourite', { id: props.id, isFavorite: isFavorite.value });
 	};
-	
+
 	const formatPrice = (price: number) => {
 		return `${price.toLocaleString('ru-RU')} ₽`;
 	};
-	
+
 	const handleAddToCart = () => {
 		emit('add-to-cart');
 	};
-	
+
 	const handleCardClick = () => {
 		emit('click', props.product);
 	};
 </script>
 <style module>
 	@import '@shared/ui/theme.module.css';
-	
+
 	.card {
 		background: transparent;
 		display: flex;
@@ -125,14 +147,14 @@
 		height: 100%;
 		gap: 12px;
 		max-height: 378px;
-    	max-width: 234px;
+		max-width: 234px;
 	}
-	
+
 	.card.list {
 		flex-direction: row;
 		align-items: center;
 	}
-	
+
 	.imageWrapper {
 		width: 100%;
 		aspect-ratio: 3 / 4;
@@ -141,16 +163,18 @@
 		position: relative;
 		border-radius: 8px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-		transition: transform 0.2s, box-shadow 0.2s;
+		transition:
+			transform 0.2s,
+			box-shadow 0.2s;
 	}
-	
+
 	.heartContainer {
 		position: absolute;
 		top: 8px;
 		right: 8px;
 		z-index: 1;
 	}
-	
+
 	.heartBtn {
 		width: 32px;
 		height: 32px;
@@ -165,49 +189,49 @@
 		padding: 0;
 		backdrop-filter: blur(4px);
 	}
-	
+
 	.heartBtn:hover {
 		background: rgba(255, 255, 255, 0.95);
 		transform: scale(1.1);
 	}
-	
+
 	.heartBtn:active {
 		transform: scale(0.95);
 	}
-	
+
 	.heartIcon {
 		width: 18px;
 		height: 16px;
 		transition: all 0.2s;
 	}
-	
+
 	.heartIcon.active {
 		width: 32px;
 		height: 32px;
 	}
-	
+
 	.card:hover .imageWrapper {
 		transform: translateY(-4px);
 		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 	}
-	
+
 	.card.list .imageWrapper {
 		width: 200px;
 		aspect-ratio: 1 / 1;
 		flex-shrink: 0;
 	}
-	
+
 	.img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		transition: transform 0.3s;
 	}
-	
+
 	.card:hover .img {
 		transform: scale(1.05);
 	}
-	
+
 	.body {
 		display: flex;
 		flex-direction: row;
@@ -217,7 +241,7 @@
 		gap: 5px;
 		max-height: min-content;
 	}
-	
+
 	.title {
 		font-size: 22px;
 		font-weight: 600;
@@ -231,26 +255,26 @@
 		line-height: 1.3;
 		text-align: left;
 	}
-	
+
 	.footer {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
 	}
-	
+
 	.priceWrapper {
 		display: flex;
 		flex-direction: column;
 		gap: 2px;
 	}
-	
+
 	.price {
 		font-size: 16px;
 		font-weight: 600;
 		color: var(--color-primary);
 		text-align: left;
 	}
-	
+
 	.cartBtn {
 		min-width: 36px;
 		height: 36px;
@@ -266,38 +290,38 @@
 		padding: 0 8px;
 		white-space: nowrap;
 	}
-	
+
 	.cartBtn.inCart {
 		background: #e5e5e5;
 		cursor: not-allowed;
 		opacity: 0.7;
 	}
-	
+
 	.cartText {
 		font-size: 12px;
 		font-weight: 500;
 		color: var(--color-primary);
 		padding: 0 4px;
 	}
-	
+
 	.cartIcon {
 		width: 24px;
 		height: 24px;
 		color: var(--color-accent);
 	}
-	
+
 	.cartBtn:not(.inCart):hover {
 		transform: scale(1.1);
 	}
-	
+
 	.cartBtn:not(.inCart):hover .cartIcon {
 		filter: brightness(1.2);
 	}
-	
+
 	.cartBtn:not(.inCart):active {
 		transform: scale(0.95);
 	}
-	
+
 	@media (min-width: 480px) and (max-width: 1200px) {
 		.imageWrapper,
 		.img {
@@ -320,20 +344,20 @@
 			width: 100%;
 			height: 196px;
 		}
-		
+
 		.title {
 			font-size: 14px;
 		}
-		
+
 		.price {
 			font-size: 14px;
 		}
-		
+
 		.cartBtn {
 			width: 32px;
 			height: 32px;
 		}
-		
+
 		.cartIcon {
 			width: 20px;
 			height: 20px;
@@ -345,43 +369,43 @@
 			width: auto;
 		}
 	}
-	
+
 	/* Recommendation card style */
 	.card.recommendation {
 		height: auto;
 		width: 166px;
 		gap: 8px;
 	}
-	
+
 	.card.recommendation .imageWrapper {
 		width: 166px;
 		height: 198px;
 		border-radius: 8px;
 		aspect-ratio: auto;
 	}
-	
+
 	.card.recommendation .body {
 		display: flex;
 		flex-direction: row;
 		gap: 4px;
 	}
-	
+
 	.card.recommendation .title {
 		font-size: 20px;
 		line-height: 1.2;
 		-webkit-line-clamp: 2;
 		padding-right: 10px;
 	}
-	
+
 	.card.recommendation .price {
 		font-size: 14px;
 	}
-	
+
 	.card.recommendation .cartBtn {
 		width: 28px;
 		height: 28px;
 	}
-	
+
 	.card.recommendation .cartIcon {
 		width: 18px;
 		height: 18px;

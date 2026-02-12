@@ -13,18 +13,22 @@ export const clearPreviewFormData = createEvent();
 
 export const getProductsFx = createEffect<void, Product[]>(async () => {
 	const response = await getProducts({ __mock: true });
-	
+
 	if (!response.success) {
-		throw new Error(response.error || i18n.global.t('errors.loadProductsFailed'));
+		throw new Error(
+			response.error || i18n.global.t('errors.loadProductsFailed'),
+		);
 	}
-	
+
 	return response.data || [];
 });
 
 export const $products = createStore<Product[]>([])
 	.on(setProducts, (_, list) => list)
 	.on(addProduct, (state, item) => [...state, item])
-	.on(updateProduct, (state, item) => state.map(p => (p.id === item.id ? item : p)))
+	.on(updateProduct, (state, item) =>
+		state.map((p) => (p.id === item.id ? item : p)),
+	)
 	.on(getProductsFx.doneData, (_, list) => list);
 
 export const $previewProduct = createStore<Product | null>(null)
