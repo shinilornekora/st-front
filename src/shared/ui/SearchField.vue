@@ -1,14 +1,14 @@
 <template>
-	<div :class="$style.searchContainer" ref="containerRef">
+	<div ref="containerRef" :class="$style.searchContainer">
 		<form
 			ref="formRef"
 			:class="[$style.form, $style[type]]"
-			@submit.prevent="handleSubmit"
 			role="search"
+			@submit.prevent="handleSubmit"
 		>
 			<input
-				:class="$style.input"
 				v-model="value"
+				:class="$style.input"
 				:placeholder="placeholder"
 				:aria-label="t('common.search')"
 				@focus="showPopup = true"
@@ -64,8 +64,8 @@
 				v-if="value || activeFilters.length > 0"
 				:class="$style.clearBtn"
 				type="button"
-				@click="clearAll"
 				:aria-label="t('ui.clear')"
+				@click="clearAll"
 			>
 				<svg
 					width="20"
@@ -107,8 +107,8 @@
 						<div
 							v-for="filter in allFilters"
 							:key="filter.id"
-							:class="$style.filterLabelWrapper"
 							ref="filterLabelRefs"
+							:class="$style.filterLabelWrapper"
 						>
 							<button
 								:class="$style.filterLabel"

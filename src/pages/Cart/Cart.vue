@@ -10,8 +10,8 @@
 				/>
 				<Button
 					type="accent"
-					@click="goToShop"
 					:class="$style.customButton"
+					@click="goToShop"
 					>{{ t('cart.goToShop') }}</Button
 				>
 			</div>
@@ -21,8 +21,8 @@
 					<div :class="$style.cartItems">
 						<CartItem
 							v-for="item in cartItems"
-							:key="item.id"
 							:id="item.id"
+							:key="item.id"
 							:image="
 								item.product.images &&
 								item.product.images.length > 0
@@ -61,8 +61,8 @@
 						</div>
 						<Button
 							type="accent"
-							@click="checkout"
 							:class="$style.checkoutBtn"
+							@click="checkout"
 							>{{ t('cart.checkout') }}</Button
 						>
 					</div>
@@ -76,8 +76,8 @@
 				<div :class="$style.similarProducts">
 					<ProductCard
 						v-for="similarProduct in similarProducts"
-						:key="similarProduct.id"
 						:id="similarProduct.id"
+						:key="similarProduct.id"
 						:image="similarProduct.images[0]"
 						:title="similarProduct.name"
 						:price="similarProduct.price"

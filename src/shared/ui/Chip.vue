@@ -6,9 +6,9 @@
 		<slot />
 		<button
 			v-if="removable"
-			@click="$emit('remove')"
 			:class="$style.close"
 			:aria-label="t('common.delete')"
+			@click="$emit('remove')"
 		>
 			×
 		</button>

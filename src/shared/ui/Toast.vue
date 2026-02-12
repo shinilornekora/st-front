@@ -8,8 +8,8 @@
 			{{ item.text }}
 			<button
 				:class="$style.close"
-				@click="remove(item.id)"
 				:aria-label="t('ui.hide')"
+				@click="remove(item.id)"
 			>
 				×
 			</button>

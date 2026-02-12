@@ -8,8 +8,8 @@
 					</h2>
 					<button
 						:class="$style.modalClose"
-						@click="close"
 						:aria-label="t('common.close')"
+						@click="close"
 					>
 						<img
 							:src="crossIcon"
@@ -54,8 +54,8 @@
 					<div :class="$style.leftActions">
 						<Button
 							type="accent"
-							@click="handleSave"
 							:class="$style.saveButton"
+							@click="handleSave"
 						>
 							{{ t('settings.save') }}
 						</Button>

@@ -1,6 +1,6 @@
 <template>
 	<div :class="$style.page">
-		<Header :lightHeader="true" />
+		<Header :light-header="true" />
 		<main :class="$style.main">
 			<div :class="$style.menuContainer">
 				<div :class="$style.menuHeader">

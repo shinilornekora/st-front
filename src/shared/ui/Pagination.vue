@@ -2,9 +2,9 @@
 	<nav :class="$style.pagination" aria-label="Pagination">
 		<button
 			:class="[$style.paginationBtn, $style.paginationArrow]"
-			@click="goToPreviousPage"
 			:disabled="currentPage === 1"
 			:aria-label="t('ui.previous')"
+			@click="goToPreviousPage"
 		>
 			<img
 				src="@assets/arrow_left.svg"
@@ -20,9 +20,9 @@
 				$style.paginationBtn,
 				{ [$style.active]: 1 === currentPage },
 			]"
-			@click="goToPage(1)"
 			:aria-label="'Page 1'"
 			:aria-current="1 === currentPage ? 'page' : undefined"
+			@click="goToPage(1)"
 		>
 			1
 		</button>
@@ -38,9 +38,9 @@
 				$style.paginationBtn,
 				{ [$style.active]: page === currentPage },
 			]"
-			@click="goToPage(page)"
 			:aria-label="`Page ${page}`"
 			:aria-current="page === currentPage ? 'page' : undefined"
+			@click="goToPage(page)"
 		>
 			{{ page }}
 		</button>
@@ -55,18 +55,18 @@
 				$style.paginationBtn,
 				{ [$style.active]: totalPages === currentPage },
 			]"
-			@click="goToPage(totalPages)"
 			:aria-label="`Page ${totalPages}`"
 			:aria-current="totalPages === currentPage ? 'page' : undefined"
+			@click="goToPage(totalPages)"
 		>
 			{{ totalPages }}
 		</button>
 
 		<button
 			:class="[$style.paginationBtn, $style.paginationArrow]"
-			@click="goToNextPage"
 			:disabled="currentPage === totalPages"
 			:aria-label="t('ui.next')"
+			@click="goToNextPage"
 		>
 			{{ nextText || t('common.next') }}
 			<img

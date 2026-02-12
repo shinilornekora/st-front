@@ -10,8 +10,8 @@
 						</h2>
 						<button
 							:class="$style.modalClose"
-							@click="close"
 							:aria-label="t('modal.close')"
+							@click="close"
 						>
 							<img
 								:src="crossIcon"
@@ -41,8 +41,8 @@
 					<div :class="$style.modalHeader">
 						<button
 							:class="$style.backButton"
-							@click="handleBack"
 							:aria-label="t('modal.back')"
+							@click="handleBack"
 						>
 							<img
 								:src="arrowLeftIcon"
@@ -55,8 +55,8 @@
 						</h2>
 						<button
 							:class="$style.modalClose"
-							@click="close"
 							:aria-label="t('modal.close')"
+							@click="close"
 						>
 							<img
 								:src="crossIcon"
@@ -126,7 +126,7 @@
 
 							<Button
 								type="accent"
-								typeAttr="submit"
+								type-attr="submit"
 								variant="filled"
 								size="large"
 								:class="$style.submitButton"

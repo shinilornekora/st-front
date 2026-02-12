@@ -3,16 +3,16 @@
 		<input
 			type="checkbox"
 			:checked="modelValue"
+			:disabled="disabled"
+			:aria-checked="modelValue"
+			:aria-required="required"
+			:class="$style.checkbox"
 			@change="
 				$emit(
 					'update:modelValue',
 					($event.target as HTMLInputElement)?.checked,
 				)
 			"
-			:disabled="disabled"
-			:aria-checked="modelValue"
-			:aria-required="required"
-			:class="$style.checkbox"
 		/>
 		<span :class="$style.label">{{ label }}</span>
 	</label>

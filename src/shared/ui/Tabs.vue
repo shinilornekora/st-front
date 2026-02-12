@@ -4,10 +4,10 @@
 			v-for="(tab, i) in tabs"
 			:key="tab.value"
 			:class="[$style.tab, active === tab.value && $style.active]"
-			@click="$emit('update:active', tab.value)"
 			role="tab"
 			:aria-selected="active === tab.value"
 			:tabindex="active === tab.value ? 0 : -1"
+			@click="$emit('update:active', tab.value)"
 		>
 			{{ tab.label }}
 		</button>

@@ -10,16 +10,16 @@
 		@click="handleCardClick"
 	>
 		<div :class="$style.imageWrapper">
-			<img :src="image" :alt="title" :class="$style.img" v-if="image" />
+			<img v-if="image" :src="image" :alt="title" :class="$style.img" />
 			<div :class="$style.heartContainer">
 				<button
 					:class="$style.heartBtn"
-					@click.stop="toggleHeart"
 					:aria-label="
 						isFavorite
 							? t('product.removeFromFavorites')
 							: t('product.addToFavorites')
 					"
+					@click.stop="toggleHeart"
 				>
 					<img
 						:src="isFavorite ? darkHeartIcon : heartIcon"
@@ -45,8 +45,8 @@
 			</div>
 			<button
 				:class="$style.cartBtn"
-				@click.stop="handleAddToCart"
 				:aria-label="t('cart.addToCart')"
+				@click.stop="handleAddToCart"
 			>
 				<img
 					src="@assets/shopping_cart.svg"

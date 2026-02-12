@@ -9,18 +9,18 @@
 			:src="image"
 			:alt="title"
 			:class="$style.img"
-			@click="goToProduct"
 			role="button"
 			tabindex="0"
+			@click="goToProduct"
 			@keydown.enter="goToProduct"
 		/>
 		<div :class="$style.info">
 			<div :class="$style.topBlock">
 				<h4
 					:class="$style.title"
-					@click="goToProduct"
 					role="button"
 					tabindex="0"
+					@click="goToProduct"
 					@keydown.enter="goToProduct"
 				>
 					{{ title || 'No title' }}
@@ -41,8 +41,8 @@
 				<div :class="$style.actions">
 					<button
 						:class="$style.actionBtn"
-						@click="toggleHeart"
 						:aria-label="t('cart.addToFavorites')"
+						@click="toggleHeart"
 					>
 						<img
 							:src="isFavorite ? filledHeartIcon : heartIcon"
@@ -52,8 +52,8 @@
 					</button>
 					<button
 						:class="$style.actionBtn"
-						@click="$emit('share')"
 						:aria-label="t('cart.share')"
+						@click="$emit('share')"
 					>
 						<img
 							src="@assets/share.svg"
@@ -63,8 +63,8 @@
 					</button>
 					<button
 						:class="$style.remove"
-						@click="$emit('remove')"
 						:aria-label="t('cart.removeFromCart')"
+						@click="$emit('remove')"
 					>
 						<img
 							src="@assets/trash.svg"
@@ -79,9 +79,9 @@
 			<div :class="$style.quantityControl">
 				<button
 					:class="$style.quantityBtn"
-					@click="decreaseQuantity"
 					:disabled="qty <= 1"
 					:aria-label="t('cart.decreaseQuantity')"
+					@click="decreaseQuantity"
 				>
 					<img
 						src="@assets/minus_circle.svg"
@@ -92,8 +92,8 @@
 				<span :class="$style.quantity">{{ qty || 0 }}</span>
 				<button
 					:class="$style.quantityBtn"
-					@click="increaseQuantity"
 					:aria-label="t('cart.increaseQuantity')"
+					@click="increaseQuantity"
 				>
 					<img
 						src="@assets/plus_circle.svg"

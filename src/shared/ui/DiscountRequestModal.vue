@@ -8,8 +8,8 @@
 					</h2>
 					<button
 						:class="$style.modalClose"
-						@click="close"
 						:aria-label="t('modal.close')"
+						@click="close"
 					>
 						<img
 							:src="crossIcon"
@@ -37,7 +37,7 @@
 
 						<Button
 							type="accent"
-							typeAttr="submit"
+							type-attr="submit"
 							variant="filled"
 							size="large"
 							:class="$style.submitButton"

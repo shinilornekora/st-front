@@ -20,8 +20,8 @@
 				</div>
 				<button
 					:class="$style.alertClose"
-					@click="handleClose"
 					:aria-label="t('modal.close')"
+					@click="handleClose"
 				>
 					<img :src="crossIcon" alt="" :class="$style.closeIcon" />
 				</button>

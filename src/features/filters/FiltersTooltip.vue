@@ -1,5 +1,5 @@
 <template>
-	<div :class="$style.tooltipContainer" ref="tooltipRef">
+	<div ref="tooltipRef" :class="$style.tooltipContainer">
 		<div :class="$style.tooltip">
 			<div :class="$style.tooltipHeader">
 				<h4>{{ t('filters.activeFilters') }}</h4>
@@ -14,8 +14,8 @@
 					<button
 						:class="$style.removeBtn"
 						type="button"
-						@click="removeFilter(filter.id)"
 						:aria-label="t('filters.removeFilter')"
+						@click="removeFilter(filter.id)"
 					>
 						<svg
 							width="14"

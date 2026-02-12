@@ -1,9 +1,9 @@
 <template>
 	<button
 		:class="$style.burger"
-		@click="$emit('click')"
 		:aria-label="$t('ui.openMenu')"
 		type="button"
+		@click="$emit('click')"
 	>
 		<span
 			v-for="i in 3"

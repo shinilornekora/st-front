@@ -8,8 +8,8 @@
 				<div :class="$style.header">
 					<button
 						:class="$style.backButton"
-						@click="goBack"
 						:aria-label="t('common.back')"
+						@click="goBack"
 					>
 						<img
 							:src="arrowLeftIcon"
@@ -62,8 +62,8 @@
 						>
 							<ProductCard
 								v-for="product in favoriteProducts"
-								:key="product.id"
 								:id="product.id"
+								:key="product.id"
 								:image="product.images[0]"
 								:title="product.name"
 								:price="product.price"

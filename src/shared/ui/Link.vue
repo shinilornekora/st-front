@@ -2,11 +2,11 @@
 	<a
 		:href="href"
 		:class="[$style.link, { [$style.inline]: inline }, $attrs.class]"
-		@click="onClick"
 		:tabindex="tabindex"
 		:aria-label="ariaLabel || undefined"
 		:target="target"
 		rel="noopener noreferrer"
+		@click="onClick"
 		><slot
 	/></a>
 </template>

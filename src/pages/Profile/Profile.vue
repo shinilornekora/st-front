@@ -1,6 +1,6 @@
 <template>
 	<div :class="$style.page">
-		<Header :hideSearch="true" :userRole="displayUserRole" />
+		<Header :hide-search="true" :user-role="displayUserRole" />
 
 		<!-- Settings Modal -->
 		<SettingsModal
@@ -264,7 +264,7 @@
 								:placeholder="t('auth.password')"
 								:variant="passwordError ? 'error' : 'default'"
 								:error="Boolean(passwordError)"
-								showPasswordToggle
+								show-password-toggle
 								:class="$style.input"
 							/>
 						</div>
@@ -330,7 +330,7 @@
 									customerPasswordError ? 'error' : 'default'
 								"
 								:error="Boolean(customerPasswordError)"
-								showPasswordToggle
+								show-password-toggle
 								:class="$style.input"
 							/>
 						</div>
@@ -394,7 +394,7 @@
 									sellerPasswordError ? 'error' : 'default'
 								"
 								:error="Boolean(sellerPasswordError)"
-								showPasswordToggle
+								show-password-toggle
 								:class="$style.input"
 							/>
 						</div>
@@ -402,7 +402,7 @@
 
 					<Button
 						type="accent"
-						typeAttr="submit"
+						type-attr="submit"
 						variant="filled"
 						size="large"
 						:class="$style.loginButton"

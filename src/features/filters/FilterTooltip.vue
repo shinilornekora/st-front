@@ -1,5 +1,5 @@
 <template>
-	<Tooltip @close="$emit('close')" :width="tooltipWidth">
+	<Tooltip :width="tooltipWidth" @close="$emit('close')">
 		<!-- Size Filter Tooltip -->
 		<div v-if="filterType === 'size'">
 			<h3 :class="$style.tooltipTitle">{{ t('filters.selectSize') }}</h3>

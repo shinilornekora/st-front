@@ -3,16 +3,16 @@
 		<button
 			v-if="showEdit"
 			:class="[$style.btn, $style.edit, $style[type]]"
-			@click="$emit('edit')"
 			:aria-label="t('common.edit')"
+			@click="$emit('edit')"
 		>
 			✏️
 		</button>
 		<button
 			v-if="showDelete"
 			:class="[$style.btn, $style.delete, $style[type]]"
-			@click="$emit('delete')"
 			:aria-label="t('common.delete')"
+			@click="$emit('delete')"
 		>
 			🗑️
 		</button>

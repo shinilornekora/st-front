@@ -1,5 +1,5 @@
 <template>
-	<div :class="$style.tooltipContainer" ref="tooltipRef">
+	<div ref="tooltipRef" :class="$style.tooltipContainer">
 		<div :class="$style.tooltip" :style="{ width: width }">
 			<slot />
 		</div>

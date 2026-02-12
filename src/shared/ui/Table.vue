@@ -5,8 +5,8 @@
 				<th
 					v-for="(h, idx) in headers"
 					:key="h.key"
-					@click="sort(idx)"
 					:aria-sort="ariaSort(idx)"
+					@click="sort(idx)"
 				>
 					{{ h.label }}
 					<span v-if="sortKey === idx">{{

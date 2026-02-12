@@ -3,8 +3,8 @@
 		<div :class="$style.statHeader">
 			<h3 :class="$style.statTitle">{{ t('b2b.productsSold') }}</h3>
 			<select
-				:class="$style.periodSelect"
 				v-model="localPeriod"
+				:class="$style.periodSelect"
 				@change="handlePeriodChange"
 			>
 				<option value="month">{{ t('admin.month') }}</option>
@@ -29,7 +29,7 @@
 			:key="`products-single-${localPeriod}`"
 			:data="chartData.chartData.data"
 			:labels="chartData.chartData.labels"
-			:legendLabel="t('b2b.sandals')"
+			:legend-label="t('b2b.sandals')"
 			color="#5fdbd1"
 		/>
 	</div>

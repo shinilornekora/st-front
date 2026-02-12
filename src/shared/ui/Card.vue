@@ -3,8 +3,8 @@
 		<div :class="$style.heartContainer">
 			<IconButton
 				size="24"
-				@click="toggleHeart"
 				aria-label="Toggle favorite"
+				@click="toggleHeart"
 			>
 				<img
 					:src="isFavorite ? darkHeartIcon : heartIcon"

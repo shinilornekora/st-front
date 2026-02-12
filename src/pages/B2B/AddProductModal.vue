@@ -50,8 +50,8 @@
 					<div :class="$style.checkboxGroup">
 						<label :class="$style.checkboxLabel">
 							<input
-								type="checkbox"
 								v-model="formData.sizes.small"
+								type="checkbox"
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
@@ -59,8 +59,8 @@
 						</label>
 						<label :class="$style.checkboxLabel">
 							<input
-								type="checkbox"
 								v-model="formData.sizes.medium"
+								type="checkbox"
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
@@ -68,8 +68,8 @@
 						</label>
 						<label :class="$style.checkboxLabel">
 							<input
-								type="checkbox"
 								v-model="formData.sizes.large"
+								type="checkbox"
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
@@ -84,8 +84,8 @@
 					<div :class="$style.checkboxGroup">
 						<label :class="$style.checkboxLabel">
 							<input
-								type="checkbox"
 								v-model="formData.colors.white"
+								type="checkbox"
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
@@ -93,8 +93,8 @@
 						</label>
 						<label :class="$style.checkboxLabel">
 							<input
-								type="checkbox"
 								v-model="formData.colors.black"
+								type="checkbox"
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
@@ -102,8 +102,8 @@
 						</label>
 						<label :class="$style.checkboxLabel">
 							<input
-								type="checkbox"
 								v-model="formData.colors.red"
+								type="checkbox"
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
@@ -138,12 +138,12 @@
 					<label :class="$style.label">Добавить изображения</label>
 					<div :class="$style.uploadArea">
 						<input
+							id="fileUpload"
 							type="file"
 							multiple
 							accept="image/*"
-							@change="handleFileUpload"
 							:class="$style.fileInput"
-							id="fileUpload"
+							@change="handleFileUpload"
 						/>
 						<label for="fileUpload" :class="$style.uploadLabel">
 							<svg

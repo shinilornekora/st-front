@@ -201,8 +201,8 @@
 
 					<button
 						:class="$style.discountLink"
-						@click="openDiscountModal"
 						:aria-label="t('product.requestDiscount')"
+						@click="openDiscountModal"
 					>
 						{{ t('product.wantDiscount') }}
 					</button>
@@ -219,8 +219,8 @@
 					<div :class="$style.quantityBlock">
 						<button
 							:class="$style.quantityBtn"
-							@click="decreaseQuantity"
 							:disabled="quantity <= 1"
+							@click="decreaseQuantity"
 						>
 							<img
 								src="@assets/minus_circle.svg"
@@ -229,8 +229,8 @@
 							/>
 						</button>
 						<input
-							type="number"
 							v-model.number="quantity"
+							type="number"
 							:class="$style.quantityInput"
 							min="1"
 						/>

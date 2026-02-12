@@ -2,27 +2,27 @@
 	<div :class="$style.stepper">
 		<button
 			:class="$style.btn"
-			@click="dec"
 			:disabled="disabled || value <= min"
 			:aria-label="t('cart.decreaseQuantity')"
+			@click="dec"
 		>
 			−
 		</button>
 		<input
 			type="number"
 			:value="value"
-			@input="onInput"
 			:min="min"
 			:max="max"
 			:class="$style.input"
 			:disabled="disabled"
 			:aria-label="t('cart.quantity')"
+			@input="onInput"
 		/>
 		<button
 			:class="$style.btn"
-			@click="inc"
 			:disabled="disabled || value >= max"
 			:aria-label="t('cart.increaseQuantity')"
+			@click="inc"
 		>
 			+
 		</button>

@@ -6,17 +6,17 @@
 			:max="max"
 			:step="step"
 			:value="modelValue"
+			:disabled="disabled"
+			:aria-valuemin="min"
+			:aria-valuemax="max"
+			:aria-valuenow="modelValue"
+			:class="$style.rangeSlider"
 			@input="
 				$emit(
 					'update:modelValue',
 					Number(($event.target as HTMLInputElement)?.value),
 				)
 			"
-			:disabled="disabled"
-			:aria-valuemin="min"
-			:aria-valuemax="max"
-			:aria-valuenow="modelValue"
-			:class="$style.rangeSlider"
 		/>
 		<span v-if="label" :class="$style.label">{{ label }}</span>
 	</label>

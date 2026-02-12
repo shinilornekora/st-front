@@ -24,7 +24,7 @@
 
 		<!-- Gray placeholder boxes -->
 		<section :class="$style.placeholderSection">
-			<div :class="$style.placeholderBox" v-for="i in 6" :key="i"></div>
+			<div v-for="i in 6" :key="i" :class="$style.placeholderBox"></div>
 		</section>
 
 		<!-- Product Grid -->
@@ -32,8 +32,8 @@
 			<div ref="productGrid" :class="$style.productGrid">
 				<ProductCard
 					v-for="product in displayedProducts"
-					:key="product.id"
 					:id="product.id"
+					:key="product.id"
 					:image="
 						product.images && product.images.length > 0
 							? product.images[0]
@@ -41,7 +41,7 @@
 					"
 					:title="product.name"
 					:price="product.price"
-					:oldPrice="
+					:old-price="
 						product.discount
 							? Math.round(
 									product.price /

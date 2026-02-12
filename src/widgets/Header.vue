@@ -36,7 +36,7 @@
 						effectiveUserRole === 'admin'
 					"
 					@submit="handleSearch"
-					@filterChange="handleFilterChange"
+					@filter-change="handleFilterChange"
 				/>
 			</div>
 			<div v-if="!lightHeader" :class="$style.headerIcons">

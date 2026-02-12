@@ -15,12 +15,6 @@
 			:type="computedType"
 			:placeholder="placeholder"
 			:value="modelValue"
-			@input="
-				$emit(
-					'update:modelValue',
-					($event.target as HTMLInputElement)?.value,
-				)
-			"
 			:class="[
 				$style.uiInput,
 				$style[`uiInput--${variant}`],
@@ -31,14 +25,20 @@
 			:aria-invalid="Boolean(error)"
 			:aria-required="required"
 			autocomplete="off"
+			@input="
+				$emit(
+					'update:modelValue',
+					($event.target as HTMLInputElement)?.value,
+				)
+			"
 		/>
 
 		<button
 			v-if="showPasswordToggle"
 			type="button"
 			:class="$style.suffix"
-			@click="togglePasswordVisibility"
 			tabindex="-1"
+			@click="togglePasswordVisibility"
 		>
 			<svg
 				width="20"

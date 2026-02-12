@@ -1,12 +1,6 @@
 <template>
 	<textarea
 		:value="modelValue"
-		@input="
-			$emit(
-				'update:modelValue',
-				($event.target as HTMLTextAreaElement)?.value,
-			)
-		"
 		:class="[$style.textarea, error && $style.error]"
 		:disabled="disabled"
 		:required="required"
@@ -14,6 +8,12 @@
 		:placeholder="placeholder"
 		:aria-invalid="Boolean(error)"
 		:aria-required="required"
+		@input="
+			$emit(
+				'update:modelValue',
+				($event.target as HTMLTextAreaElement)?.value,
+			)
+		"
 	/>
 </template>
 

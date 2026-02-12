@@ -1,6 +1,6 @@
 <template>
 	<div :class="$style.page">
-		<Header :userRole="'admin'" @search="handleSearch" />
+		<Header :user-role="'admin'" @search="handleSearch" />
 
 		<main :class="$style.main">
 			<div :class="$style.container">
@@ -47,8 +47,8 @@
 						<div v-else-if="error" :class="$style.error">
 							<p>{{ error }}</p>
 							<button
-								@click="loadDashboard"
 								:class="$style.retryButton"
+								@click="loadDashboard"
 							>
 								{{ t('admin.retry') }}
 							</button>
@@ -65,8 +65,8 @@
 											{{ t('admin.revenue') }}
 										</h3>
 										<select
-											:class="$style.periodSelect"
 											v-model="revenuePeriod"
+											:class="$style.periodSelect"
 											@change="loadDashboard"
 										>
 											<option value="month">
@@ -93,7 +93,7 @@
 										:labels="
 											dashboard.revenue.chartData.labels
 										"
-										legendLabel="Stivalli"
+										legend-label="Stivalli"
 										color="#5fdbd1"
 									/>
 								</div>
@@ -105,8 +105,8 @@
 											{{ t('admin.growth') }}
 										</h3>
 										<select
-											:class="$style.periodSelect"
 											v-model="growthPeriod"
+											:class="$style.periodSelect"
 											@change="loadDashboard"
 										>
 											<option value="month">
@@ -136,7 +136,7 @@
 										:labels="
 											dashboard.growth.chartData.labels
 										"
-										legendLabel="Stivalli"
+										legend-label="Stivalli"
 										color="#5fdbd1"
 									/>
 								</div>
@@ -189,8 +189,8 @@
 						>
 							<p>{{ applicationsError }}</p>
 							<button
-								@click="loadApplications"
 								:class="$style.retryButton"
+								@click="loadApplications"
 							>
 								{{ t('admin.retry') }}
 							</button>
@@ -221,25 +221,25 @@
 										<td>
 											<div :class="$style.actions">
 												<button
-													@click="
-														handleReject(app.id)
-													"
 													:class="$style.rejectButton"
 													:disabled="
 														processingId === app.id
+													"
+													@click="
+														handleReject(app.id)
 													"
 												>
 													{{ t('admin.reject') }}
 												</button>
 												<button
-													@click="
-														handleApprove(app.id)
-													"
 													:class="
 														$style.approveButton
 													"
 													:disabled="
 														processingId === app.id
+													"
+													@click="
+														handleApprove(app.id)
 													"
 												>
 													{{ t('admin.accept') }}
@@ -260,7 +260,7 @@
 			</div>
 		</main>
 
-		<Footer :userRole="'admin'" />
+		<Footer :user-role="'admin'" />
 	</div>
 </template>
 

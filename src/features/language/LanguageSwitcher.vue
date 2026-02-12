@@ -7,8 +7,8 @@
 				$style.langBtn,
 				{ [$style.active]: currentLocale === lang.code },
 			]"
-			@click="switchLanguage(lang.code)"
 			:aria-label="`Switch to ${lang.name}`"
+			@click="switchLanguage(lang.code)"
 		>
 			{{ lang.label }}
 		</button>

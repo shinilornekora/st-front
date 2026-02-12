@@ -5,9 +5,9 @@
 			accept="image/*"
 			:multiple="multiple"
 			:disabled="disabled"
-			@change="onChange"
 			:aria-label="$t('ui.uploadFile')"
 			:class="$style.input"
+			@change="onChange"
 		/>
 		<span>{{ label }}</span>
 		<div v-if="files.length" :class="$style.previewRow">

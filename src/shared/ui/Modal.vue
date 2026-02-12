@@ -2,15 +2,15 @@
 	<div
 		v-if="open"
 		:class="$style.backdrop"
-		@click.self="close"
 		role="dialog"
 		aria-modal="true"
+		@click.self="close"
 	>
 		<div :class="$style.dialog" tabindex="-1">
 			<button
 				:class="$style.close"
-				@click="close"
 				:aria-label="t('modal.close')"
+				@click="close"
 			>
 				×
 			</button>

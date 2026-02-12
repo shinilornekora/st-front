@@ -7,9 +7,9 @@
 			accent ? $style['iconButton--accent'] : '',
 			$attrs.class,
 		]"
-		@click="onClick"
 		:disabled="disabled"
 		:aria-label="ariaLabel || undefined"
+		@click="onClick"
 	>
 		<slot />
 	</button>

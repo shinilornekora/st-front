@@ -6,18 +6,18 @@
 	>
 		<button
 			:class="$style.arrow"
-			@click="prev"
 			:aria-label="t('ui.previous')"
 			:disabled="index <= 0"
+			@click="prev"
 		>
 			‹
 		</button>
 		<img :src="images[index]" :alt="`item-${index}`" :class="$style.img" />
 		<button
 			:class="$style.arrow"
-			@click="next"
 			:aria-label="t('ui.next')"
 			:disabled="index >= images.length - 1"
+			@click="next"
 		>
 			›
 		</button>

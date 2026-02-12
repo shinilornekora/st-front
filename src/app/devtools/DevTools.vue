@@ -14,10 +14,10 @@
 					<div :class="$style.setting">
 						<label :class="$style.label">
 							<input
-								type="checkbox"
 								v-model="settings.mockEnabled"
-								@change="saveSettings"
+								type="checkbox"
 								:class="$style.checkbox"
+								@change="saveSettings"
 							/>
 							<span>Enable Mock API</span>
 						</label>
@@ -27,23 +27,23 @@
 						<label :class="$style.label">
 							<span>Network Delay (ms)</span>
 							<input
-								type="number"
 								v-model.number="settings.mockDelay"
-								@input="saveSettings"
+								type="number"
 								:class="$style.input"
 								min="0"
 								max="5000"
 								step="100"
+								@input="saveSettings"
 							/>
 						</label>
 						<input
-							type="range"
 							v-model.number="settings.mockDelay"
-							@input="saveSettings"
+							type="range"
 							:class="$style.slider"
 							min="0"
 							max="5000"
 							step="100"
+							@input="saveSettings"
 						/>
 					</div>
 				</section>
@@ -54,8 +54,8 @@
 		<button
 			v-if="isDev"
 			:class="$style.toggleBtn"
-			@click="toggle"
 			:title="isVisible ? 'Hide Dev Tools' : 'Show Dev Tools'"
+			@click="toggle"
 		>
 			🛠️
 		</button>

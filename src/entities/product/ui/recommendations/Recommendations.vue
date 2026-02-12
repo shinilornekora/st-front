@@ -5,8 +5,8 @@
 		<div :class="$style.recommendations">
 			<ProductCard
 				v-for="product in products"
-				:key="product.id"
 				:id="product.id"
+				:key="product.id"
 				:image="
 					product.images && product.images.length > 0
 						? product.images[0]
@@ -14,7 +14,7 @@
 				"
 				:title="product.name"
 				:price="product.price"
-				:oldPrice="
+				:old-price="
 					product.discount
 						? Math.round(
 								product.price / (1 - product.discount / 100),

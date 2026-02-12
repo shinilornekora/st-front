@@ -1,6 +1,6 @@
 <template>
 	<!-- Desktop Footer -->
-	<footer :class="$style.footer" v-if="!isMobile">
+	<footer v-if="!isMobile" :class="$style.footer">
 		<div :class="$style.footerContent">
 			<div :class="$style.logoColumn">
 				<img
@@ -74,7 +74,7 @@
 	</footer>
 
 	<!-- Mobile Footer Menu -->
-	<footer :class="$style.mobileFooter" v-else>
+	<footer v-else :class="$style.mobileFooter">
 		<div :class="$style.mobileFooterContent">
 			<router-link
 				to="/profile"

@@ -4,11 +4,11 @@
 			type="radio"
 			:name="name"
 			:checked="modelValue === value"
-			@change="$emit('update:modelValue', value)"
 			:disabled="disabled"
 			:aria-checked="modelValue === value"
 			:aria-required="required"
 			:class="$style.radio"
+			@change="$emit('update:modelValue', value)"
 		/>
 		<span :class="$style.label">{{ label }}</span>
 	</label>

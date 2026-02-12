@@ -7,8 +7,8 @@
 	>
 		<button
 			:class="$style.toggle"
-			@click="open = !open"
 			:aria-expanded="open"
+			@click="open = !open"
 		>
 			<slot name="button">Menu</slot>
 		</button>

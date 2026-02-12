@@ -1,19 +1,19 @@
 <template>
 	<section :class="$style.accordion">
 		<button
+			:id="headerId"
 			:class="$style.header"
-			@click="expanded = !expanded"
 			:aria-expanded="expanded"
 			:aria-controls="panelId"
-			:id="headerId"
 			type="button"
+			@click="expanded = !expanded"
 		>
 			<slot name="header" />
 		</button>
 		<div
+			v-show="expanded"
 			:id="panelId"
 			:class="$style.panel"
-			v-show="expanded"
 			:aria-labelledby="headerId"
 			role="region"
 		>

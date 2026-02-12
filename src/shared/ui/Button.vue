@@ -9,8 +9,8 @@
 			{ [$style.primary]: primary },
 			$attrs.class,
 		]"
-		@click="onClick"
 		:disabled="disabled"
+		@click="onClick"
 	>
 		<slot>{{ label }}</slot>
 	</button>

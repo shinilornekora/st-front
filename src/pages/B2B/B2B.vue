@@ -1,6 +1,6 @@
 <template>
 	<div :class="$style.page">
-		<Header :userRole="'partner'" @search="handleSearch" />
+		<Header :user-role="'partner'" @search="handleSearch" />
 
 		<main :class="$style.main">
 			<div :class="$style.container">
@@ -49,22 +49,22 @@
 							<div :class="$style.statsGrid">
 								<!-- Revenue Card -->
 								<RevenueChart
-									:chartData="revenueData"
-									:productsData="productsData"
-									:selectedProductIds="selectedProductIds"
+									:chart-data="revenueData"
+									:products-data="productsData"
+									:selected-product-ids="selectedProductIds"
 									:period="revenuePeriod"
-									:productColors="productColors"
+									:product-colors="productColors"
 									@update:period="revenuePeriod = $event"
 									@load-data="loadRevenueAnalytics"
 								/>
 
 								<!-- Products Sold Card -->
 								<ProductsSoldChart
-									:chartData="productsSoldData"
-									:productsData="productsData"
-									:selectedProductIds="selectedProductIds"
+									:chart-data="productsSoldData"
+									:products-data="productsData"
+									:selected-product-ids="selectedProductIds"
 									:period="productsPeriod"
-									:productColors="productColors"
+									:product-colors="productColors"
 									@update:period="productsPeriod = $event"
 									@load-data="loadProductsAnalytics"
 								/>
@@ -278,8 +278,8 @@
 								></div>
 								<button
 									:class="$style.actionBtn"
-									@click="handleAddClick"
 									:aria-label="t('b2b.addProduct')"
+									@click="handleAddClick"
 								>
 									<svg
 										width="24"
@@ -308,9 +308,9 @@
 												!selectedProductId,
 										},
 									]"
-									@click="handleEditClick"
 									:disabled="!selectedProductId"
 									:aria-label="t('b2b.editProduct')"
+									@click="handleEditClick"
 								>
 									<svg
 										width="24"
@@ -336,9 +336,9 @@
 												!selectedProductId,
 										},
 									]"
-									@click="handleDeleteClick"
 									:disabled="!selectedProductId"
 									:aria-label="t('b2b.deleteProduct')"
+									@click="handleDeleteClick"
 								>
 									<svg
 										width="24"
@@ -361,12 +361,12 @@
 			</div>
 		</main>
 
-		<Footer :userRole="'partner'" />
+		<Footer :user-role="'partner'" />
 
 		<!-- Add/Edit Product Modal -->
 		<AddProductModal
-			:isOpen="isAddModalOpen"
-			:editData="editingProduct"
+			:is-open="isAddModalOpen"
+			:edit-data="editingProduct"
 			@close="handleModalClose"
 			@save="handleModalSave"
 		/>
