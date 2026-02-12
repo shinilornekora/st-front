@@ -91,34 +91,6 @@ const randomItem = <T>(array: T[]): T => {
 	return array[Math.floor(Math.random() * array.length)]!;
 };
 
-// Generate a random number between min and max
-const randomBetween = (min: number, max: number): number => {
-	return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-// Generate a random price
-const generatePrice = (): number => {
-	return randomBetween(2990, 25990);
-};
-
-// Generate product images
-const generateImages = (count: number = 3): string[] => {
-	const images: string[] = [];
-	const usedIndexes = new Set<number>();
-
-	for (let i = 0; i < count; i++) {
-		let index;
-		do {
-			index = randomBetween(0, imageUrls.length - 1);
-		} while (usedIndexes.has(index));
-
-		usedIndexes.add(index);
-		images.push(imageUrls[index]!);
-	}
-
-	return images;
-};
-
 // Generate product characteristics
 const generateCharacteristics = (
 	material: string,

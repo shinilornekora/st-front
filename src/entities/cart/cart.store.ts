@@ -19,11 +19,11 @@ const loadCartFromLocalStorage = (): Cart | null => {
 	return null;
 };
 
-const clearCartFromLocalStorage = () => {
-	if (!isUserAuthenticated()) {
-		localStorage.removeItem('cart');
-	}
-};
+// const clearCartFromLocalStorage = () => {
+// 	if (!isUserAuthenticated()) {
+// 		localStorage.removeItem('cart');
+// 	}
+// };
 
 export const setCart = createEvent<Cart>();
 export const addItem = createEvent<CartItem>();

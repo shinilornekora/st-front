@@ -1,7 +1,7 @@
 <template>
 	<div :class="$style.tabs" role="tablist">
 		<button
-			v-for="(tab, i) in tabs"
+			v-for="tab in tabs"
 			:key="tab.value"
 			:class="[$style.tab, active === tab.value && $style.active]"
 			role="tab"
