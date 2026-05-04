@@ -4,7 +4,7 @@
  */
 
 import { mockClient } from './mockClient/client';
-import type { MockResponse } from './mockClient/client';
+import { apiClient, type ApiResponse } from './client';
 import { i18n } from '@shared/i18n';
 
 // Types
@@ -58,30 +58,14 @@ const generateMockApplications = (): Application[] => {
  */
 export const getApplications = async (
 	params: GetApplicationsRequest = {},
-): Promise<MockResponse<Application[]>> => {
+): Promise<ApiResponse<Application[]>> => {
 	if (params.__mock) {
 		return mockClient.get(() => generateMockApplications());
 	}
 
-	// Real API call would go here
-	try {
-		const response = await fetch('/api/admin/applications');
-		const data = await response.json();
+	const response = await apiClient.get<Application[]>('/admin/applications');
 
-		return {
-			success: response.ok,
-			data: response.ok ? data : undefined,
-			error: response.ok ? undefined : 'Failed to fetch applications',
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: i18n.global.t('errors.networkError'),
-		};
-	}
+	return response;
 };
 
 /**
@@ -89,7 +73,7 @@ export const getApplications = async (
  */
 export const updateApplicationStatus = async (
 	params: UpdateApplicationStatusRequest,
-): Promise<MockResponse<{ message: string }>> => {
+): Promise<ApiResponse<{ message: string }>> => {
 	if (params.__mock) {
 		return mockClient.post(
 			(data) => ({
@@ -102,34 +86,10 @@ export const updateApplicationStatus = async (
 		);
 	}
 
-	// Real API call would go here
-	try {
-		const response = await fetch(
-			`/api/admin/applications/${params.id}/status`,
-			{
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ status: params.status }),
-			},
-		);
-		const data = await response.json();
+	const response = await apiClient.patch<{ message: string }>(
+		`/admin/applications/${params.id}/status`,
+		{ status: params.status },
+	);
 
-		return {
-			success: response.ok,
-			data: response.ok ? data : undefined,
-			error: response.ok
-				? undefined
-				: 'Failed to update application status',
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: i18n.global.t('errors.networkError'),
-		};
-	}
+	return response;
 };

@@ -4,7 +4,7 @@ import {
 	mockGetSimilarProducts,
 } from './mockClient/products.mock';
 import type { Product } from '@entities/product/product.types';
-import type { ApiResponse } from './auth.api';
+import { apiClient, type ApiResponse } from './client';
 import { i18n } from '@shared/i18n';
 
 export interface GetProductsRequest {
@@ -30,33 +30,21 @@ export const getProducts = async (
 		return mockGetProducts(params.count);
 	}
 
-	try {
-		const response = await fetch(
-			`/api/products?count=${params.count || 250}`,
-		);
-		const result = await response.json();
+	const response = await apiClient.get<{ products: Product[] }>(
+		`/products?count=${params.count || 250}`,
+	);
 
-		if (!response.ok) {
-			return {
-				success: false,
-				error:
-					result.error || i18n.global.t('errors.loadProductsFailed'),
-			};
-		}
-
+	if (response.success && response.data) {
 		return {
 			success: true,
-			data: result.products,
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: i18n.global.t('errors.networkError'),
+			data: response.data.products,
 		};
 	}
+
+	return {
+		success: false,
+		error: response.error || i18n.global.t('errors.loadProductsFailed'),
+	};
 };
 
 export const getProductById = async (
@@ -66,30 +54,21 @@ export const getProductById = async (
 		return mockGetProductById(params.id);
 	}
 
-	try {
-		const response = await fetch(`/api/products/${params.id}`);
-		const result = await response.json();
+	const response = await apiClient.get<{ product: Product }>(
+		`/products/${params.id}`,
+	);
 
-		if (!response.ok) {
-			return {
-				success: false,
-				error: result.error || i18n.global.t('errors.productNotFound'),
-			};
-		}
-
+	if (response.success && response.data) {
 		return {
 			success: true,
-			data: result.product,
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: i18n.global.t('errors.networkError'),
+			data: response.data.product,
 		};
 	}
+
+	return {
+		success: false,
+		error: response.error || i18n.global.t('errors.productNotFound'),
+	};
 };
 
 export const getSimilarProducts = async (
@@ -99,31 +78,19 @@ export const getSimilarProducts = async (
 		return mockGetSimilarProducts(params.productId, params.count);
 	}
 
-	try {
-		const response = await fetch(
-			`/api/products/${params.productId}/similar?count=${params.count || 5}`,
-		);
-		const result = await response.json();
+	const response = await apiClient.get<{ products: Product[] }>(
+		`/products/${params.productId}/similar?count=${params.count || 5}`,
+	);
 
-		if (!response.ok) {
-			return {
-				success: false,
-				error:
-					result.error || i18n.global.t('errors.loadSimilarFailed'),
-			};
-		}
-
+	if (response.success && response.data) {
 		return {
 			success: true,
-			data: result.products,
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: i18n.global.t('errors.networkError'),
+			data: response.data.products,
 		};
 	}
+
+	return {
+		success: false,
+		error: response.error || i18n.global.t('errors.loadSimilarFailed'),
+	};
 };

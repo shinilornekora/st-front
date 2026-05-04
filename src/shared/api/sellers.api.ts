@@ -4,7 +4,7 @@
  */
 
 import { mockClient } from './mockClient/client';
-import type { MockResponse } from './mockClient/client';
+import { apiClient, type ApiResponse } from './client';
 import { i18n } from '@shared/i18n';
 
 // Types
@@ -88,32 +88,14 @@ const generateMockDashboard = (period: string = 'month'): SellersDashboard => {
  */
 export const getSellersDashboard = async (
 	params: GetSellersDashboardRequest = {},
-): Promise<MockResponse<SellersDashboard>> => {
+): Promise<ApiResponse<SellersDashboard>> => {
 	if (params.__mock) {
 		return mockClient.get(() => generateMockDashboard(params.period));
 	}
 
-	// Real API call would go here
-	try {
-		const response = await fetch(
-			`/api/admin/sellers/dashboard?period=${params.period || 'month'}`,
-		);
-		const data = await response.json();
+	const response = await apiClient.get<SellersDashboard>(
+		`/admin/sellers/dashboard?period=${params.period || 'month'}`,
+	);
 
-		return {
-			success: response.ok,
-			data: response.ok ? data : undefined,
-			error: response.ok
-				? undefined
-				: 'Failed to fetch sellers dashboard',
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: i18n.global.t('errors.networkError'),
-		};
-	}
+	return response;
 };

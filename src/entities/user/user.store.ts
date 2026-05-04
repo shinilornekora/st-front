@@ -1,5 +1,7 @@
 import { createStore, createEvent, createEffect } from 'effector';
 import type { User } from './user.types';
+import { apiClient } from '@shared/api/client';
+import { setAuthenticationStatus } from '@shared/utils/auth';
 
 // События
 export const setUser = createEvent<User | null>();
@@ -8,7 +10,6 @@ export const resetUser = createEvent();
 // Эффекты (моки)
 export const loginFx = createEffect<{ email: string; password: string }, User>(
 	async ({ email }) => {
-		// mock user
 		return {
 			id: 1,
 			email,
@@ -22,7 +23,6 @@ export const loginFx = createEffect<{ email: string; password: string }, User>(
 
 export const updateProfileFx = createEffect<Partial<User>, User>(
 	async (fields) => {
-		// В норме: api, сейчас mock
 		return {
 			id: 1,
 			email: fields.email ?? 'demo@mail.com',
@@ -36,37 +36,22 @@ export const updateProfileFx = createEffect<Partial<User>, User>(
 	},
 );
 
-// Эффект для инициализации пользователя из localStorage
+// Эффект для инициализации пользователя из backend-driven session
 export const initUserFx = createEffect<void, User | null>(async () => {
 	try {
-		// Проверяем cookie аутентификации
-		const hasAuthCookie = document.cookie
-			.split(';')
-			.some((cookie) => cookie.trim().startsWith('gtrh=1'));
+		const response = await apiClient.restoreSession();
 
-		if (!hasAuthCookie) {
+		if (!response.success || !response.data) {
+			setAuthenticationStatus(false);
 			return null;
 		}
 
-		// Пытаемся восстановить данные пользователя из localStorage
-		const userDataStr = localStorage.getItem('user');
-		if (userDataStr) {
-			const userData = JSON.parse(userDataStr);
-			return userData;
-		}
-
-		// Если данных нет в localStorage, но есть cookie, возвращаем mock пользователя
-		// В реальном приложении здесь был бы запрос к API для получения данных пользователя
-		return {
-			id: 1,
-			email: 'demo@mail.com',
-			role: 'CUSTOMER',
-			fullName: 'Demo Customer',
-			phone: '+71234567890',
-			specificFields: { favoriteProducts: [100, 101] },
-		};
+		localStorage.setItem('user', JSON.stringify(response.data));
+		setAuthenticationStatus(true);
+		return response.data;
 	} catch (error) {
 		console.error('Error initializing user:', error);
+		setAuthenticationStatus(false);
 		return null;
 	}
 });
@@ -74,20 +59,21 @@ export const initUserFx = createEffect<void, User | null>(async () => {
 // Store
 export const $user = createStore<User | null>(null)
 	.on(setUser, (_, user) => {
-		// Сохраняем пользователя в localStorage при установке
 		if (user) {
 			localStorage.setItem('user', JSON.stringify(user));
+			setAuthenticationStatus(true);
 		} else {
-			localStorage.removeItem('user');
+			setAuthenticationStatus(false);
 		}
 		return user;
 	})
 	.on(resetUser, () => {
-		localStorage.removeItem('user');
+		setAuthenticationStatus(false);
 		return null;
 	})
 	.on(loginFx.doneData, (_, user) => {
 		localStorage.setItem('user', JSON.stringify(user));
+		setAuthenticationStatus(true);
 		return user;
 	})
 	.on(updateProfileFx.doneData, (_, user) => {

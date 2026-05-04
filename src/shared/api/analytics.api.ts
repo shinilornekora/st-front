@@ -4,7 +4,7 @@
  */
 
 import { mockClient } from './mockClient/client';
-import type { MockResponse } from './mockClient/client';
+import { apiClient, type ApiResponse } from './client';
 import { i18n } from '@shared/i18n';
 
 // Types
@@ -139,34 +139,16 @@ const generateMockAnalytics = (
  */
 export const getAnalyticsDashboard = async (
 	params: GetAnalyticsDashboardRequest = {},
-): Promise<MockResponse<AnalyticsDashboard>> => {
+): Promise<ApiResponse<AnalyticsDashboard>> => {
 	if (params.__mock) {
 		return mockClient.get(() => generateMockAnalytics(params.period));
 	}
 
-	// Real API call would go here
-	try {
-		const response = await fetch(
-			`/api/b2b/analytics/dashboard?period=${params.period || 'month'}`,
-		);
-		const data = await response.json();
+	const response = await apiClient.get<AnalyticsDashboard>(
+		`/b2b/analytics/dashboard?period=${params.period || 'month'}`,
+	);
 
-		return {
-			success: response.ok,
-			data: response.ok ? data : undefined,
-			error: response.ok
-				? undefined
-				: 'Failed to fetch analytics dashboard',
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: i18n.global.t('errors.networkError'),
-		};
-	}
+	return response;
 };
 
 /**
@@ -174,7 +156,7 @@ export const getAnalyticsDashboard = async (
  */
 export const getSellerProducts = async (
 	params: { __mock?: boolean } = {},
-): Promise<MockResponse<ProductListItem[]>> => {
+): Promise<ApiResponse<ProductListItem[]>> => {
 	if (params.__mock) {
 		const mockProducts: ProductListItem[] = [
 			{
@@ -193,23 +175,7 @@ export const getSellerProducts = async (
 		return mockClient.get(() => mockProducts);
 	}
 
-	// Real API call would go here
-	try {
-		const response = await fetch('/api/b2b/products');
-		const data = await response.json();
+	const response = await apiClient.get<ProductListItem[]>('/b2b/products');
 
-		return {
-			success: response.ok,
-			data: response.ok ? data : undefined,
-			error: response.ok ? undefined : 'Failed to fetch products',
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: i18n.global.t('errors.networkError'),
-		};
-	}
+	return response;
 };

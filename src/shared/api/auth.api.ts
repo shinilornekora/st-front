@@ -1,6 +1,11 @@
 import { mockLogin, mockRegister } from './mockClient/auth.mock';
 import type { User } from '@entities/user/user.types';
-import { i18n } from '@shared/i18n';
+import {
+	accessTokenStore,
+	apiClient,
+	type ApiResponse,
+	type LoginResponse,
+} from './client';
 
 export interface LoginRequest {
 	login: string;
@@ -17,13 +22,6 @@ export interface RegisterRequest {
 	__mock?: boolean;
 }
 
-export interface ApiResponse<T = unknown> {
-	success: boolean;
-	data?: T;
-	error?: string;
-	message?: string;
-}
-
 /**
  * API: Авторизация пользователя
  * Если __mock=true, использует mock client
@@ -38,40 +36,29 @@ export const loginUser = async (
 	}
 
 	// Реальный API запрос
-	try {
-		const response = await fetch('/api/auth/login', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				login: data.login,
-				password: data.password,
-			}),
-		});
+	const response = await apiClient.post<LoginResponse>('/auth/login', {
+		login: data.login,
+		password: data.password,
+	});
 
-		const result = await response.json();
-
-		if (!response.ok) {
-			return {
-				success: false,
-				error: result.error || i18n.global.t('errors.authError'),
-			};
+	if (response.success && response.data?.user) {
+		if (response.data.accessToken) {
+			accessTokenStore.set(response.data.accessToken);
 		}
 
 		return {
 			success: true,
-			data: result.user,
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: i18n.global.t('errors.networkError'),
+			data: response.data.user,
+			message: response.data.message,
 		};
 	}
+
+	return {
+		success: false,
+		error: response.error,
+		message: response.message,
+		status: response.status,
+	};
 };
 
 /**
@@ -88,41 +75,21 @@ export const registerUser = async (
 	}
 
 	// Реальный API запрос
-	try {
-		const response = await fetch('/api/auth/register', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				name: data.name,
-				phone: data.phone,
-				email: data.email,
-				password: data.password,
-				role: data.role,
-			}),
-		});
+	return apiClient.post<{ message: string }>('/auth/register', {
+		name: data.name,
+		phone: data.phone,
+		email: data.email,
+		password: data.password,
+		role: data.role,
+	});
+};
 
-		const result = await response.json();
+/**
+ * API: Выход из системы
+ */
+export const logoutUser = async (): Promise<ApiResponse<void>> => {
+	const response = await apiClient.post<void>('/auth/logout');
+	apiClient.clearSession();
 
-		if (!response.ok) {
-			return {
-				success: false,
-				error: result.error || i18n.global.t('errors.registerError'),
-			};
-		}
-
-		return {
-			success: true,
-			data: { message: result.message },
-		};
-	} catch (error) {
-		return {
-			success: false,
-			error:
-				error instanceof Error
-					? error.message
-					: i18n.global.t('errors.networkError'),
-		};
-	}
+	return response;
 };

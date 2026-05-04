@@ -4,8 +4,9 @@
  */
 
 // Auth API
-export { loginUser, registerUser } from './auth.api';
-export type { LoginRequest, RegisterRequest, ApiResponse } from './auth.api';
+export { loginUser, registerUser, logoutUser } from './auth.api';
+export type { LoginRequest, RegisterRequest } from './auth.api';
+export type { ApiResponse, LoginResponse, MeResponse } from './client';
 
 // Products API
 export {
