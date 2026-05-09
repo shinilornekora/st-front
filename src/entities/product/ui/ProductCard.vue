@@ -104,12 +104,7 @@
 
 	const toggleHeart = () => {
 		if (!props.id) return;
-
-		// Use localStorage for all users (both authenticated and non-authenticated)
-		// TODO: In the future, authenticated users should call 'add_favourite' API endpoint
 		isFavorite.value = toggleFavorite(props.id);
-
-		// Emit the favourite event
 		emit('favourite', { id: props.id, isFavorite: isFavorite.value });
 	};
 

@@ -284,8 +284,6 @@
 	};
 
 	const handlePreview = () => {
-		console.log('Preview:', formData);
-
 		// Создаем объект товара из данных формы для превью
 		const previewProduct = {
 			id: props.editData?.id || 999999, // Временный ID для превью
@@ -319,8 +317,6 @@
 					: undefined,
 			article: formData.article || 'ART-000',
 		};
-
-		console.log('Preview product:', previewProduct);
 
 		// Сохраняем товар в Effector store
 		setPreviewProduct(previewProduct);

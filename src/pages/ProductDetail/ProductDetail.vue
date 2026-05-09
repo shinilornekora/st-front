@@ -416,6 +416,7 @@
 	} from '@entities/product/product.store';
 	import { isUserAuthenticated } from '@shared/utils/auth';
 	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
+	import { recordRecentlyViewed } from '@shared/utils/recentlyViewed';
 	import heartIcon from '@assets/heart_icon.svg';
 	import darkHeartIcon from '@assets/dark_heart_icon.svg';
 
@@ -579,9 +580,10 @@
 						});
 
 					if (productResponse.success && productResponse.data) {
-						product.value = productResponse.data;
-					}
-					isLoading.value = false;
+							product.value = productResponse.data;
+							recordRecentlyViewed(productResponse.data);
+						}
+						isLoading.value = false;
 				}
 
 				// Load additional data (characteristics and similar products) asynchronously
@@ -688,16 +690,10 @@
 			// Use localStorage for non-authenticated users
 			isFavorite.value = toggleFavorite(product.value.id);
 		} else {
-			// For authenticated users, just toggle the UI state
-			// In a real app, this would make an API call
+			// For authenticated users, toggle UI state
+			// Future: call POST /api/favorites/{productId}
 			isFavorite.value = !isFavorite.value;
 		}
-
-		console.log(
-			'Product favorite status changed:',
-			product.value.name,
-			isFavorite.value,
-		);
 	};
 
 	const copyCurrentUrl = async () => {
@@ -709,7 +705,6 @@
 
 		try {
 			await navigator.clipboard.writeText(window.location.href);
-			console.log('URL copied to clipboard:', window.location.href);
 			showStatusLine.value = true;
 			setTimeout(() => {
 				showStatusLine.value = false;

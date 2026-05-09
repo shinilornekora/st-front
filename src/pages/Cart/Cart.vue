@@ -121,6 +121,7 @@
 	import { getProducts } from '@shared/api';
 	import { isUserAuthenticated } from '@shared/utils/auth';
 	import { showToast } from '@shared/model';
+	import { toggleFavorite } from '@shared/utils/favorites';
 
 	const { t } = useI18n();
 
@@ -181,11 +182,9 @@
 	};
 
 	const addToFavourites = (item: any) => {
-		// TODO: Implement add to favourites logic
 		// Handle both cart items (with product property) and recommendation products (direct)
-		const productName = item.product ? item.product.name : item.name;
-		const productId = item.product ? item.product.id : item.id;
-		console.log('Added to favourites:', productName, 'ID:', productId);
+		const productId: number = item.product ? item.product.id : item.id;
+		toggleFavorite(productId);
 	};
 
 	const shareProduct = async (item: any) => {
@@ -198,9 +197,8 @@
 
 			// Copy the URL to clipboard
 			await navigator.clipboard.writeText(productUrl);
-			console.log('Product URL copied to clipboard:', productUrl);
-
-			// Show status line
+	
+				// Show status line
 			showStatusLine.value = true;
 			setTimeout(() => {
 				showStatusLine.value = false;

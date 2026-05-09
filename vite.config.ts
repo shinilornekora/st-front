@@ -13,6 +13,14 @@ const dirname =
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
 	plugins: [vue()],
+	server: {
+		proxy: {
+			'/api': {
+				target: process.env.VITE_API_TARGET ?? 'http://localhost:3000',
+				changeOrigin: true,
+			},
+		},
+	},
 	resolve: {
 		alias: {
 			'@assets': path.resolve(dirname, 'src/assets'),

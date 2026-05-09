@@ -475,6 +475,7 @@
 	import { addItem } from '@entities/cart/cart.store';
 	import type { Product } from '@entities/product/product.types';
 	import { getFavoriteProducts } from '@shared/utils/favorites';
+	import { getRecentlyViewedProducts } from '@shared/utils/recentlyViewed';
 	import { showToast } from '@shared/model';
 	import userCircleIcon from '@assets/user_circle.svg';
 	import cardIcon from '@assets/card.svg';
@@ -496,6 +497,7 @@
 	onMounted(() => {
 		isAuthenticated.value = isUserAuthenticated() && user.value !== null;
 		updateFavoritesCount();
+		recentlyViewedProducts.value = getRecentlyViewedProducts();
 	});
 
 	// Watch for user changes to update authentication status
@@ -812,8 +814,7 @@
 	};
 
 	const handlePasswordRecovery = () => {
-		// Handle password recovery
-		console.log('Navigate to password recovery');
+		// Password recovery page is not yet implemented — no-op
 	};
 
 	const clearAllFields = () => {
@@ -837,93 +838,18 @@
 		router.push('/');
 	};
 
-	// Mock data for recently viewed products (в будущем будет из localStorage или API)
-	const recentlyViewedProducts = ref<Product[]>([
-		{
-			id: 1,
-			name: t('mockData.mockProducts.nikeAirMax'),
-			slug: 'nike-air-max',
-			price: 12990,
-			discount: 15,
-			currency: 'RUB',
-			images: [
-				'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=300&fit=crop',
-			],
-			description: t('mockData.mockDescriptions.comfortable'),
-			category: [{ id: '1', name: t('mockData.mockCategories.shoes') }],
-			tags: [{ id: 't1', name: t('mockData.mockTags.sport') }],
-			sizes: ['40', '41', '42', '43'],
-			stockStatus: 'in_stock',
-			gender: 'unisex',
-			inStock: true,
-			seller: {
-				id: 1,
-				name: 'Nike Store',
-				rating: 4.8,
-			},
-		},
-		{
-			id: 2,
-			name: t('mockData.mockProducts.adidasTshirt'),
-			slug: 'adidas-tshirt',
-			price: 2990,
-			currency: 'RUB',
-			images: [
-				'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop',
-			],
-			description: t('mockData.mockDescriptions.sport'),
-			category: [
-				{ id: '2', name: t('mockData.mockCategories.clothing') },
-			],
-			tags: [{ id: 't2', name: t('mockData.mockTags.sport') }],
-			sizes: ['S', 'M', 'L', 'XL'],
-			stockStatus: 'in_stock',
-			gender: 'unisex',
-			inStock: true,
-			seller: {
-				id: 2,
-				name: 'Adidas Store',
-				rating: 4.7,
-			},
-		},
-		{
-			id: 3,
-			name: t('mockData.mockProducts.pumaBackpack'),
-			slug: 'puma-backpack',
-			price: 4990,
-			discount: 10,
-			currency: 'RUB',
-			images: [
-				'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=300&fit=crop',
-			],
-			description: t('mockData.mockDescriptions.spacious'),
-			category: [
-				{ id: '3', name: t('mockData.mockCategories.accessories') },
-			],
-			tags: [
-				{ id: 't3', name: t('mockData.mockCategories.accessories') },
-			],
-			sizes: ['One Size'],
-			stockStatus: 'in_stock',
-			gender: 'unisex',
-			inStock: true,
-			seller: {
-				id: 3,
-				name: 'Puma Store',
-				rating: 4.9,
-			},
-		},
-	]);
+	// Recently viewed products — populated from localStorage on mount
+	const recentlyViewedProducts = ref<Product[]>([]);
 
 	// Handlers for action items
 	const handleProfileEdit = () => {
-		console.log('Edit profile');
-		// TODO: Открыть модальное окно редактирования профиля
+		// Scroll to top of the profile page (user is already on /profile)
+		window.scrollTo({ top: 0, behavior: 'smooth' });
 	};
 
 	const handlePaymentMethods = () => {
-		console.log('Payment methods');
-		// TODO: Перейти на страницу способов оплаты
+		// Navigate to purchases tab (closest existing page for payment/order history)
+		router.push('/favorites?tab=purchases');
 	};
 
 	const handleRequisites = () => {

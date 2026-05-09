@@ -137,7 +137,6 @@
 
 	// Check if product is favorite on mount
 	onMounted(() => {
-		// Use localStorage for all users (TODO: integrate with API for authenticated users)
 		isFavorite.value = isProductFavorite(props.id);
 	});
 
@@ -146,14 +145,12 @@
 		() => props.id,
 		(newId) => {
 			if (newId) {
-				// Use localStorage for all users (TODO: integrate with API for authenticated users)
 				isFavorite.value = isProductFavorite(newId);
 			}
 		},
 	);
 
 	const toggleHeart = () => {
-		// Use localStorage for all users (TODO: integrate with API for authenticated users)
 		isFavorite.value = toggleFavorite(props.id);
 		emit('favourite');
 	};

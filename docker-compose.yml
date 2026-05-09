@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    environment:
+      # Имя сервиса бэкенда и порт внутри Docker-сети
+      # Замени на реальное имя сервиса из docker-compose бэкенда
+      BACKEND_HOST: backend:3000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # Заглушка — замени на реальный бэкенд-сервис
+  # backend:
+  #   image: your-backend-image
+  #   ports:
+  #     - '3000:3000'
+  #   restart: unless-stopped
