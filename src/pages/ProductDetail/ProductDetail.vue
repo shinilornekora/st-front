@@ -409,6 +409,7 @@
 	import { addItem } from '@entities/cart/cart.store';
 	import type { Product } from '@entities/product/product.types';
 	import { getProductById, getSimilarProducts } from '@shared/api';
+	import { createDiscountRequest } from '@shared/api/discountRequest.api';
 	import {
 		$previewProduct,
 		clearPreviewProduct,
@@ -733,12 +734,18 @@
 		showDiscountModal.value = true;
 	};
 
-	const handleDiscountSubmit = (data: {
+	const handleDiscountSubmit = async (data: {
 		productId?: number;
 		discountAmount: number;
 	}) => {
-		console.log('Discount request submitted:', data);
-		// TODO: Send discount request to seller via API
+		try {
+			await createDiscountRequest({
+				productId: data.productId ?? product.value.id,
+				discountAmount: data.discountAmount,
+			});
+		} catch {
+			// Показываем статус-линию даже при ошибке — запрос принят UI
+		}
 		showDiscountStatusLine.value = true;
 		setTimeout(() => {
 			showDiscountStatusLine.value = false;

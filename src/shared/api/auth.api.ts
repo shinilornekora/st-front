@@ -6,6 +6,12 @@ import {
 	type LoginResponse,
 } from './client';
 
+export interface UpdateProfileRequest {
+	fullName?: string;
+	phone?: string;
+	email?: string;
+}
+
 export interface LoginRequest {
 	login: string;
 	password: string;
@@ -76,4 +82,14 @@ export const logoutUser = async (): Promise<ApiResponse<void>> => {
 	apiClient.clearSession();
 
 	return response;
+};
+
+/**
+ * API: Обновление профиля пользователя
+ * PATCH /api/auth/me
+ */
+export const updateProfile = async (
+	data: UpdateProfileRequest,
+): Promise<ApiResponse<User>> => {
+	return apiClient.patch<User>('/auth/me', data);
 };

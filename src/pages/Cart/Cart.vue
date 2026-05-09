@@ -102,8 +102,16 @@
 	import { useRouter } from 'vue-router';
 	import { useStore } from 'effector-vue/composition';
 	import { useI18n } from 'vue-i18n';
-	import { $cart, removeItem, updateQty } from '@entities/cart/cart.store';
-	import { addItem } from '@entities/cart/cart.store';
+	import {
+		$cart,
+		removeItem,
+		removeItemFx,
+		updateQty,
+		updateQtyFx,
+		addItem,
+		getCartFx,
+	} from '@entities/cart/cart.store';
+	import { addOrderFx } from '@entities/order/order.store';
 	import type { Product } from '@entities/product/product.types';
 	import { Header, Footer } from '@widgets/index';
 	import { StatusLine } from '@shared/ui';
@@ -112,6 +120,7 @@
 	import CartItem from '@entities/cart/ui/CartItem.vue';
 	import { getProducts } from '@shared/api';
 	import { isUserAuthenticated } from '@shared/utils/auth';
+	import { showToast } from '@shared/model';
 
 	const { t } = useI18n();
 
@@ -120,7 +129,6 @@
 
 	// Force reactivity with watchEffect
 	watchEffect(() => {
-		// Just accessing the cart value to ensure reactivity
 		cart.value;
 	});
 
@@ -134,15 +142,17 @@
 	// Status line state
 	const showStatusLine = ref(false);
 
-	// Load similar products on mount
+	// Load cart and similar products on mount
 	onMounted(async () => {
-		// Get products using API
+		// Для авторизованных — загружаем корзину с сервера
+		if (isUserAuthenticated()) {
+			await getCartFx();
+		}
+
+		// Загружаем «Вам может понравиться»
 		const response = await getProducts();
-
 		if (response.success && response.data) {
-			const cartItemIds = cartItems.value.map((item) => item.id);
-
-			// Filter out products already in cart and take 5 random ones
+			const cartItemIds = cartItems.value.map((item) => item.product.id);
 			const availableProducts = response.data.filter(
 				(product) => !cartItemIds.includes(product.id),
 			);
@@ -155,11 +165,19 @@
 	};
 
 	const removeFromCart = (itemId: number) => {
-		removeItem(itemId);
+		if (isUserAuthenticated()) {
+			removeItemFx(itemId);
+		} else {
+			removeItem(itemId);
+		}
 	};
 
 	const updateQuantity = (payload: { id: number; quantity: number }) => {
-		updateQty(payload);
+		if (isUserAuthenticated()) {
+			updateQtyFx(payload);
+		} else {
+			updateQty(payload);
+		}
 	};
 
 	const addToFavourites = (item: any) => {
@@ -207,16 +225,31 @@
 		}
 	};
 
-	const checkout = () => {
-		// Check if user is authenticated
+	const checkout = async () => {
 		if (!isUserAuthenticated()) {
-			// Redirect to login page if not authenticated
 			router.push('/profile');
 			return;
 		}
 
-		// TODO: Implement checkout logic for authenticated users
-		console.log('Checkout for authenticated user');
+		try {
+			const items = cartItems.value.map((item) => ({
+				productId: item.product.id,
+				quantity: item.quantity,
+				price: item.price,
+			}));
+			const currency =
+				cartItems.value[0]?.currency ?? 'RUB';
+
+			await addOrderFx({ items, currency });
+
+			showToast({ message: 'Заказ успешно оформлен!', type: 'success' });
+			router.push('/favorites?tab=purchases');
+		} catch {
+			showToast({
+				message: 'Не удалось оформить заказ. Попробуйте ещё раз.',
+				type: 'error',
+			});
+		}
 	};
 
 	const formatPrice = (price: number) => {

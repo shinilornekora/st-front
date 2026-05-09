@@ -4,8 +4,12 @@
  */
 
 // Auth API
-export { loginUser, registerUser, logoutUser } from './auth.api';
-export type { LoginRequest, RegisterRequest } from './auth.api';
+export { loginUser, registerUser, logoutUser, updateProfile } from './auth.api';
+export type {
+	LoginRequest,
+	RegisterRequest,
+	UpdateProfileRequest,
+} from './auth.api';
 export type { ApiResponse, LoginResponse, MeResponse } from './client';
 
 // Products API
@@ -54,6 +58,35 @@ export type {
 	DeleteProductRequest,
 } from './analytics.api';
 
-// В будущем здесь будут другие API модули:
-// export * from './orders.api';
-// и т.д.
+// Cart API
+export {
+	getCart,
+	addToCart,
+	updateCartItem,
+	removeFromCart,
+	clearCart,
+} from './cart.api';
+export type {
+	AddToCartRequest,
+	UpdateCartItemRequest,
+	RemoveFromCartRequest,
+} from './cart.api';
+
+// Orders API
+export { getOrders, createOrder } from './orders.api';
+export type { CreateOrderRequest } from './orders.api';
+
+// Seller Application API
+export { submitSellerApplication } from './sellerApplication.api';
+export type { SubmitSellerApplicationRequest } from './sellerApplication.api';
+
+// User API
+export { deleteAccount, saveRequisites, saveSettings } from './user.api';
+export type { Requisites, UserSettings } from './user.api';
+
+// Discount Request API
+export { createDiscountRequest } from './discountRequest.api';
+export type {
+	CreateDiscountRequestRequest,
+	DiscountRequest,
+} from './discountRequest.api';

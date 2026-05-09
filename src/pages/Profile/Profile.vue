@@ -460,6 +460,12 @@
 	import { SettingsModal } from '@features/settings';
 	import { RequisitesModal } from '@features/requisites';
 	import { loginUser, registerUser } from '@shared/api';
+	import {
+		deleteAccount,
+		saveRequisites,
+		saveSettings,
+	} from '@shared/api/user.api';
+	import type { UserSettings } from '@shared/api/user.api';
 	import { setUser, resetUser, $user } from '@entities/user/user.store';
 	import {
 		isUserAuthenticated,
@@ -825,16 +831,9 @@
 	};
 
 	const handleLogout = () => {
-		// Сбрасываем пользователя в store
 		resetUser();
-
-		// Удаляем cookie аутентификации
 		setAuthenticationStatus(false);
-
-		// Обновляем статус аутентификации
 		isAuthenticated.value = false;
-
-		// Перенаправляем на главную
 		router.push('/');
 	};
 
@@ -931,29 +930,53 @@
 		showRequisitesModal.value = true;
 	};
 
-	const handleSaveRequisites = (requisitesData: any) => {
-		console.log('Save requisites:', requisitesData);
-		// TODO: Сохранить реквизиты на сервер или в localStorage
-		// Можно показать уведомление об успешном сохранении
+	const handleSaveRequisites = async (requisitesData: any) => {
+		try {
+			await saveRequisites(requisitesData);
+			showToast({ message: t('profile.requisitesSaved'), type: 'success' });
+		} catch {
+			showToast({ message: t('profile.requisitesError'), type: 'error' });
+		}
 	};
 
 	const handleSupport = () => {
-		console.log('Contact support');
-		// TODO: Открыть форму обращения в поддержку
+		// Открытие внешней формы поддержки — не требует API
 	};
 
 	const handleSettings = () => {
 		showSettingsModal.value = true;
 	};
 
-	const handleSaveSettings = (settings: any[]) => {
-		console.log('Save settings:', settings);
-		// TODO: Сохранить настройки в localStorage или отправить на сервер
+	const handleSaveSettings = async (settings: any[]) => {
+		try {
+			const payload: UserSettings = {
+				notifications:
+					settings.find((s) => s.id === 'notifications')
+						?.enabled ?? true,
+				email:
+					settings.find((s) => s.id === 'email')?.enabled ?? true,
+				marketing:
+					settings.find((s) => s.id === 'marketing')?.enabled ??
+					false,
+				analytics:
+					settings.find((s) => s.id === 'analytics')?.enabled ??
+					true,
+			};
+			await saveSettings(payload);
+			showToast({ message: t('profile.settingsSaved'), type: 'success' });
+		} catch {
+			showToast({ message: t('profile.settingsError'), type: 'error' });
+		}
 	};
 
-	const handleDeleteAccount = () => {
-		console.log('Delete account');
-		// TODO: Показать подтверждение и удалить аккаунт
+	const handleDeleteAccount = async () => {
+		if (!confirm(t('profile.deleteAccountConfirm'))) return;
+		try {
+			await deleteAccount();
+			handleLogout();
+		} catch {
+			showToast({ message: t('profile.deleteAccountError'), type: 'error' });
+		}
 	};
 
 	// Handlers for recommendations

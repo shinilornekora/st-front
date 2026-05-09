@@ -533,3 +533,352 @@
 {
   "message": "string"
 }
+```
+
+---
+
+## [`GET /api/cart`](src/shared/api/cart.api.ts:30)
+**Что делает:** возвращает корзину текущего авторизованного пользователя.
+
+**Request**
+```json
+{}
+```
+
+**Response**
+```json
+{
+  "items": [
+    {
+      "id": 1,
+      "product": {},
+      "quantity": 1,
+      "price": 10000,
+      "discount": 10,
+      "currency": "RUB",
+      "selectedColor": "string"
+    }
+  ],
+  "total": 10000,
+  "currency": "RUB"
+}
+```
+
+---
+
+## [`POST /api/cart/items`](src/shared/api/cart.api.ts:38)
+**Что делает:** добавляет товар в корзину.
+
+**Request**
+```json
+{
+  "body": {
+    "productId": 1,
+    "quantity": 1,
+    "selectedColor": "string"
+  }
+}
+```
+
+**Response**
+```json
+{
+  "items": [],
+  "total": 0,
+  "currency": "RUB"
+}
+```
+
+---
+
+## [`PATCH /api/cart/items/{itemId}`](src/shared/api/cart.api.ts:47)
+**Что делает:** обновляет количество товара в корзине.
+
+**Request**
+```json
+{
+  "path": {
+    "itemId": 1
+  },
+  "body": {
+    "quantity": 2
+  }
+}
+```
+
+**Response**
+```json
+{
+  "items": [],
+  "total": 0,
+  "currency": "RUB"
+}
+```
+
+---
+
+## [`DELETE /api/cart/items/{itemId}`](src/shared/api/cart.api.ts:57)
+**Что делает:** удаляет товар из корзины.
+
+**Request**
+```json
+{
+  "path": {
+    "itemId": 1
+  }
+}
+```
+
+**Response**
+```json
+{
+  "items": [],
+  "total": 0,
+  "currency": "RUB"
+}
+```
+
+---
+
+## [`DELETE /api/cart`](src/shared/api/cart.api.ts:57)
+**Что делает:** полностью очищает корзину.
+
+**Request**
+```json
+{}
+```
+
+**Response**
+```json
+{
+  "message": "string"
+}
+```
+
+---
+
+## [`GET /api/orders`](src/shared/api/orders.api.ts:14)
+**Что делает:** возвращает список заказов текущего авторизованного пользователя.
+
+**Auth:** Bearer token required
+
+**Request**
+```json
+{}
+```
+
+**Response**
+```json
+[
+  {
+    "id": "number",
+    "createdAt": "string (ISO 8601)",
+    "items": [
+      {
+        "id": "number",
+        "product": { "id": "number", "name": "string", "price": "number" },
+        "quantity": "number",
+        "price": "number",
+        "currency": "string"
+      }
+    ],
+    "total": "number",
+    "currency": "string",
+    "status": "PAID | PENDING | CANCELLED | REFUNDED",
+    "customer": { "id": "number", "fullName": "string", "email": "string", "phone": "string" },
+    "seller": { "id": "number", "name": "string" }
+  }
+]
+```
+
+---
+
+## [`POST /api/orders`](src/shared/api/orders.api.ts:18)
+**Что делает:** создаёт новый заказ из текущей корзины.
+
+**Auth:** Bearer token required
+
+**Request**
+```json
+{
+  "items": [
+    {
+      "productId": "number",
+      "quantity": "number",
+      "price": "number"
+    }
+  ],
+  "currency": "string"
+}
+```
+
+**Response**
+```json
+{
+  "id": "number",
+  "createdAt": "string (ISO 8601)",
+  "items": [...],
+  "total": "number",
+  "currency": "string",
+  "status": "PENDING",
+  "customer": { "id": "number", "fullName": "string", "email": "string", "phone": "string" },
+  "seller": { "id": "number", "name": "string" }
+}
+```
+
+---
+
+## [`POST /api/seller-applications`](src/shared/api/sellerApplication.api.ts:14)
+**Что делает:** подаёт заявку на регистрацию продавца.
+
+**Auth:** Bearer token required
+
+**Request**
+```json
+{
+  "name": "string",
+  "phone": "string",
+  "email": "string",
+  "inn": "string (optional)",
+  "billingAccount": "string (optional)"
+}
+```
+
+**Response**
+```json
+{
+  "id": "number",
+  "userId": "number",
+  "status": "PENDING | APPROVED | REJECTED",
+  "name": "string",
+  "phone": "string",
+  "email": "string"
+}
+```
+
+---
+
+## [`PATCH /api/auth/me`](src/shared/api/auth.api.ts:87)
+**Что делает:** обновляет профиль текущего авторизованного пользователя.
+
+**Auth:** Bearer token required
+
+**Request**
+```json
+{
+  "fullName": "string (optional)",
+  "phone": "string (optional)",
+  "email": "string (optional)"
+}
+```
+
+**Response**
+```json
+{
+  "id": "number",
+  "role": "CUSTOMER | SELLER | ADMIN",
+  "email": "string",
+  "fullName": "string",
+  "phone": "string",
+  "specificFields": {}
+}
+```
+
+---
+
+## [`DELETE /api/users/me`](src/shared/api/user.api.ts:19)
+**Что делает:** удаляет аккаунт текущего авторизованного пользователя. Необратимое действие.
+
+**Auth:** Bearer token required
+
+**Request**
+```json
+{}
+```
+
+**Response**
+```json
+{}
+```
+
+---
+
+## [`POST /api/users/me/requisites`](src/shared/api/user.api.ts:23)
+**Что делает:** сохраняет банковские реквизиты пользователя.
+
+**Auth:** Bearer token required
+
+**Request**
+```json
+{
+  "country": "string",
+  "name": "string",
+  "bik": "string",
+  "account": "string",
+  "fullName": "string"
+}
+```
+
+**Response**
+```json
+{
+  "country": "string",
+  "name": "string",
+  "bik": "string",
+  "account": "string",
+  "fullName": "string"
+}
+```
+
+---
+
+## [`PATCH /api/users/me/settings`](src/shared/api/user.api.ts:30)
+**Что делает:** сохраняет пользовательские настройки (уведомления, email-рассылки и т.д.).
+
+**Auth:** Bearer token required
+
+**Request**
+```json
+{
+  "notifications": "boolean",
+  "email": "boolean",
+  "marketing": "boolean",
+  "analytics": "boolean"
+}
+```
+
+**Response**
+```json
+{
+  "notifications": "boolean",
+  "email": "boolean",
+  "marketing": "boolean",
+  "analytics": "boolean"
+}
+```
+
+---
+
+## [`POST /api/discount-requests`](src/shared/api/discountRequest.api.ts:14)
+**Что делает:** отправляет запрос на скидку продавцу от покупателя.
+
+**Auth:** Bearer token required
+
+**Request**
+```json
+{
+  "productId": "number",
+  "discountAmount": "number"
+}
+```
+
+**Response**
+```json
+{
+  "id": "number",
+  "productId": "number",
+  "discountAmount": "number",
+  "status": "PENDING | APPROVED | REJECTED",
+  "createdAt": "string (ISO 8601)"
+}
+```

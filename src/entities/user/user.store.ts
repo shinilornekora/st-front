@@ -1,38 +1,33 @@
 import { createStore, createEvent, createEffect } from 'effector';
 import type { User } from './user.types';
 import { apiClient } from '@shared/api/client';
+import { loginUser, updateProfile } from '@shared/api/auth.api';
+import type { UpdateProfileRequest } from '@shared/api/auth.api';
 import { setAuthenticationStatus } from '@shared/utils/auth';
 
 // События
 export const setUser = createEvent<User | null>();
 export const resetUser = createEvent();
 
-// Эффекты (моки)
+// Эффект авторизации — вызывает реальный POST /api/auth/login
 export const loginFx = createEffect<{ email: string; password: string }, User>(
-	async ({ email }) => {
-		return {
-			id: 1,
-			email,
-			role: 'CUSTOMER',
-			fullName: 'Demo Customer',
-			phone: '+71234567890',
-			specificFields: { favoriteProducts: [100, 101] },
-		};
+	async ({ email, password }) => {
+		const response = await loginUser({ login: email, password });
+		if (!response.success || !response.data) {
+			throw new Error(response.error ?? 'Login failed');
+		}
+		return response.data;
 	},
 );
 
-export const updateProfileFx = createEffect<Partial<User>, User>(
+// Эффект обновления профиля — вызывает реальный PATCH /api/auth/me
+export const updateProfileFx = createEffect<UpdateProfileRequest, User>(
 	async (fields) => {
-		return {
-			id: 1,
-			email: fields.email ?? 'demo@mail.com',
-			role: 'CUSTOMER',
-			fullName: fields.fullName ?? 'Demo Customer',
-			phone: fields.phone ?? '+71234567890',
-			specificFields: fields.specificFields ?? {
-				favoriteProducts: [100],
-			},
-		};
+		const response = await updateProfile(fields);
+		if (!response.success || !response.data) {
+			throw new Error(response.error ?? 'Failed to update profile');
+		}
+		return response.data;
 	},
 );
 

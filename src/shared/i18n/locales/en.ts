@@ -147,6 +147,12 @@ export default {
 			'After reviewing your application, a resolution will be sent to the specified email, after which you can log in to your account using your credentials.',
 		applicationPendingText3:
 			'If the application review takes more than three days, you can write to us by email, after which we will check the current status of your application and inform you of the approximate timeframe.',
+		requisitesSaved: 'Requisites saved successfully',
+		requisitesError: 'Failed to save requisites',
+		settingsSaved: 'Settings saved successfully',
+		settingsError: 'Failed to save settings',
+		deleteAccountConfirm: 'Are you sure you want to delete your account? This action is irreversible.',
+		deleteAccountError: 'Failed to delete account',
 	},
 	navigation: {
 		home: 'Home',

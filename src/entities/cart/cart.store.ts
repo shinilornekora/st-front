@@ -3,8 +3,15 @@ import type { Cart, CartItem } from './cart.types';
 import { isUserAuthenticated } from '@shared/utils/auth';
 import { showToast, hideToast } from '@shared/model';
 import { i18n } from '@shared/i18n';
+import {
+	getCart as getCartApi,
+	addToCart as addToCartApi,
+	updateCartItem as updateCartItemApi,
+	removeFromCart as removeFromCartApi,
+} from '@shared/api/cart.api';
 
-// Helper functions for localStorage
+// ─── localStorage helpers (неавторизованные пользователи) ────────────────────
+
 const saveCartToLocalStorage = (cart: Cart) => {
 	if (!isUserAuthenticated()) {
 		localStorage.setItem('cart', JSON.stringify(cart));
@@ -19,34 +26,131 @@ const loadCartFromLocalStorage = (): Cart | null => {
 	return null;
 };
 
-// const clearCartFromLocalStorage = () => {
-// 	if (!isUserAuthenticated()) {
-// 		localStorage.removeItem('cart');
-// 	}
-// };
+// ─── Events ──────────────────────────────────────────────────────────────────
 
 export const setCart = createEvent<Cart>();
 export const addItem = createEvent<CartItem>();
-export const removeItem = createEvent<number>(); // id товара (item)
+export const removeItem = createEvent<number>(); // id позиции (CartItem.id)
 export const updateQty = createEvent<{ id: number; quantity: number }>();
 
-export const getCartFx = createEffect<void, Cart>(() => {
-	// Try to load cart from localStorage if user is not authenticated
-	const savedCart = loadCartFromLocalStorage();
-	if (savedCart) {
-		return savedCart;
+// ─── Effects ─────────────────────────────────────────────────────────────────
+
+/**
+ * Загрузить корзину:
+ * - авторизованный → GET /api/cart
+ * - гость → localStorage
+ */
+export const getCartFx = createEffect<void, Cart>(async () => {
+	if (isUserAuthenticated()) {
+		const response = await getCartApi();
+		if (response.success && response.data) {
+			return response.data;
+		}
 	}
 
-	// Return empty cart if no saved cart
-	return {
+	const savedCart = loadCartFromLocalStorage();
+	if (savedCart) return savedCart;
+
+	return { items: [], total: 0, currency: 'RUB' };
+});
+
+/**
+ * Добавить товар:
+ * - авторизованный → POST /api/cart/items → возвращает обновлённую корзину
+ * - гость → локальное обновление
+ */
+export const addItemFx = createEffect<CartItem, Cart>(async (item) => {
+	if (isUserAuthenticated()) {
+		const response = await addToCartApi({
+			productId: item.product.id,
+			quantity: item.quantity,
+			selectedColor: item.selectedColor,
+		});
+		if (response.success && response.data) {
+			return response.data;
+		}
+	}
+
+	// Fallback: локальное обновление для гостя
+	const savedCart = loadCartFromLocalStorage() ?? {
 		items: [],
 		total: 0,
 		currency: 'RUB',
 	};
+	const exists = savedCart.items.find(
+		(i) => i.id === item.id && i.selectedColor === item.selectedColor,
+	);
+	const items = exists
+		? savedCart.items.map((i) =>
+				i.id === item.id && i.selectedColor === item.selectedColor
+					? { ...i, quantity: i.quantity + item.quantity }
+					: i,
+			)
+		: [...savedCart.items, item];
+	const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
+	const newCart: Cart = { ...savedCart, items, total };
+	saveCartToLocalStorage(newCart);
+	return newCart;
 });
 
-// Initial cart state - try to load from localStorage or use empty cart
-const initialCart = loadCartFromLocalStorage() || {
+/**
+ * Обновить количество:
+ * - авторизованный → PATCH /api/cart/items/{itemId}
+ * - гость → локальное обновление
+ */
+export const updateQtyFx = createEffect<
+	{ id: number; quantity: number },
+	Cart
+>(async ({ id, quantity }) => {
+	if (isUserAuthenticated()) {
+		const response = await updateCartItemApi({ itemId: id, quantity });
+		if (response.success && response.data) {
+			return response.data;
+		}
+	}
+
+	const savedCart = loadCartFromLocalStorage() ?? {
+		items: [],
+		total: 0,
+		currency: 'RUB',
+	};
+	const items = savedCart.items.map((i) =>
+		i.id === id ? { ...i, quantity } : i,
+	);
+	const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
+	const newCart: Cart = { ...savedCart, items, total };
+	saveCartToLocalStorage(newCart);
+	return newCart;
+});
+
+/**
+ * Удалить товар:
+ * - авторизованный → DELETE /api/cart/items/{itemId}
+ * - гость → локальное обновление
+ */
+export const removeItemFx = createEffect<number, Cart>(async (id) => {
+	if (isUserAuthenticated()) {
+		const response = await removeFromCartApi({ itemId: id });
+		if (response.success && response.data) {
+			return response.data;
+		}
+	}
+
+	const savedCart = loadCartFromLocalStorage() ?? {
+		items: [],
+		total: 0,
+		currency: 'RUB',
+	};
+	const items = savedCart.items.filter((i) => i.id !== id);
+	const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
+	const newCart: Cart = { ...savedCart, items, total };
+	saveCartToLocalStorage(newCart);
+	return newCart;
+});
+
+// ─── Store ────────────────────────────────────────────────────────────────────
+
+const initialCart = loadCartFromLocalStorage() ?? {
 	items: [],
 	total: 0,
 	currency: 'RUB',
@@ -57,12 +161,12 @@ export const $cart = createStore<Cart>(initialCart)
 		saveCartToLocalStorage(c);
 		return c;
 	})
+	// Синхронные события (для гостей / оптимистичных обновлений)
 	.on(addItem, (state, item) => {
-		// Check if item with same id AND selectedColor exists
 		const exists = state.items.find(
 			(i) => i.id === item.id && i.selectedColor === item.selectedColor,
 		);
-		let items = exists
+		const items = exists
 			? state.items.map((i) =>
 					i.id === item.id && i.selectedColor === item.selectedColor
 						? { ...i, quantity: i.quantity + item.quantity }
@@ -72,7 +176,6 @@ export const $cart = createStore<Cart>(initialCart)
 		const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
 		const newCart = { ...state, items, total };
 		saveCartToLocalStorage(newCart);
-
 		return newCart;
 	})
 	.on(removeItem, (state, id) => {
@@ -91,34 +194,49 @@ export const $cart = createStore<Cart>(initialCart)
 		saveCartToLocalStorage(newCart);
 		return newCart;
 	})
+	// API-эффекты — обновляют стор ответом сервера
 	.on(getCartFx.doneData, (_, cart) => {
+		saveCartToLocalStorage(cart);
+		return cart;
+	})
+	.on(addItemFx.doneData, (_, cart) => {
+		saveCartToLocalStorage(cart);
+		return cart;
+	})
+	.on(updateQtyFx.doneData, (_, cart) => {
+		saveCartToLocalStorage(cart);
+		return cart;
+	})
+	.on(removeItemFx.doneData, (_, cart) => {
 		saveCartToLocalStorage(cart);
 		return cart;
 	});
 
-// Effect to hide toast after delay
+// ─── Toast ────────────────────────────────────────────────────────────────────
+
 const hideToastFx = createEffect(() => {
 	return new Promise<void>((resolve) => {
-		setTimeout(() => {
-			resolve();
-		}, 2500);
+		setTimeout(() => resolve(), 2500);
 	});
 });
 
-// Show toast when item is added to cart
 sample({
 	clock: addItem,
 	fn: () => i18n.global.t('messages.itemAddedToCart'),
 	target: showToast,
 });
 
-// Start timer to hide toast
 sample({
-	clock: addItem,
+	clock: addItemFx.doneData,
+	fn: () => i18n.global.t('messages.itemAddedToCart'),
+	target: showToast,
+});
+
+sample({
+	clock: [addItem, addItemFx.doneData],
 	target: hideToastFx,
 });
 
-// Hide toast when timer completes
 sample({
 	clock: hideToastFx.doneData,
 	target: hideToast,
