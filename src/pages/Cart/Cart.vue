@@ -137,7 +137,7 @@
 	// Load similar products on mount
 	onMounted(async () => {
 		// Get products using API
-		const response = await getProducts({ __mock: true });
+		const response = await getProducts();
 
 		if (response.success && response.data) {
 			const cartItemIds = cartItems.value.map((item) => item.id);

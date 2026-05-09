@@ -2,8 +2,7 @@
 	<span :class="$style.req">*</span>
 </template>
 
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 
 <style module>
 	@import './theme.module.css';

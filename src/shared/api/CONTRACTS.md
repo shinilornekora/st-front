@@ -445,3 +445,91 @@
     "price": 0
   }
 ]
+```
+
+---
+
+## [`POST /api/b2b/products`](src/shared/api/analytics.api.ts:207)
+**Что делает:** создаёт новый товар продавца.
+
+**Request**
+```json
+{
+  "body": {
+    "name": "string",
+    "article": "string",
+    "price": 0,
+    "discountPrice": 0,
+    "sizes": ["small", "medium", "large"],
+    "colors": ["white", "black", "red"],
+    "composition": "string",
+    "gender": "male | female | unisex",
+    "images": ["string"]
+  }
+}
+```
+
+**Response**
+```json
+{
+  "id": 1,
+  "article": "string",
+  "name": "string",
+  "price": 0
+}
+```
+
+---
+
+## [`PUT /api/b2b/products/{id}`](src/shared/api/analytics.api.ts:232)
+**Что делает:** обновляет товар продавца по id.
+
+**Request**
+```json
+{
+  "path": {
+    "id": "number"
+  },
+  "body": {
+    "name": "string",
+    "article": "string",
+    "price": 0,
+    "discountPrice": 0,
+    "sizes": ["small", "medium", "large"],
+    "colors": ["white", "black", "red"],
+    "composition": "string",
+    "gender": "male | female | unisex",
+    "images": ["string"]
+  }
+}
+```
+
+**Response**
+```json
+{
+  "id": 1,
+  "article": "string",
+  "name": "string",
+  "price": 0
+}
+```
+
+---
+
+## [`DELETE /api/b2b/products/{id}`](src/shared/api/analytics.api.ts:258)
+**Что делает:** удаляет товар продавца по id.
+
+**Request**
+```json
+{
+  "path": {
+    "id": "number"
+  }
+}
+```
+
+**Response**
+```json
+{
+  "message": "string"
+}

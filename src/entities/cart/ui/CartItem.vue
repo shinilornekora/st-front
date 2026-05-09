@@ -175,7 +175,6 @@
 	const goToProduct = () => {
 		emit('product-click', props.id);
 	};
-
 </script>
 <style module>
 	@import '@shared/ui/theme.module.css';

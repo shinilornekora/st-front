@@ -305,6 +305,7 @@ export default {
 		applicationApproved: 'Заявка принята',
 		applicationRejected: 'Заявка отклонена',
 		itemAddedToCart: 'Товар успешно добавлен в корзину',
+		productDeleted: 'Товар успешно удалён',
 	},
 	mockData: {
 		fasteners: {

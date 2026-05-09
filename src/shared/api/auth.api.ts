@@ -1,4 +1,3 @@
-import { mockLogin, mockRegister } from './mockClient/auth.mock';
 import type { User } from '@entities/user/user.types';
 import {
 	accessTokenStore,
@@ -10,7 +9,6 @@ import {
 export interface LoginRequest {
 	login: string;
 	password: string;
-	__mock?: boolean;
 }
 
 export interface RegisterRequest {
@@ -19,23 +17,15 @@ export interface RegisterRequest {
 	email: string;
 	password: string;
 	role: 'CUSTOMER' | 'SELLER';
-	__mock?: boolean;
 }
 
 /**
  * API: Авторизация пользователя
- * Если __mock=true, использует mock client
- * Иначе отправляет реальный запрос на сервер
+ * POST /api/auth/login
  */
 export const loginUser = async (
 	data: LoginRequest,
 ): Promise<ApiResponse<User>> => {
-	if (data.__mock) {
-		// Mock режим
-		return mockLogin(data.login, data.password);
-	}
-
-	// Реальный API запрос
 	const response = await apiClient.post<LoginResponse>('/auth/login', {
 		login: data.login,
 		password: data.password,
@@ -63,18 +53,11 @@ export const loginUser = async (
 
 /**
  * API: Регистрация нового пользователя
- * Если __mock=true, использует mock client
- * Иначе отправляет реальный запрос на сервер
+ * POST /api/auth/register
  */
 export const registerUser = async (
 	data: RegisterRequest,
 ): Promise<ApiResponse<{ message: string }>> => {
-	if (data.__mock) {
-		// Mock режим
-		return mockRegister(data);
-	}
-
-	// Реальный API запрос
 	return apiClient.post<{ message: string }>('/auth/register', {
 		name: data.name,
 		phone: data.phone,
@@ -86,6 +69,7 @@ export const registerUser = async (
 
 /**
  * API: Выход из системы
+ * POST /api/auth/logout
  */
 export const logoutUser = async (): Promise<ApiResponse<void>> => {
 	const response = await apiClient.post<void>('/auth/logout');

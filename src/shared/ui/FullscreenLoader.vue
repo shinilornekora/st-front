@@ -1,5 +1,9 @@
 <template>
-	<aside :class="[$style.full, type && $style[type]]" aria-busy="true" role="alert">
+	<aside
+		:class="[$style.full, type && $style[type]]"
+		aria-busy="true"
+		role="alert"
+	>
 		<span :class="$style.inner">
 			<slot><span :class="$style.spinner" /></slot>
 		</span>

@@ -295,6 +295,7 @@ export default {
 		applicationApproved: 'Application approved',
 		applicationRejected: 'Application rejected',
 		itemAddedToCart: 'Item successfully added to cart',
+		productDeleted: 'Product successfully deleted',
 	},
 	mockData: {
 		fasteners: {

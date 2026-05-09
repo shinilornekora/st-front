@@ -31,7 +31,6 @@
 </template>
 
 <script setup lang="ts">
-
 	type Option = { value: string | number; label: string };
 	const props = defineProps<{
 		options: Option[];

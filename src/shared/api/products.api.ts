@@ -1,35 +1,26 @@
-import {
-	mockGetProducts,
-	mockGetProductById,
-	mockGetSimilarProducts,
-} from './mockClient/products.mock';
 import type { Product } from '@entities/product/product.types';
 import { apiClient, type ApiResponse } from './client';
 import { i18n } from '@shared/i18n';
 
 export interface GetProductsRequest {
 	count?: number;
-	__mock?: boolean;
 }
 
 export interface GetProductByIdRequest {
 	id: number;
-	__mock?: boolean;
 }
 
 export interface GetSimilarProductsRequest {
 	productId: number;
 	count?: number;
-	__mock?: boolean;
 }
 
+/**
+ * GET /api/products
+ */
 export const getProducts = async (
 	params: GetProductsRequest = {},
 ): Promise<ApiResponse<Product[]>> => {
-	if (params.__mock) {
-		return mockGetProducts(params.count);
-	}
-
 	const response = await apiClient.get<{ products: Product[] }>(
 		`/products?count=${params.count || 250}`,
 	);
@@ -47,13 +38,12 @@ export const getProducts = async (
 	};
 };
 
+/**
+ * GET /api/products/{id}
+ */
 export const getProductById = async (
 	params: GetProductByIdRequest,
 ): Promise<ApiResponse<Product>> => {
-	if (params.__mock) {
-		return mockGetProductById(params.id);
-	}
-
 	const response = await apiClient.get<{ product: Product }>(
 		`/products/${params.id}`,
 	);
@@ -71,13 +61,12 @@ export const getProductById = async (
 	};
 };
 
+/**
+ * GET /api/products/{productId}/similar
+ */
 export const getSimilarProducts = async (
 	params: GetSimilarProductsRequest,
 ): Promise<ApiResponse<Product[]>> => {
-	if (params.__mock) {
-		return mockGetSimilarProducts(params.productId, params.count);
-	}
-
 	const response = await apiClient.get<{ products: Product[] }>(
 		`/products/${params.productId}/similar?count=${params.count || 5}`,
 	);

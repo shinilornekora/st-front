@@ -9,7 +9,6 @@
 </template>
 
 <script setup lang="ts">
-
 	defineProps<{
 		forId?: string;
 		required?: boolean;

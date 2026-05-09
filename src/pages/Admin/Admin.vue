@@ -327,7 +327,6 @@
 		try {
 			const response = await getSellersDashboard({
 				period: revenuePeriod.value as 'month' | 'quarter' | 'year',
-				__mock: true,
 			});
 
 			if (response.success && response.data) {
@@ -349,7 +348,7 @@
 		applicationsError.value = null;
 
 		try {
-			const response = await getApplications({ __mock: true });
+			const response = await getApplications();
 
 			if (response.success && response.data) {
 				applications.value = response.data;
@@ -373,7 +372,6 @@
 			const response = await updateApplicationStatus({
 				id,
 				status: 'approved',
-				__mock: true,
 			});
 
 			if (response.success) {
@@ -400,7 +398,6 @@
 			const response = await updateApplicationStatus({
 				id,
 				status: 'rejected',
-				__mock: true,
 			});
 
 			if (response.success) {

@@ -3,9 +3,7 @@
  * API для работы с заявками продавцов
  */
 
-import { mockClient } from './mockClient/client';
 import { apiClient, type ApiResponse } from './client';
-import { i18n } from '@shared/i18n';
 
 // Types
 export interface Application {
@@ -16,80 +14,30 @@ export interface Application {
 	status: 'pending' | 'approved' | 'rejected';
 }
 
-export interface GetApplicationsRequest {
-	__mock?: boolean;
-}
-
 export interface UpdateApplicationStatusRequest {
 	id: number;
 	status: 'approved' | 'rejected';
-	__mock?: boolean;
 }
-
-// Mock data generator
-const generateMockApplications = (): Application[] => {
-	return [
-		{
-			id: 1,
-			name: 'Stivalli',
-			phone: '+7 123 456 78 90',
-			email: 'Stivalli@mail.ru',
-			status: 'pending',
-		},
-		{
-			id: 2,
-			name: 'Fashion House',
-			phone: '+7 987 654 32 10',
-			email: 'fashion@mail.ru',
-			status: 'pending',
-		},
-		{
-			id: 3,
-			name: 'Style Co',
-			phone: '+7 555 123 45 67',
-			email: 'style@mail.ru',
-			status: 'pending',
-		},
-	];
-};
 
 /**
  * Получить список заявок
+ * GET /api/admin/applications
  */
-export const getApplications = async (
-	params: GetApplicationsRequest = {},
-): Promise<ApiResponse<Application[]>> => {
-	if (params.__mock) {
-		return mockClient.get(() => generateMockApplications());
-	}
-
-	const response = await apiClient.get<Application[]>('/admin/applications');
-
-	return response;
+export const getApplications = async (): Promise<
+	ApiResponse<Application[]>
+> => {
+	return apiClient.get<Application[]>('/admin/applications');
 };
 
 /**
  * Обновить статус заявки
+ * PATCH /api/admin/applications/{id}/status
  */
 export const updateApplicationStatus = async (
 	params: UpdateApplicationStatusRequest,
 ): Promise<ApiResponse<{ message: string }>> => {
-	if (params.__mock) {
-		return mockClient.post(
-			(data) => ({
-				message:
-					data.status === 'approved'
-						? i18n.global.t('messages.applicationApproved')
-						: i18n.global.t('messages.applicationRejected'),
-			}),
-			params,
-		);
-	}
-
-	const response = await apiClient.patch<{ message: string }>(
+	return apiClient.patch<{ message: string }>(
 		`/admin/applications/${params.id}/status`,
 		{ status: params.status },
 	);
-
-	return response;
 };

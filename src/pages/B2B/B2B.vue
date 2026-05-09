@@ -379,7 +379,13 @@
 	import { useI18n } from 'vue-i18n';
 	import { useRoute } from 'vue-router';
 	import { Header, Footer } from '../../widgets';
-	import { getAnalyticsDashboard, getSellerProducts } from '@shared/api';
+	import {
+		getAnalyticsDashboard,
+		getSellerProducts,
+		createSellerProduct,
+		updateSellerProduct,
+		deleteSellerProduct,
+	} from '@shared/api';
 	import type { AnalyticsDashboard, ProductListItem } from '@shared/api';
 	import {
 		$previewFormData,
@@ -494,7 +500,6 @@
 		try {
 			const response = await getAnalyticsDashboard({
 				period: revenuePeriod.value as 'month' | 'quarter' | 'year',
-				__mock: true,
 			});
 
 			if (response.success && response.data) {
@@ -513,7 +518,6 @@
 		try {
 			const response = await getAnalyticsDashboard({
 				period: productsPeriod.value as 'month' | 'quarter' | 'year',
-				__mock: true,
 			});
 
 			if (response.success && response.data) {
@@ -532,7 +536,6 @@
 		try {
 			const response = await getAnalyticsDashboard({
 				period: revenuePeriod.value as 'month' | 'quarter' | 'year',
-				__mock: true,
 			});
 
 			if (response.success && response.data) {
@@ -551,7 +554,7 @@
 	const loadProducts = async () => {
 		isLoadingProducts.value = true;
 		try {
-			const response = await getSellerProducts({ __mock: true });
+			const response = await getSellerProducts();
 
 			if (response.success && response.data) {
 				products.value = response.data;
@@ -624,38 +627,81 @@
 		editingProduct.value = null;
 	};
 
-	const handleModalSave = (data: any) => {
-		console.log('Product data saved:', data);
-
+	const handleModalSave = async (data: any) => {
 		if (editingProduct.value) {
 			// Редактирование существующего товара
-			const index = products.value.findIndex(
-				(p) => p.id === editingProduct.value?.id,
-			);
-			if (index !== -1 && products.value[index]) {
-				const currentProduct = products.value[index];
-				products.value[index] = {
-					id: currentProduct.id,
-					name: data.name || currentProduct.name,
-					article: data.article || currentProduct.article,
-					price: parseFloat(data.price) || currentProduct.price,
-				};
-				console.log('Product updated:', products.value[index]);
+			const response = await updateSellerProduct({
+				id: editingProduct.value.id,
+				name: data.name || undefined,
+				article: data.article || undefined,
+				price: parseFloat(data.price) || undefined,
+				discountPrice: data.discountPrice
+					? parseFloat(data.discountPrice)
+					: undefined,
+				composition: data.composition || undefined,
+				gender: data.gender || undefined,
+				sizes: buildSizesArray(data.sizes),
+				colors: buildColorsArray(data.colors),
+			});
+
+			if (response.success && response.data) {
+				const index = products.value.findIndex(
+					(p) => p.id === editingProduct.value?.id,
+				);
+				if (index !== -1) {
+					products.value[index] = response.data;
+				}
+			} else {
+				console.error('Failed to update product:', response.error);
 			}
 		} else {
-			// Создаем новый товар для добавления в таблицу
-			const newProduct: ProductListItem = {
-				id: products.value.length + 1,
+			// Создание нового товара
+			const response = await createSellerProduct({
 				name: data.name || 'Новый товар',
 				article: data.article || 'ART-' + (products.value.length + 1),
 				price: parseFloat(data.price) || 0,
-			};
+				discountPrice: data.discountPrice
+					? parseFloat(data.discountPrice)
+					: undefined,
+				composition: data.composition || undefined,
+				gender: data.gender || undefined,
+				sizes: buildSizesArray(data.sizes),
+				colors: buildColorsArray(data.colors),
+			});
 
-			// Добавляем товар в начало списка
-			products.value = [newProduct, ...products.value];
-
-			console.log('Product added to list:', newProduct);
+			if (response.success && response.data) {
+				products.value = [response.data, ...products.value];
+			} else {
+				console.error('Failed to create product:', response.error);
+			}
 		}
+	};
+
+	// Helpers to convert checkbox objects to string arrays
+	const buildSizesArray = (sizes: {
+		small?: boolean;
+		medium?: boolean;
+		large?: boolean;
+	}): string[] => {
+		if (!sizes) return [];
+		const result: string[] = [];
+		if (sizes.small) result.push('small');
+		if (sizes.medium) result.push('medium');
+		if (sizes.large) result.push('large');
+		return result;
+	};
+
+	const buildColorsArray = (colors: {
+		white?: boolean;
+		black?: boolean;
+		red?: boolean;
+	}): string[] => {
+		if (!colors) return [];
+		const result: string[] = [];
+		if (colors.white) result.push('white');
+		if (colors.black) result.push('black');
+		if (colors.red) result.push('red');
+		return result;
 	};
 
 	const handleEdit = () => {
@@ -671,15 +717,19 @@
 		}
 	};
 
-	const handleDelete = () => {
+	const handleDelete = async () => {
 		if (!selectedProductId.value) return;
-		console.log('Delete product clicked:', selectedProductId.value);
 
-		// Удаляем товар из списка
-		products.value = products.value.filter(
-			(p) => p.id !== selectedProductId.value,
-		);
-		selectedProductId.value = null;
+		const idToDelete = selectedProductId.value;
+
+		const response = await deleteSellerProduct({ id: idToDelete });
+
+		if (response.success) {
+			products.value = products.value.filter((p) => p.id !== idToDelete);
+			selectedProductId.value = null;
+		} else {
+			console.error('Failed to delete product:', response.error);
+		}
 	};
 
 	// Dragging functionality

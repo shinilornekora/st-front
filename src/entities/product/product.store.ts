@@ -12,7 +12,7 @@ export const setPreviewFormData = createEvent<Record<string, unknown>>();
 export const clearPreviewFormData = createEvent();
 
 export const getProductsFx = createEffect<void, Product[]>(async () => {
-	const response = await getProducts({ __mock: true });
+	const response = await getProducts();
 
 	if (!response.success) {
 		throw new Error(

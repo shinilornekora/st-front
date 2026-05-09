@@ -14,7 +14,6 @@
 	</button>
 </template>
 <script setup lang="ts">
-
 	defineEmits<{
 		click: [];
 	}>();

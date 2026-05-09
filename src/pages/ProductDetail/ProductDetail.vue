@@ -574,9 +574,8 @@
 				if (!product.value.id || product.value.id !== productId) {
 					isLoading.value = true;
 					const productResponse = await getProductById({
-						id: productId,
-						__mock: true,
-					});
+							id: productId,
+						});
 
 					if (productResponse.success && productResponse.data) {
 						product.value = productResponse.data;
@@ -588,8 +587,8 @@
 				// This happens in the background while basic product info is already displayed
 				const loadAdditionalData = async () => {
 					const [similarResponse] = await Promise.all([
-						getSimilarProducts({ productId, __mock: true }),
-					]);
+							getSimilarProducts({ productId }),
+						]);
 
 					// Extract available colors from tags
 					const colorNames = [

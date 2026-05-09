@@ -233,7 +233,9 @@
 	const activeTooltip = ref<string | null>(null);
 	const containerRef = ref<HTMLElement | null>(null);
 	const showFiltersTooltip = ref(false);
-	const filtersTooltipTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
+	const filtersTooltipTimeout = ref<ReturnType<typeof setTimeout> | null>(
+		null,
+	);
 	const shouldCompressFilters = ref(false);
 	const formRef = ref<HTMLElement | null>(null);
 	const filterChipsRef = ref<HTMLElement | null>(null);

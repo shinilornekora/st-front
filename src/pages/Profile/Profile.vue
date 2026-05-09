@@ -712,13 +712,12 @@
 			if (isRegisterMode.value) {
 				// Регистрация покупателя
 				const response = await registerUser({
-					name: customerName.value,
-					phone: customerPhone.value,
-					email: customerEmail.value,
-					password: customerPassword.value,
-					role: 'CUSTOMER',
-					__mock: true, // TODO: убрать когда будет реальный API
-				});
+						name: customerName.value,
+						phone: customerPhone.value,
+						email: customerEmail.value,
+						password: customerPassword.value,
+						role: 'CUSTOMER',
+					});
 
 				if (response.success && response.data) {
 					// Показываем сообщение об успешной регистрации
@@ -730,13 +729,12 @@
 			} else if (isSellerMode.value) {
 				// Регистрация продавца
 				const response = await registerUser({
-					name: sellerName.value,
-					phone: sellerPhone.value,
-					email: sellerEmail.value,
-					password: sellerPassword.value,
-					role: 'SELLER',
-					__mock: true, // TODO: убрать когда будет реальный API
-				});
+						name: sellerName.value,
+						phone: sellerPhone.value,
+						email: sellerEmail.value,
+						password: sellerPassword.value,
+						role: 'SELLER',
+					});
 
 				if (response.success) {
 					// Показываем success alert для продавца
@@ -746,10 +744,9 @@
 			} else {
 				// Вход в систему
 				const response = await loginUser({
-					login: login.value,
-					password: password.value,
-					__mock: true, // TODO: убрать когда будет реальный API
-				});
+						login: login.value,
+						password: password.value,
+					});
 
 				if (response.success && response.data) {
 					// Сохраняем пользователя в store
