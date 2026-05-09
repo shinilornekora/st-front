@@ -432,6 +432,7 @@
 	import { createDiscountRequest } from '@shared/api/discountRequest.api';
 	import {
 		$previewProduct,
+		$previewFormData,
 		clearPreviewProduct,
 	} from '@entities/product/product.store';
 	import { isUserAuthenticated } from '@shared/utils/auth';
@@ -455,6 +456,7 @@
 	const route = useRoute();
 	const router = useRouter();
 	const previewProduct = useStore($previewProduct);
+	const previewFormData = useStore($previewFormData);
 
 	const isLoading = ref(false);
 	const isPreviewMode = ref(false);
@@ -537,18 +539,116 @@
 				},
 	);
 
-	const characteristics = ref<Array<{ label: string; value: string }>>([]);
-	const additionalInfo = ref<Array<{ label: string; value: string }>>([]);
+	type DetailRow = { label: string; value: string };
+
+	const extractMaterialFromTags = (tags: Product['tags']): string => {
+		const materialTag = tags.find((tag) => tag.id?.startsWith('material-'));
+		return materialTag?.name ?? '';
+	};
+
+	const mapGenderLabel = (gender: Product['gender']): string => {
+		if (gender === 'male') return t('filters.male');
+		if (gender === 'female') return t('filters.female');
+		return t('filters.unisex');
+	};
+
+	const buildMainCharacteristics = (): DetailRow[] => {
+		const rows: DetailRow[] = [];
+		const fallbackColor = availableColors.value[0]?.label ?? '';
+		const resolvedColor = selectedColorLabel.value || fallbackColor;
+		const previewComposition =
+			typeof previewFormData.value?.composition === 'string'
+				? previewFormData.value.composition
+				: '';
+		const composition =
+			previewComposition ||
+			extractMaterialFromTags(product.value.tags) ||
+			product.value.description;
+
+		if (resolvedColor) {
+			rows.push({ label: t('product.details.color'), value: resolvedColor });
+		}
+		if (composition) {
+			rows.push({ label: t('product.details.composition'), value: composition });
+		}
+
+		rows.push({
+			label: t('product.details.gender'),
+			value: mapGenderLabel(product.value.gender),
+		});
+
+		if (product.value.seller?.name) {
+			rows.push({
+				label: t('product.details.manufacturer'),
+				value: product.value.seller.name,
+			});
+		}
+
+		return rows;
+	};
+
+	const buildAdditionalInfo = (): DetailRow[] => {
+		const previewAdditionalInfo =
+			previewFormData.value &&
+			typeof previewFormData.value === 'object' &&
+			'additionalInfo' in previewFormData.value
+				? (previewFormData.value.additionalInfo as unknown)
+				: undefined;
+		const additionalInfoSource =
+			previewAdditionalInfo ?? product.value.additionalInfo;
+		if (
+			additionalInfoSource &&
+			typeof additionalInfoSource === 'object' &&
+			!Array.isArray(additionalInfoSource)
+		) {
+			const fromRecord = Object.entries(additionalInfoSource)
+				.map(([label, value]) => ({
+					label: String(label).trim(),
+					value: String(value).trim(),
+				}))
+				.filter((row) => row.label.length > 0 && row.value.length > 0);
+			if (fromRecord.length > 0) {
+				return fromRecord;
+			}
+		}
+
+		const rows: DetailRow[] = [];
+		const sizes = product.value.sizes.join(', ');
+		const categories = product.value.category.map((item) => item.name).join(', ');
+		const stockValue =
+			product.value.stockStatus === 'in_stock'
+				? t('product.inStock')
+				: t('product.preOrder');
+
+		if (sizes) {
+			rows.push({ label: t('product.details.availableSizes'), value: sizes });
+		}
+		rows.push({ label: t('product.details.stockStatus'), value: stockValue });
+		if (categories) {
+			rows.push({ label: t('product.details.categories'), value: categories });
+		}
+		if (typeof product.value.seller?.rating === 'number') {
+			rows.push({
+				label: t('product.details.sellerRating'),
+				value: product.value.seller.rating.toFixed(1),
+			});
+		}
+
+		return rows;
+	};
+
+	const characteristics = computed<DetailRow[]>(() => buildMainCharacteristics());
+	const additionalInfo = computed<DetailRow[]>(() => buildAdditionalInfo());
 	const similarProducts = ref<Product[]>([]);
 
 	const displayedImages = computed(() => {
-		if (
-			selectedColorKey.value &&
-			colorImageMap.value[selectedColorKey.value]?.length
-		) {
-			return colorImageMap.value[selectedColorKey.value];
+		const selectedColorImages = selectedColorKey.value
+			? colorImageMap.value[selectedColorKey.value]
+			: undefined;
+		if (selectedColorImages && selectedColorImages.length > 0) {
+			return selectedColorImages;
 		}
-		return product.value.images;
+		return product.value.images ?? [];
 	});
 
 	const currentImage = computed(
@@ -619,14 +719,66 @@
 				// Use preview product from Effector store (create mutable copy)
 				product.value = { ...previewProduct.value } as Product;
 
-				// Load mock characteristics for preview
-				const { mockData } = await import('../../shared/lib/mockData');
-				characteristics.value = mockData.generateCharacteristics(
-					'натуральная кожа',
-					'черный',
-					'Stivalli',
+				const translatedColorToKey = new Map(
+					colorKeys.map((key) => [t(`filters.colors.${key}`), key]),
 				);
-				additionalInfo.value = mockData.generateAdditionalInfo();
+				const extractedColorKeys = [
+					...new Set(
+						product.value.tags
+							.map((tag) => {
+								if (tag.id?.startsWith('color-')) {
+									return tag.id.replace('color-', '').toLowerCase();
+								}
+								const normalizedName = tag.name?.toLowerCase();
+								return translatedColorToKey.get(normalizedName);
+							})
+							.filter(
+								(
+									colorKey,
+								): colorKey is (typeof colorKeys)[number] =>
+									Boolean(
+										colorKey &&
+											colorKeys.includes(
+												colorKey as (typeof colorKeys)[number],
+											),
+									),
+							),
+					),
+				];
+				availableColors.value = extractedColorKeys.map((key) => ({
+					key,
+					label: getColorLabel(key),
+				}));
+				availableSizes.value = product.value.sizes || [];
+				const previewFirstColor = availableColors.value[0];
+				if (previewFirstColor) {
+					selectedColorKey.value = previewFirstColor.key;
+				}
+				if (availableSizes.value.length > 0 && availableSizes.value[0]) {
+					selectedSize.value = availableSizes.value[0];
+				}
+
+				if (
+					extractedColorKeys.length > 0 &&
+					product.value.images.length > extractedColorKeys.length
+				) {
+					const imagesPerColor = Math.max(
+						1,
+						Math.floor(product.value.images.length / extractedColorKeys.length),
+					);
+					const nextMap: Record<string, string[]> = {};
+					extractedColorKeys.forEach((colorKey, index) => {
+						const start = index * imagesPerColor;
+						const end =
+							index === extractedColorKeys.length - 1
+								? product.value.images.length
+								: start + imagesPerColor;
+						nextMap[colorKey] = product.value.images.slice(start, end);
+					});
+					colorImageMap.value = nextMap;
+				} else {
+					colorImageMap.value = {};
+				}
 
 				// Don't clear preview data yet - we need it for back navigation
 				return;
@@ -721,8 +873,9 @@
 					availableSizes.value = product.value.sizes || [];
 
 					// Set initial selected color
-					if (availableColors.value.length > 0) {
-						selectedColorKey.value = availableColors.value[0].key;
+					const firstColor = availableColors.value[0];
+					if (firstColor) {
+						selectedColorKey.value = firstColor.key;
 					}
 					if (
 						availableSizes.value.length > 0 &&
@@ -730,36 +883,6 @@
 					) {
 						selectedSize.value = availableSizes.value[0];
 					}
-
-					// Generate characteristics based on product data
-					const material =
-						product.value.tags.find(
-							(tag) =>
-								tag.name.includes(
-									t('mockData.materials.naturalLeather'),
-								) ||
-								tag.name.includes(
-									t('mockData.materials.suede'),
-								) ||
-								tag.name.includes(
-									t('mockData.materials.nubuck'),
-								),
-						)?.name || t('mockData.materials.naturalLeather');
-					const color =
-						selectedColorLabel.value ||
-						availableColors.value[0]?.label ||
-						t('filters.colors.black');
-					const brand = product.value.seller.name;
-
-					// Import and generate characteristics
-					const { mockData } =
-						await import('../../shared/lib/mockData');
-					characteristics.value = mockData.generateCharacteristics(
-						material,
-						color,
-						brand,
-					);
-					additionalInfo.value = mockData.generateAdditionalInfo();
 
 					// Set similar products
 					if (similarResponse.success && similarResponse.data) {

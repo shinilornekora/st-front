@@ -1,6 +1,18 @@
 import { json, noContent } from '../lib/http.mjs';
 
 export const handleUserRoute = ({ res, method, pathname, body, state }) => {
+	if (method === 'GET' && pathname === '/api/users/me/settings') {
+		const user = state.getCurrentUser();
+		const current = state.userSettings.get(user.id) ?? {
+			notifications: true,
+			email: true,
+			marketing: false,
+			analytics: true,
+		};
+		json(res, 200, current);
+		return true;
+	}
+
 	if (method === 'DELETE' && pathname === '/api/users/me') {
 		noContent(res);
 		return true;

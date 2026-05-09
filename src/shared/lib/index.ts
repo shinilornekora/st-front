@@ -1,2 +1,2 @@
 // shared library layer (FSD)
-export * from './mockData';
+export * from './analytics';

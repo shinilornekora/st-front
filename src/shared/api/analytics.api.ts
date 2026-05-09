@@ -28,6 +28,7 @@ export interface ProductListItem {
 	article: string;
 	name: string;
 	price: number;
+	additionalInfo?: Record<string, string>;
 }
 
 export interface AnalyticsDashboard {
@@ -58,6 +59,7 @@ export interface CreateProductRequest {
 	composition?: string;
 	gender?: 'male' | 'female' | 'unisex';
 	images?: string[];
+	additionalInfo?: Record<string, string>;
 }
 
 export interface UpdateProductRequest {
@@ -71,6 +73,7 @@ export interface UpdateProductRequest {
 	composition?: string;
 	gender?: 'male' | 'female' | 'unisex';
 	images?: string[];
+	additionalInfo?: Record<string, string>;
 }
 
 export interface DeleteProductRequest {

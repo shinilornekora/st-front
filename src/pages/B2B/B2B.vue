@@ -379,6 +379,7 @@
 		<AddProductModal
 			:is-open="isAddModalOpen"
 			:edit-data="editingProduct"
+			:initial-form-data="previewFormData"
 			@close="handleModalClose"
 			@save="handleModalSave"
 		/>
@@ -627,9 +628,6 @@
 			// Restore form data
 			editingProduct.value = previewFormData.value.editData || null;
 			isAddModalOpen.value = true;
-
-			// Clear the saved form data
-			clearPreviewFormData();
 		} else {
 			editingProduct.value = null;
 			isAddModalOpen.value = true;
@@ -639,6 +637,7 @@
 	const handleModalClose = () => {
 		isAddModalOpen.value = false;
 		editingProduct.value = null;
+		clearPreviewFormData();
 	};
 
 	const handleModalSave = async (data: any) => {
@@ -656,6 +655,7 @@
 				gender: data.gender || undefined,
 				sizes: buildSizesArray(data.sizes),
 				colors: buildColorsArray(data.colors),
+				additionalInfo: data.additionalInfo || undefined,
 			});
 
 			if (response.success && response.data) {
@@ -681,6 +681,7 @@
 				gender: data.gender || undefined,
 				sizes: buildSizesArray(data.sizes),
 				colors: buildColorsArray(data.colors),
+				additionalInfo: data.additionalInfo || undefined,
 			});
 
 			if (response.success && response.data) {

@@ -42,6 +42,21 @@ const getPeriodChart = (period, metric) => {
 };
 
 const formatTotal = (value) => `${value.toLocaleString('ru-RU')} RUB`;
+const parseAdditionalInfo = (value) => {
+	if (!value || typeof value !== 'object' || Array.isArray(value)) {
+		return undefined;
+	}
+
+	const entries = Object.entries(value)
+		.map(([key, fieldValue]) => [String(key).trim(), String(fieldValue).trim()])
+		.filter(([key, fieldValue]) => key.length > 0 && fieldValue.length > 0);
+
+	if (entries.length === 0) {
+		return undefined;
+	}
+
+	return Object.fromEntries(entries);
+};
 
 export const handleB2bRoute = ({ res, method, pathname, body, state, url }) => {
 	if (method === 'GET' && pathname === '/api/b2b/analytics/dashboard') {
@@ -115,6 +130,7 @@ export const handleB2bRoute = ({ res, method, pathname, body, state, url }) => {
 			article: body?.article ?? `B2B-${String(newId).padStart(4, '0')}`,
 			name: body?.name ?? `B2B Product #${newId}`,
 			price: Number(body?.price ?? 0),
+			additionalInfo: parseAdditionalInfo(body?.additionalInfo),
 		};
 		state.b2bProducts.push(created);
 		json(res, 200, created);
@@ -131,7 +147,13 @@ export const handleB2bRoute = ({ res, method, pathname, body, state, url }) => {
 		}
 
 		if (method === 'PUT') {
-			state.b2bProducts[index] = { ...state.b2bProducts[index], ...body, id };
+			const { additionalInfo: nextAdditionalInfo, ...restBody } = body ?? {};
+			state.b2bProducts[index] = {
+				...state.b2bProducts[index],
+				...restBody,
+				id,
+				additionalInfo: parseAdditionalInfo(nextAdditionalInfo),
+			};
 			json(res, 200, state.b2bProducts[index]);
 			return true;
 		}

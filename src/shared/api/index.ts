@@ -87,7 +87,13 @@ export { submitSellerApplication } from './sellerApplication.api';
 export type { SubmitSellerApplicationRequest } from './sellerApplication.api';
 
 // User API
-export { deleteAccount, saveRequisites, saveSettings } from './user.api';
+export {
+	deleteAccount,
+	saveRequisites,
+	saveSettings,
+	getSettings,
+	DEFAULT_USER_SETTINGS,
+} from './user.api';
 export type { Requisites, UserSettings } from './user.api';
 
 // Discount Request API

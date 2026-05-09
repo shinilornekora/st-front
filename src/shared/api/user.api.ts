@@ -16,6 +16,13 @@ export interface UserSettings {
 	analytics: boolean;
 }
 
+export const DEFAULT_USER_SETTINGS: UserSettings = {
+	notifications: true,
+	email: true,
+	marketing: false,
+	analytics: true,
+};
+
 export const deleteAccount = async (): Promise<ApiResponse<void>> => {
 	return apiClient.delete<void>('/users/me');
 };
@@ -30,4 +37,8 @@ export const saveSettings = async (
 	data: UserSettings,
 ): Promise<ApiResponse<UserSettings>> => {
 	return apiClient.patch<UserSettings>('/users/me/settings', data);
+};
+
+export const getSettings = async (): Promise<ApiResponse<UserSettings>> => {
+	return apiClient.get<UserSettings>('/users/me/settings');
 };

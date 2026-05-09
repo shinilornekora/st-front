@@ -372,7 +372,8 @@ null
 ```json
 {
   "query": {
-    "period": "month | quarter | year"
+    "period": "month | quarter | year",
+    "growthPeriod": "month | quarter | year (optional, по умолчанию равен period)"
   }
 }
 ```
@@ -449,8 +450,7 @@ null
       "sold": 0,
       "revenue": 0,
       "dynamics": "string",
-      "stock": 0,
-      "imageUrl": "string"
+      "stock": 0
     }
   ]
 }
@@ -473,7 +473,10 @@ null
     "id": 1,
     "article": "string",
     "name": "string",
-    "price": 0
+    "price": 0,
+    "additionalInfo": {
+      "string": "string"
+    }
   }
 ]
 ```
@@ -495,7 +498,10 @@ null
     "colors": ["white", "black", "red"],
     "composition": "string",
     "gender": "male | female | unisex",
-    "images": ["string"]
+    "images": ["string"],
+    "additionalInfo": {
+      "string": "string"
+    }
   }
 }
 ```
@@ -506,7 +512,10 @@ null
   "id": 1,
   "article": "string",
   "name": "string",
-  "price": 0
+  "price": 0,
+  "additionalInfo": {
+    "string": "string"
+  }
 }
 ```
 
@@ -530,7 +539,10 @@ null
     "colors": ["white", "black", "red"],
     "composition": "string",
     "gender": "male | female | unisex",
-    "images": ["string"]
+    "images": ["string"],
+    "additionalInfo": {
+      "string": "string"
+    }
   }
 }
 ```
@@ -541,7 +553,10 @@ null
   "id": 1,
   "article": "string",
   "name": "string",
-  "price": 0
+  "price": 0,
+  "additionalInfo": {
+    "string": "string"
+  }
 }
 ```
 
@@ -847,8 +862,7 @@ null
   "currency": "string",
   "status": "PAID | PENDING | CANCELLED | REFUNDED",
   "customer": { "id": "number", "fullName": "string", "email": "string", "phone": "string" },
-  "seller": { "id": "number", "name": "string" },
-  "paymentInfo": {}
+  "seller": { "id": "number", "name": "string" }
 }
 ```
 
@@ -953,6 +967,28 @@ null
   "bik": "string",
   "account": "string",
   "fullName": "string"
+}
+```
+
+---
+
+## [`GET /api/users/me/settings`](src/shared/api/user.api.ts)
+**Что делает:** возвращает текущие пользовательские настройки (для гидрации UI).
+
+**Auth:** Bearer token required
+
+**Request**
+```json
+{}
+```
+
+**Response**
+```json
+{
+  "notifications": "boolean",
+  "email": "boolean",
+  "marketing": "boolean",
+  "analytics": "boolean"
 }
 ```
 

@@ -1,4 +1,5 @@
 import { createStore, createEvent } from 'effector';
+import { $userSettings } from '@entities/user/settings.store';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -17,17 +18,32 @@ export const $toast = createStore<{
 	type: 'success',
 })
 	.on(showToast, (_, payload) => {
-		if (typeof payload === 'string') {
+		const nextToast =
+			typeof payload === 'string'
+				? {
+						show: true,
+						message: payload,
+						type: 'success' as ToastType,
+					}
+				: {
+						show: true,
+						message: payload.message,
+						type: payload.type || 'success',
+					};
+
+		// Notifications setting controls non-critical in-app notices.
+		if (nextToast.type !== 'error' && !$userSettings.getState().notifications) {
 			return {
-				show: true,
-				message: payload,
-				type: 'success' as ToastType,
+				show: false,
+				message: '',
+				type: nextToast.type,
 			};
 		}
+
 		return {
 			show: true,
-			message: payload.message,
-			type: payload.type || 'success',
+			message: nextToast.message,
+			type: nextToast.type,
 		};
 	})
 	.on(hideToast, (state) => ({ ...state, show: false }));

@@ -20,6 +20,7 @@ export interface Product {
 		logo?: string;
 		rating?: number;
 	};
+	additionalInfo?: Record<string, string>;
 	isFavorite?: boolean;
 }
 export interface Category {

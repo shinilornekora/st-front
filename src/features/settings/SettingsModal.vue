@@ -40,10 +40,10 @@
 					>
 						<div :class="$style.settingInfo">
 							<div :class="$style.settingLabel">
-								{{ setting.label }}
+								{{ getSettingLabel(setting.id) }}
 							</div>
 							<div :class="$style.settingDescription">
-								{{ setting.description }}
+								{{ getSettingDescription(setting.id) }}
 							</div>
 						</div>
 						<Switch v-model="setting.enabled" />
@@ -55,9 +55,10 @@
 						<Button
 							type="accent"
 							:class="$style.saveButton"
+							:disabled="props.loading"
 							@click="handleSave"
 						>
-							{{ t('settings.save') }}
+							{{ props.loading ? t('common.loading') : t('settings.save') }}
 						</Button>
 						<button
 							:class="$style.logoutLink"
@@ -84,27 +85,31 @@
 </template>
 
 <script setup lang="ts">
-	import { ref } from 'vue';
+	import { ref, watch } from 'vue';
 	import { useI18n } from 'vue-i18n';
 	import { Switch, Button } from '@shared/ui';
 	import { LanguageSwitcher } from '@features/language';
 	import crossIcon from '@assets/cross.svg';
 	import quitIcon from '@assets/quit.svg';
+	import type { UserSettings } from '@shared/api/user.api';
 
 	const { t } = useI18n();
 
 	interface Setting {
 		id: string;
-		label: string;
-		description: string;
 		enabled: boolean;
 	}
 
 	interface Props {
 		modelValue: boolean;
+		settings?: UserSettings;
+		loading?: boolean;
 	}
 
-	const props = defineProps<Props>();
+	const props = withDefaults(defineProps<Props>(), {
+		settings: undefined,
+		loading: false,
+	});
 	const emit = defineEmits([
 		'update:modelValue',
 		'save',
@@ -116,36 +121,64 @@
 	const settings = ref<Setting[]>([
 		{
 			id: 'notifications',
-			label: 'Label',
-			description: 'Description',
 			enabled: true,
 		},
 		{
 			id: 'email',
-			label: 'Label',
-			description: 'Description',
 			enabled: true,
 		},
 		{
 			id: 'marketing',
-			label: 'Label',
-			description: 'Description',
 			enabled: false,
 		},
 		{
 			id: 'analytics',
-			label: 'Label',
-			description: 'Description',
 			enabled: true,
 		},
 	]);
+
+	const syncSettingsFromProps = () => {
+		const source = props.settings;
+		if (!source) return;
+		settings.value = [
+			{ id: 'notifications', enabled: source.notifications },
+			{ id: 'email', enabled: source.email },
+			{ id: 'marketing', enabled: source.marketing },
+			{ id: 'analytics', enabled: source.analytics },
+		];
+	};
+
+	watch(
+		() => [props.modelValue, props.settings] as const,
+		([isOpen, nextSettings]) => {
+			if (isOpen && nextSettings) {
+				syncSettingsFromProps();
+			}
+		},
+		{ immediate: true, deep: true },
+	);
+
+	const getSettingLabel = (id: string) => t(`settings.items.${id}.label`);
+	const getSettingDescription = (id: string) =>
+		t(`settings.items.${id}.description`);
 
 	const close = () => {
 		emit('update:modelValue', false);
 	};
 
 	const handleSave = () => {
-		emit('save', settings.value);
+		const payload: UserSettings = {
+			notifications:
+				settings.value.find((s) => s.id === 'notifications')?.enabled ??
+				true,
+			email: settings.value.find((s) => s.id === 'email')?.enabled ?? true,
+			marketing:
+				settings.value.find((s) => s.id === 'marketing')?.enabled ??
+				false,
+			analytics:
+				settings.value.find((s) => s.id === 'analytics')?.enabled ?? true,
+		};
+		emit('save', payload);
 		close();
 	};
 

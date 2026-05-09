@@ -5,6 +5,8 @@
 		<!-- Settings Modal -->
 		<SettingsModal
 			v-model="showSettingsModal"
+			:settings="userSettings"
+			:loading="userSettingsLoading"
 			@save="handleSaveSettings"
 			@logout="handleLogout"
 			@delete-account="handleDeleteAccount"
@@ -464,11 +466,7 @@
 	import { RequisitesModal } from '@features/requisites';
 	import { EditProfileModal } from '@features/editProfile';
 	import { loginUser, registerUser } from '@shared/api';
-	import {
-		deleteAccount,
-		saveRequisites,
-		saveSettings,
-	} from '@shared/api/user.api';
+	import { deleteAccount, saveRequisites } from '@shared/api/user.api';
 	import type { UserSettings } from '@shared/api/user.api';
 	import { setUser, resetUser, $user } from '@entities/user/user.store';
 	import {
@@ -481,6 +479,13 @@
 	import { getFavoriteProducts } from '@shared/utils/favorites';
 	import { getRecentlyViewedProducts } from '@shared/utils/recentlyViewed';
 	import { showToast } from '@shared/model';
+	import {
+		$userSettings,
+		$userSettingsLoading,
+		loadUserSettingsFx,
+		saveUserSettingsFx,
+	} from '@entities/user/settings.store';
+	import { trackEvent } from '@shared/lib';
 	import userCircleIcon from '@assets/user_circle.svg';
 	import cardIcon from '@assets/card.svg';
 	import docsIcon from '@assets/docs.svg';
@@ -493,6 +498,8 @@
 	const { t } = useI18n();
 	const router = useRouter();
 	const user = useStore($user);
+	const userSettings = useStore($userSettings);
+	const userSettingsLoading = useStore($userSettingsLoading);
 
 	// Check if user is authenticated
 	const isAuthenticated = ref(false);
@@ -773,10 +780,13 @@
 
 					// Перенаправляем в зависимости от роли
 					if (response.data.role === 'SELLER') {
+						trackEvent('auth_login_success', { role: 'SELLER' });
 						router.push('/b2b');
 					} else if (response.data.role === 'ADMIN') {
+						trackEvent('auth_login_success', { role: 'ADMIN' });
 						router.push('/admin');
 					} else {
+						trackEvent('auth_login_success', { role: 'CUSTOMER' });
 						router.push('/'); // Покупатели на главную
 					}
 				} else {
@@ -883,22 +893,15 @@
 
 	const handleSettings = () => {
 		showSettingsModal.value = true;
+		loadUserSettingsFx().catch(() => {
+			showToast({ message: t('profile.settingsError'), type: 'error' });
+		});
 	};
 
-	const handleSaveSettings = async (settings: any[]) => {
+	const handleSaveSettings = async (settings: UserSettings) => {
 		try {
-			const payload: UserSettings = {
-				notifications:
-					settings.find((s) => s.id === 'notifications')?.enabled ??
-					true,
-				email: settings.find((s) => s.id === 'email')?.enabled ?? true,
-				marketing:
-					settings.find((s) => s.id === 'marketing')?.enabled ??
-					false,
-				analytics:
-					settings.find((s) => s.id === 'analytics')?.enabled ?? true,
-			};
-			await saveSettings(payload);
+			await saveUserSettingsFx(settings);
+			trackEvent('settings_updated', { ...settings });
 			showToast({ message: t('profile.settingsSaved'), type: 'success' });
 		} catch {
 			showToast({ message: t('profile.settingsError'), type: 'error' });

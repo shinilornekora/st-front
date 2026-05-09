@@ -133,6 +133,45 @@
 					/>
 				</div>
 
+				<!-- Дополнительная информация -->
+				<div :class="$style.field">
+					<div :class="$style.additionalInfoHeader">
+						<label :class="$style.label">
+							{{ t('b2b.form.additionalInfo') }}
+						</label>
+						<button
+							type="button"
+							:class="$style.addInfoButton"
+							@click="addAdditionalInfoRow"
+						>
+							{{ t('b2b.form.addInfoField') }}
+						</button>
+					</div>
+					<div
+						v-for="(row, index) in additionalInfoRows"
+						:key="`additional-${index}`"
+						:class="$style.additionalInfoRow"
+					>
+						<Input
+							v-model="row.key"
+							:placeholder="t('b2b.form.placeholders.additionalInfoKey')"
+							:class="$style.input"
+						/>
+						<Input
+							v-model="row.value"
+							:placeholder="t('b2b.form.placeholders.additionalInfoValue')"
+							:class="$style.input"
+						/>
+						<button
+							type="button"
+							:class="$style.removeInfoButton"
+							@click="removeAdditionalInfoRow(index)"
+						>
+							{{ t('common.delete') }}
+						</button>
+					</div>
+				</div>
+
 				<!-- Добавить изображения -->
 				<div :class="$style.field">
 					<label :class="$style.label">{{ t('b2b.form.images') }}</label>
@@ -237,6 +276,7 @@
 	const props = defineProps<{
 		isOpen: boolean;
 		editData?: any;
+		initialFormData?: any;
 	}>();
 
 	const emit = defineEmits<{
@@ -244,7 +284,7 @@
 		save: [data: any];
 	}>();
 
-	const formData = reactive({
+	const createEmptyFormData = () => ({
 		name: '',
 		article: '',
 		price: '',
@@ -263,7 +303,34 @@
 		gender: '',
 		images: [] as File[],
 	});
+	const formData = reactive(createEmptyFormData());
 	const imagePreviews = ref<Array<{ name: string; url: string }>>([]);
+	const additionalInfoRows = ref<Array<{ key: string; value: string }>>([
+		{ key: '', value: '' },
+	]);
+
+	const recordToAdditionalRows = (
+		value: unknown,
+	): Array<{ key: string; value: string }> => {
+		if (!value || typeof value !== 'object' || Array.isArray(value)) {
+			return [{ key: '', value: '' }];
+		}
+		const rows = Object.entries(value)
+			.map(([key, rowValue]) => ({
+				key: String(key),
+				value: String(rowValue),
+			}))
+			.filter((row) => row.key.trim().length > 0);
+
+		return rows.length > 0 ? rows : [{ key: '', value: '' }];
+	};
+
+	const additionalRowsToRecord = (): Record<string, string> => {
+		const entries = additionalInfoRows.value
+			.map((row) => [row.key.trim(), row.value.trim()] as const)
+			.filter(([key, value]) => key.length > 0 && value.length > 0);
+		return Object.fromEntries(entries);
+	};
 
 	const revokeImagePreviews = () => {
 		imagePreviews.value.forEach((preview) => {
@@ -280,39 +347,40 @@
 		}));
 	};
 
-	// Watch for editData changes and populate form
-	watch(
-		() => props.editData,
-		(newData) => {
-			if (newData) {
-				formData.name = newData.name || '';
-				formData.article = newData.article || '';
-				formData.price = newData.price?.toString() || '';
-				formData.discountPrice =
-					newData.discountPrice?.toString() || '';
-				formData.composition = newData.composition || '';
-				formData.gender = newData.gender || '';
+	const applyFormData = (source: any) => {
+		formData.name = source?.name || '';
+		formData.article = source?.article || '';
+		formData.price = source?.price?.toString() || '';
+		formData.discountPrice = source?.discountPrice?.toString() || '';
+		formData.composition = source?.composition || '';
+		formData.gender = source?.gender || '';
+		formData.sizes = source?.sizes
+			? { ...source.sizes }
+			: { small: false, medium: false, large: false };
+		formData.colors = source?.colors
+			? { ...source.colors }
+			: { white: false, black: false, red: false };
+		formData.images = Array.isArray(source?.images)
+			? [...source.images]
+			: [];
+		additionalInfoRows.value = recordToAdditionalRows(source?.additionalInfo);
+		syncImagePreviews(formData.images);
+	};
 
-				// Reset sizes and colors if editing
-				if (newData.sizes) {
-					formData.sizes = { ...newData.sizes };
-				}
-				if (newData.colors) {
-					formData.colors = { ...newData.colors };
-				}
-			} else {
-				// Reset form when no editData (adding new product)
-				formData.name = '';
-				formData.article = '';
-				formData.price = '';
-				formData.discountPrice = '';
-				formData.composition = '';
-				formData.gender = '';
-				formData.sizes = { small: false, medium: false, large: false };
-				formData.colors = { white: false, black: false, red: false };
-				formData.images = [];
+	// Watch for edit data / restored preview data changes and populate form
+	watch(
+		() => [props.initialFormData, props.editData, props.isOpen] as const,
+		([initialFormData, editData, isOpen]) => {
+			if (!isOpen) return;
+			if (initialFormData) {
+				applyFormData(initialFormData);
+				return;
 			}
-			syncImagePreviews(formData.images);
+			if (editData) {
+				applyFormData(editData);
+				return;
+			}
+			applyFormData(createEmptyFormData());
 		},
 		{ immediate: true },
 	);
@@ -340,12 +408,37 @@
 		syncImagePreviews(formData.images);
 	};
 
+	const addAdditionalInfoRow = () => {
+		additionalInfoRows.value.push({ key: '', value: '' });
+	};
+
+	const removeAdditionalInfoRow = (index: number) => {
+		additionalInfoRows.value.splice(index, 1);
+		if (additionalInfoRows.value.length === 0) {
+			additionalInfoRows.value.push({ key: '', value: '' });
+		}
+	};
+
 	const handleSave = () => {
-		emit('save', formData);
+		emit('save', {
+			...formData,
+			additionalInfo: additionalRowsToRecord(),
+		});
 		emit('close');
 	};
 
 	const handlePreview = () => {
+		const selectedSizes = Object.entries(formData.sizes)
+			.filter(([, isSelected]) => Boolean(isSelected))
+			.map(([size]) => size);
+		const selectedColors = Object.entries(formData.colors)
+			.filter(([, isSelected]) => Boolean(isSelected))
+			.map(([color]) => color);
+		const colorTags = selectedColors.map((color) => ({
+			id: `color-${color}`,
+			name: t(`filters.colors.${color}`, color),
+		}));
+
 		// Создаем объект товара из данных формы для превью
 		const previewProduct = {
 			id: props.editData?.id || 999999, // Временный ID для превью
@@ -356,12 +449,12 @@
 			currency: '₽' as const,
 			inStock: true,
 			category: [],
-			tags: [],
+			tags: colorTags,
 			images:
 				formData.images.length > 0
 					? formData.images.map((file) => URL.createObjectURL(file))
 					: ['https://via.placeholder.com/400x600'],
-			sizes: [],
+			sizes: selectedSizes,
 			stockStatus: 'in_stock' as const,
 			gender: (formData.gender || 'unisex') as
 				| 'male'
@@ -378,6 +471,7 @@
 						)
 					: undefined,
 			article: formData.article || t('b2b.form.previewArticle'),
+			additionalInfo: additionalRowsToRecord(),
 		};
 
 		// Сохраняем товар в Effector store
@@ -386,6 +480,10 @@
 		// Сохраняем данные формы для возможности вернуться к редактированию
 		setPreviewFormData({
 			...formData,
+			sizes: { ...formData.sizes },
+			colors: { ...formData.colors },
+			images: [...formData.images],
+			additionalInfo: additionalRowsToRecord(),
 			editData: props.editData, // Сохраняем также editData если редактируем
 		});
 
@@ -455,6 +553,32 @@
 
 	.select {
 		width: 100%;
+	}
+
+	.additionalInfoHeader {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+	}
+
+	.additionalInfoRow {
+		display: grid;
+		grid-template-columns: 1fr 1fr auto;
+		gap: 8px;
+		margin-bottom: 8px;
+		align-items: center;
+	}
+
+	.addInfoButton,
+	.removeInfoButton {
+		border: none;
+		background: transparent;
+		color: var(--color-secondary);
+		cursor: pointer;
+		font-size: 13px;
+		text-decoration: underline;
+		padding: 0;
 	}
 
 	.checkboxGroup {
@@ -697,6 +821,10 @@
 
 		.uploadText {
 			font-size: 13px;
+		}
+
+		.additionalInfoRow {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

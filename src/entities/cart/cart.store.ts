@@ -3,6 +3,7 @@ import type { Cart, CartItem } from './cart.types';
 import { isUserAuthenticated } from '@shared/utils/auth';
 import { showToast, hideToast } from '@shared/model';
 import { i18n } from '@shared/i18n';
+import { trackEvent } from '@shared/lib';
 import {
 	getCart as getCartApi,
 	addToCart as addToCartApi,
@@ -219,6 +220,16 @@ const hideToastFx = createEffect(() => {
 	});
 });
 
+const trackEventFx = createEffect(
+	({
+		eventName,
+		payload,
+	}: {
+		eventName: string;
+		payload: Record<string, unknown>;
+	}) => trackEvent(eventName, payload),
+);
+
 sample({
 	clock: addItem,
 	fn: () => i18n.global.t('messages.itemAddedToCart'),
@@ -226,9 +237,35 @@ sample({
 });
 
 sample({
+	clock: addItem,
+	fn: (item) => ({
+		eventName: 'cart_add_item',
+		payload: {
+			productId: item.product.id,
+			quantity: item.quantity,
+			source: 'local',
+		},
+	}),
+	target: trackEventFx,
+});
+
+sample({
 	clock: addItemFx.doneData,
 	fn: () => i18n.global.t('messages.itemAddedToCart'),
 	target: showToast,
+});
+
+sample({
+	clock: addItemFx.doneData,
+	fn: (cart) => ({
+		eventName: 'cart_add_item',
+		payload: {
+			cartTotal: cart.total,
+			itemsCount: cart.items.length,
+			source: 'api',
+		},
+	}),
+	target: trackEventFx,
 });
 
 sample({
