@@ -873,7 +873,12 @@
 	};
 
 	const handleSupport = () => {
-		// Открытие внешней формы поддержки — не требует API
+		const supportEmail = 'support@stivalli.ru';
+		const subject = encodeURIComponent('Support request');
+		const body = encodeURIComponent(
+			'Опишите проблему и при необходимости приложите скриншоты.',
+		);
+		window.location.href = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
 	};
 
 	const handleSettings = () => {

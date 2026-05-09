@@ -1,6 +1,13 @@
 # API contracts
 
-## [`POST /api/auth/login`](src/shared/api/auth.api.ts:39)
+## Runtime base URL
+
+- Все пути ниже указаны как внешние эндпоинты вида `/api/...`.
+- Реальный базовый URL задается через `VITE_API_BASE_URL` в `src/shared/api/client.ts`.
+- По умолчанию используется `'/api'`, поэтому фронт дергает эндпоинты в формате `/api/...`.
+- В api-модулях используются относительные пути без двойного префикса (например `'/orders'`, `'/users/me'`, `'/seller-applications'`, `'/discount-requests'`).
+
+## [`POST /api/auth/login`](src/shared/api/auth.api.ts)
 **Что делает:** логин пользователя.
 
 **Request**
@@ -31,7 +38,7 @@
 
 ---
 
-## [`POST /api/auth/register`](src/shared/api/auth.api.ts:78)
+## [`POST /api/auth/register`](src/shared/api/auth.api.ts)
 **Что делает:** регистрация пользователя.
 
 **Request**
@@ -56,7 +63,7 @@
 
 ---
 
-## [`POST /api/auth/logout`](src/shared/api/auth.api.ts:91)
+## [`POST /api/auth/logout`](src/shared/api/auth.api.ts)
 **Что делает:** logout пользователя.
 
 **Request**
@@ -66,12 +73,13 @@
 
 **Response**
 ```json
-{}
+null
 ```
+`HTTP 204 No Content` (тело ответа отсутствует).
 
 ---
 
-## [`POST /api/auth/refresh`](src/shared/api/client.ts:147)
+## [`POST /api/auth/refresh`](src/shared/api/client.ts)
 **Что делает:** обновляет access token по refresh-cookie.
 
 **Request**
@@ -88,7 +96,7 @@
 
 ---
 
-## [`GET /api/auth/me`](src/shared/api/client.ts:269)
+## [`GET /api/auth/me`](src/shared/api/client.ts)
 **Что делает:** возвращает текущего авторизованного пользователя.
 
 **Request**
@@ -112,17 +120,40 @@
 
 ---
 
-## [`GET /api/products`](src/shared/api/products.api.ts:33)
+## [`POST /api/auth/forgot-password`](src/shared/api/auth.api.ts)
+**Что делает:** отправляет запрос на восстановление пароля.
+
+**Request**
+```json
+{
+  "body": {
+    "email": "string"
+  }
+}
+```
+
+**Response**
+```json
+{
+  "message": "string"
+}
+```
+
+---
+
+## [`GET /api/products`](src/shared/api/products.api.ts)
 **Что делает:** получает список товаров.
 
 **Request**
 ```json
 {
   "query": {
-    "count": "number"
+    "count": "number",
+    "search": "string (optional)"
   }
 }
 ```
+`search` — строка поиска по товарам, передается как URL-encoded query параметр.
 
 **Response**
 ```json
@@ -170,7 +201,7 @@
 
 ---
 
-## [`GET /api/products/{id}`](src/shared/api/products.api.ts:57)
+## [`GET /api/products/{id}`](src/shared/api/products.api.ts)
 **Что делает:** получает товар по id.
 
 **Request**
@@ -226,7 +257,7 @@
 
 ---
 
-## [`GET /api/products/{productId}/similar`](src/shared/api/products.api.ts:81)
+## [`GET /api/products/{productId}/similar`](src/shared/api/products.api.ts)
 **Что делает:** получает похожие товары.
 
 **Request**
@@ -287,7 +318,7 @@
 
 ---
 
-## [`GET /api/admin/applications`](src/shared/api/applications.api.ts:66)
+## [`GET /api/admin/applications`](src/shared/api/applications.api.ts)
 **Что делает:** получает список заявок продавцов.
 
 **Request**
@@ -310,7 +341,7 @@
 
 ---
 
-## [`PATCH /api/admin/applications/{id}/status`](src/shared/api/applications.api.ts:89)
+## [`PATCH /api/admin/applications/{id}/status`](src/shared/api/applications.api.ts)
 **Что делает:** обновляет статус заявки продавца.
 
 **Request**
@@ -334,7 +365,7 @@
 
 ---
 
-## [`GET /api/admin/sellers/dashboard`](src/shared/api/sellers.api.ts:96)
+## [`GET /api/admin/sellers/dashboard`](src/shared/api/sellers.api.ts)
 **Что делает:** получает дашборд продавцов.
 
 **Request**
@@ -378,7 +409,7 @@
 
 ---
 
-## [`GET /api/b2b/analytics/dashboard`](src/shared/api/analytics.api.ts:147)
+## [`GET /api/b2b/analytics/dashboard`](src/shared/api/analytics.api.ts)
 **Что делает:** получает B2B аналитику.
 
 **Request**
@@ -427,7 +458,7 @@
 
 ---
 
-## [`GET /api/b2b/products`](src/shared/api/analytics.api.ts:178)
+## [`GET /api/b2b/products`](src/shared/api/analytics.api.ts)
 **Что делает:** получает список товаров продавца.
 
 **Request**
@@ -449,7 +480,7 @@
 
 ---
 
-## [`POST /api/b2b/products`](src/shared/api/analytics.api.ts:207)
+## [`POST /api/b2b/products`](src/shared/api/analytics.api.ts)
 **Что делает:** создаёт новый товар продавца.
 
 **Request**
@@ -481,7 +512,7 @@
 
 ---
 
-## [`PUT /api/b2b/products/{id}`](src/shared/api/analytics.api.ts:232)
+## [`PUT /api/b2b/products/{id}`](src/shared/api/analytics.api.ts)
 **Что делает:** обновляет товар продавца по id.
 
 **Request**
@@ -516,7 +547,7 @@
 
 ---
 
-## [`DELETE /api/b2b/products/{id}`](src/shared/api/analytics.api.ts:258)
+## [`DELETE /api/b2b/products/{id}`](src/shared/api/analytics.api.ts)
 **Что делает:** удаляет товар продавца по id.
 
 **Request**
@@ -537,7 +568,101 @@
 
 ---
 
-## [`GET /api/cart`](src/shared/api/cart.api.ts:30)
+## [`GET /api/favorites`](src/shared/api/favorites.api.ts)
+**Что делает:** возвращает id избранных товаров текущего пользователя.
+
+**Request**
+```json
+{}
+```
+
+**Response**
+```json
+{
+  "favorites": [1, 5, 10]
+}
+```
+
+---
+
+## [`GET /api/favorites/products`](src/shared/api/favorites.api.ts)
+**Что делает:** возвращает полные карточки избранных товаров текущего пользователя.
+
+**Request**
+```json
+{}
+```
+
+**Response**
+```json
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "string",
+      "slug": "string",
+      "description": "string",
+      "price": 10000,
+      "discount": 10,
+      "currency": "string",
+      "inStock": true,
+      "article": "string",
+      "category": [{ "id": "string", "name": "string" }],
+      "tags": [{ "id": "string", "name": "string" }],
+      "images": ["string"],
+      "sizes": ["string"],
+      "stockStatus": "in_stock | pre_order",
+      "gender": "male | female | unisex",
+      "seller": { "id": 1, "name": "string" },
+      "isFavorite": true
+    }
+  ]
+}
+```
+
+---
+
+## [`POST /api/favorites/{productId}`](src/shared/api/favorites.api.ts)
+**Что делает:** добавляет товар в избранное.
+
+**Request**
+```json
+{
+  "path": {
+    "productId": "number"
+  }
+}
+```
+
+**Response**
+```json
+null
+```
+`HTTP 204 No Content` (тело ответа отсутствует).
+
+---
+
+## [`DELETE /api/favorites/{productId}`](src/shared/api/favorites.api.ts)
+**Что делает:** удаляет товар из избранного.
+
+**Request**
+```json
+{
+  "path": {
+    "productId": "number"
+  }
+}
+```
+
+**Response**
+```json
+null
+```
+`HTTP 204 No Content` (тело ответа отсутствует).
+
+---
+
+## [`GET /api/cart`](src/shared/api/cart.api.ts)
 **Что делает:** возвращает корзину текущего авторизованного пользователя.
 
 **Request**
@@ -566,7 +691,7 @@
 
 ---
 
-## [`POST /api/cart/items`](src/shared/api/cart.api.ts:38)
+## [`POST /api/cart/items`](src/shared/api/cart.api.ts)
 **Что делает:** добавляет товар в корзину.
 
 **Request**
@@ -591,7 +716,7 @@
 
 ---
 
-## [`PATCH /api/cart/items/{itemId}`](src/shared/api/cart.api.ts:47)
+## [`PATCH /api/cart/items/{itemId}`](src/shared/api/cart.api.ts)
 **Что делает:** обновляет количество товара в корзине.
 
 **Request**
@@ -617,7 +742,7 @@
 
 ---
 
-## [`DELETE /api/cart/items/{itemId}`](src/shared/api/cart.api.ts:57)
+## [`DELETE /api/cart/items/{itemId}`](src/shared/api/cart.api.ts)
 **Что делает:** удаляет товар из корзины.
 
 **Request**
@@ -640,7 +765,7 @@
 
 ---
 
-## [`DELETE /api/cart`](src/shared/api/cart.api.ts:57)
+## [`DELETE /api/cart`](src/shared/api/cart.api.ts)
 **Что делает:** полностью очищает корзину.
 
 **Request**
@@ -657,7 +782,7 @@
 
 ---
 
-## [`GET /api/orders`](src/shared/api/orders.api.ts:14)
+## [`GET /api/orders`](src/shared/api/orders.api.ts)
 **Что делает:** возвращает список заказов текущего авторизованного пользователя.
 
 **Auth:** Bearer token required
@@ -693,7 +818,7 @@
 
 ---
 
-## [`POST /api/orders`](src/shared/api/orders.api.ts:18)
+## [`POST /api/orders`](src/shared/api/orders.api.ts)
 **Что делает:** создаёт новый заказ из текущей корзины.
 
 **Auth:** Bearer token required
@@ -720,15 +845,16 @@
   "items": [...],
   "total": "number",
   "currency": "string",
-  "status": "PENDING",
+  "status": "PAID | PENDING | CANCELLED | REFUNDED",
   "customer": { "id": "number", "fullName": "string", "email": "string", "phone": "string" },
-  "seller": { "id": "number", "name": "string" }
+  "seller": { "id": "number", "name": "string" },
+  "paymentInfo": {}
 }
 ```
 
 ---
 
-## [`POST /api/seller-applications`](src/shared/api/sellerApplication.api.ts:14)
+## [`POST /api/seller-applications`](src/shared/api/sellerApplication.api.ts)
 **Что делает:** подаёт заявку на регистрацию продавца.
 
 **Auth:** Bearer token required
@@ -749,16 +875,15 @@
 {
   "id": "number",
   "userId": "number",
-  "status": "PENDING | APPROVED | REJECTED",
-  "name": "string",
-  "phone": "string",
-  "email": "string"
+  "status": "NEW | PENDING | APPROVED | REJECTED",
+  "createdAt": "string (ISO 8601)",
+  "message": "string (optional)"
 }
 ```
 
 ---
 
-## [`PATCH /api/auth/me`](src/shared/api/auth.api.ts:87)
+## [`PATCH /api/auth/me`](src/shared/api/auth.api.ts)
 **Что делает:** обновляет профиль текущего авторизованного пользователя.
 
 **Auth:** Bearer token required
@@ -786,7 +911,7 @@
 
 ---
 
-## [`DELETE /api/users/me`](src/shared/api/user.api.ts:19)
+## [`DELETE /api/users/me`](src/shared/api/user.api.ts)
 **Что делает:** удаляет аккаунт текущего авторизованного пользователя. Необратимое действие.
 
 **Auth:** Bearer token required
@@ -798,12 +923,13 @@
 
 **Response**
 ```json
-{}
+null
 ```
+`HTTP 204 No Content` (тело ответа отсутствует).
 
 ---
 
-## [`POST /api/users/me/requisites`](src/shared/api/user.api.ts:23)
+## [`POST /api/users/me/requisites`](src/shared/api/user.api.ts)
 **Что делает:** сохраняет банковские реквизиты пользователя.
 
 **Auth:** Bearer token required
@@ -832,7 +958,7 @@
 
 ---
 
-## [`PATCH /api/users/me/settings`](src/shared/api/user.api.ts:30)
+## [`PATCH /api/users/me/settings`](src/shared/api/user.api.ts)
 **Что делает:** сохраняет пользовательские настройки (уведомления, email-рассылки и т.д.).
 
 **Auth:** Bearer token required
@@ -859,7 +985,7 @@
 
 ---
 
-## [`POST /api/discount-requests`](src/shared/api/discountRequest.api.ts:14)
+## [`POST /api/discount-requests`](src/shared/api/discountRequest.api.ts)
 **Что делает:** отправляет запрос на скидку продавцу от покупателя.
 
 **Auth:** Bearer token required

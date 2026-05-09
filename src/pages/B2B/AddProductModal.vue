@@ -4,49 +4,49 @@
 			<div :class="$style.modalContent">
 				<!-- Название товара -->
 				<div :class="$style.field">
-					<label :class="$style.label">Название товара</label>
+					<label :class="$style.label">{{ t('b2b.form.productName') }}</label>
 					<Input
 						v-model="formData.name"
-						placeholder="Value"
+						:placeholder="t('b2b.form.placeholders.productName')"
 						:class="$style.input"
 					/>
 				</div>
 
 				<!-- Артикул -->
 				<div :class="$style.field">
-					<label :class="$style.label">Артикул</label>
+					<label :class="$style.label">{{ t('b2b.form.article') }}</label>
 					<Input
 						v-model="formData.article"
-						placeholder="Value"
+						:placeholder="t('b2b.form.placeholders.article')"
 						:class="$style.input"
 					/>
 				</div>
 
 				<!-- Цена -->
 				<div :class="$style.field">
-					<label :class="$style.label">Цена</label>
+					<label :class="$style.label">{{ t('b2b.form.price') }}</label>
 					<Input
 						v-model="formData.price"
 						type="number"
-						placeholder="Value"
+						:placeholder="t('b2b.form.placeholders.price')"
 						:class="$style.input"
 					/>
 				</div>
 
 				<!-- Цена с учетом скидки -->
 				<div :class="$style.field">
-					<label :class="$style.label">Цена с учетом скидки</label>
+					<label :class="$style.label">{{ t('b2b.form.discountPrice') }}</label>
 					<Input
 						v-model="formData.discountPrice"
 						type="number"
-						placeholder="Value"
+						:placeholder="t('b2b.form.placeholders.discountPrice')"
 						:class="$style.input"
 					/>
 				</div>
 
 				<!-- Размеры -->
 				<div :class="$style.field">
-					<label :class="$style.label">Размеры</label>
+					<label :class="$style.label">{{ t('b2b.form.sizes') }}</label>
 					<div :class="$style.checkboxGroup">
 						<label :class="$style.checkboxLabel">
 							<input
@@ -55,7 +55,7 @@
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
-							<span>Small (Длина стопы 21.0 - 24.5 см)</span>
+							<span>{{ t('b2b.form.sizeSmall') }}</span>
 						</label>
 						<label :class="$style.checkboxLabel">
 							<input
@@ -64,7 +64,7 @@
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
-							<span>Medium (Длина стопы 25.0 - 27.5 см)</span>
+							<span>{{ t('b2b.form.sizeMedium') }}</span>
 						</label>
 						<label :class="$style.checkboxLabel">
 							<input
@@ -73,14 +73,14 @@
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
-							<span>Large (Длина стопы 28.0 - 30.5 см)</span>
+							<span>{{ t('b2b.form.sizeLarge') }}</span>
 						</label>
 					</div>
 				</div>
 
 				<!-- Цвет -->
 				<div :class="$style.field">
-					<label :class="$style.label">Цвет</label>
+					<label :class="$style.label">{{ t('b2b.form.color') }}</label>
 					<div :class="$style.checkboxGroup">
 						<label :class="$style.checkboxLabel">
 							<input
@@ -89,7 +89,7 @@
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
-							<span>Белый</span>
+							<span>{{ t('filters.colorsCapitalized.white') }}</span>
 						</label>
 						<label :class="$style.checkboxLabel">
 							<input
@@ -98,7 +98,7 @@
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
-							<span>Черный</span>
+							<span>{{ t('filters.colorsCapitalized.black') }}</span>
 						</label>
 						<label :class="$style.checkboxLabel">
 							<input
@@ -107,35 +107,35 @@
 								:class="$style.checkbox"
 							/>
 							<span :class="$style.checkmark"></span>
-							<span>Красный</span>
+							<span>{{ t('filters.colorsCapitalized.red') }}</span>
 						</label>
 					</div>
 				</div>
 
 				<!-- Состав -->
 				<div :class="$style.field">
-					<label :class="$style.label">Состав</label>
+					<label :class="$style.label">{{ t('b2b.form.composition') }}</label>
 					<Input
 						v-model="formData.composition"
-						placeholder="Value"
+						:placeholder="t('b2b.form.placeholders.composition')"
 						:class="$style.input"
 					/>
 				</div>
 
 				<!-- Пол -->
 				<div :class="$style.field">
-					<label :class="$style.label">Пол</label>
+					<label :class="$style.label">{{ t('b2b.form.gender') }}</label>
 					<Select
 						v-model="formData.gender"
 						:options="genderOptions"
-						placeholder="Value"
+						:placeholder="t('b2b.form.placeholders.gender')"
 						:class="$style.select"
 					/>
 				</div>
 
 				<!-- Добавить изображения -->
 				<div :class="$style.field">
-					<label :class="$style.label">Добавить изображения</label>
+					<label :class="$style.label">{{ t('b2b.form.images') }}</label>
 					<div :class="$style.uploadArea">
 						<input
 							id="fileUpload"
@@ -161,22 +161,59 @@
 								<line x1="12" y1="15" x2="12" y2="3" />
 							</svg>
 							<div :class="$style.uploadText">
-								<div>Перетащите ваши файлы в эту область</div>
+								<div>{{ t('b2b.form.dropFiles') }}</div>
 							</div>
 						</label>
+					</div>
+					<div
+						v-if="imagePreviews.length > 0"
+						:class="$style.uploadedFiles"
+					>
+						<div :class="$style.uploadedHeader">
+							<p :class="$style.uploadedTitle">
+								{{
+									t('b2b.form.selectedImagesCount', {
+										count: imagePreviews.length,
+									})
+								}}
+							</p>
+							<button
+								type="button"
+								:class="$style.clearFilesButton"
+								@click="clearUploadedImages"
+							>
+								{{ t('ui.clear') }}
+							</button>
+						</div>
+						<ul :class="$style.uploadedList">
+							<li
+								v-for="(preview, index) in imagePreviews"
+								:key="`${preview.name}-${index}`"
+								:class="$style.uploadedItem"
+							>
+								<img
+									:src="preview.url"
+									:alt="preview.name"
+									:class="$style.uploadedThumb"
+								/>
+								<span :class="$style.uploadedName">
+									{{ preview.name }}
+								</span>
+							</li>
+						</ul>
 					</div>
 				</div>
 
 				<!-- Кнопки -->
 				<div :class="$style.actions">
 					<button :class="$style.saveButton" @click="handleSave">
-						Сохранить
+						{{ t('common.save') }}
 					</button>
 					<button
 						:class="$style.previewButton"
 						@click="handlePreview"
 					>
-						Посмотреть превью
+						{{ t('b2b.form.preview') }}
 					</button>
 				</div>
 			</div>
@@ -185,8 +222,9 @@
 </template>
 
 <script setup lang="ts">
-	import { reactive, watch } from 'vue';
+	import { reactive, ref, watch, onUnmounted } from 'vue';
 	import { useRouter } from 'vue-router';
+	import { useI18n } from 'vue-i18n';
 	import { Input, Select } from '@shared/ui';
 	import {
 		setPreviewProduct,
@@ -194,6 +232,7 @@
 	} from '@entities/product/product.store';
 
 	const router = useRouter();
+	const { t } = useI18n();
 
 	const props = defineProps<{
 		isOpen: boolean;
@@ -224,6 +263,22 @@
 		gender: '',
 		images: [] as File[],
 	});
+	const imagePreviews = ref<Array<{ name: string; url: string }>>([]);
+
+	const revokeImagePreviews = () => {
+		imagePreviews.value.forEach((preview) => {
+			URL.revokeObjectURL(preview.url);
+		});
+		imagePreviews.value = [];
+	};
+
+	const syncImagePreviews = (files: File[]) => {
+		revokeImagePreviews();
+		imagePreviews.value = files.map((file) => ({
+			name: file.name,
+			url: URL.createObjectURL(file),
+		}));
+	};
 
 	// Watch for editData changes and populate form
 	watch(
@@ -257,14 +312,15 @@
 				formData.colors = { white: false, black: false, red: false };
 				formData.images = [];
 			}
+			syncImagePreviews(formData.images);
 		},
 		{ immediate: true },
 	);
 
 	const genderOptions = [
-		{ value: 'male', label: 'Мужской' },
-		{ value: 'female', label: 'Женский' },
-		{ value: 'unisex', label: 'Унисекс' },
+		{ value: 'male', label: t('filters.male') },
+		{ value: 'female', label: t('filters.female') },
+		{ value: 'unisex', label: t('filters.unisex') },
 	];
 
 	const handleOverlayClick = () => {
@@ -275,7 +331,13 @@
 		const target = event.target as HTMLInputElement;
 		if (target.files) {
 			formData.images = Array.from(target.files);
+			syncImagePreviews(formData.images);
 		}
+	};
+
+	const clearUploadedImages = () => {
+		formData.images = [];
+		syncImagePreviews(formData.images);
 	};
 
 	const handleSave = () => {
@@ -287,9 +349,9 @@
 		// Создаем объект товара из данных формы для превью
 		const previewProduct = {
 			id: props.editData?.id || 999999, // Временный ID для превью
-			name: formData.name || 'Предпросмотр товара',
+			name: formData.name || t('b2b.form.previewProductName'),
 			slug: 'preview',
-			description: formData.composition || 'Описание товара',
+			description: formData.composition || t('b2b.form.previewProductDescription'),
 			price: parseFloat(formData.price) || 0,
 			currency: '₽' as const,
 			inStock: true,
@@ -305,7 +367,7 @@
 				| 'male'
 				| 'female'
 				| 'unisex',
-			seller: { id: 1, name: 'Продавец' },
+			seller: { id: 1, name: t('b2b.form.previewSeller') },
 			discount:
 				formData.discountPrice && formData.price
 					? Math.round(
@@ -315,7 +377,7 @@
 								100,
 						)
 					: undefined,
-			article: formData.article || 'ART-000',
+			article: formData.article || t('b2b.form.previewArticle'),
 		};
 
 		// Сохраняем товар в Effector store
@@ -333,6 +395,10 @@
 		// Переходим на страницу превью
 		router.push('/product/preview');
 	};
+
+	onUnmounted(() => {
+		revokeImagePreviews();
+	});
 </script>
 
 <style module>
@@ -358,12 +424,16 @@
 		width: 100%;
 		max-width: 600px;
 		max-height: 90vh;
-		overflow-y: auto;
+		overflow: hidden;
 		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 	}
 
 	.modalContent {
 		padding: 32px;
+		max-height: 90vh;
+		overflow-y: auto;
+		overflow-x: hidden;
+		box-sizing: border-box;
 	}
 
 	.field {
@@ -487,6 +557,65 @@
 		text-align: left;
 	}
 
+	.uploadedFiles {
+		margin-top: 16px;
+	}
+
+	.uploadedHeader {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		margin-bottom: 10px;
+	}
+
+	.uploadedTitle {
+		margin: 0;
+		font-size: 14px;
+		color: var(--color-primary);
+		text-align: left;
+	}
+
+	.clearFilesButton {
+		border: none;
+		background: transparent;
+		padding: 0;
+		font-size: 13px;
+		color: var(--color-secondary);
+		cursor: pointer;
+		text-decoration: underline;
+	}
+
+	.uploadedList {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+		gap: 10px;
+	}
+
+	.uploadedItem {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.uploadedThumb {
+		width: 100%;
+		height: 94px;
+		object-fit: cover;
+		border-radius: 8px;
+		border: 1px solid #e5e7eb;
+	}
+
+	.uploadedName {
+		font-size: 12px;
+		color: var(--color-secondary);
+		text-align: left;
+		word-break: break-word;
+	}
+
 	.actions {
 		display: flex;
 		flex-direction: column;
@@ -535,21 +664,21 @@
 	}
 
 	/* Scrollbar styling */
-	.modal::-webkit-scrollbar {
+	.modalContent::-webkit-scrollbar {
 		width: 8px;
 	}
 
-	.modal::-webkit-scrollbar-track {
+	.modalContent::-webkit-scrollbar-track {
 		background: #f1f1f1;
 		border-radius: 8px;
 	}
 
-	.modal::-webkit-scrollbar-thumb {
+	.modalContent::-webkit-scrollbar-thumb {
 		background: #d1d5db;
 		border-radius: 8px;
 	}
 
-	.modal::-webkit-scrollbar-thumb:hover {
+	.modalContent::-webkit-scrollbar-thumb:hover {
 		background: #9ca3af;
 	}
 

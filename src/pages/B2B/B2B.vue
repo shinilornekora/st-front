@@ -45,148 +45,160 @@
 							{{ t('b2b.loading') }}
 						</div>
 						<div v-else-if="revenueData && productsSoldData">
-							<!-- Stats Cards -->
-							<div :class="$style.statsGrid">
-								<!-- Revenue Card -->
-								<RevenueChart
-									:chart-data="revenueData"
-									:products-data="productsData"
-									:selected-product-ids="selectedProductIds"
-									:period="revenuePeriod"
-									:product-colors="productColors"
-									@update:period="revenuePeriod = $event"
-									@load-data="loadRevenueAnalytics"
-								/>
+							<div :class="$style.analyticsLayout">
+								<div :class="$style.analyticsLeftColumn">
+									<!-- Stats Cards -->
+									<div :class="$style.statsGrid">
+										<!-- Revenue Card -->
+										<RevenueChart
+											:chart-data="revenueData"
+											:products-data="productsData"
+											:selected-product-ids="selectedProductIds"
+											:period="revenuePeriod"
+											:product-colors="productColors"
+											@update:period="revenuePeriod = $event"
+											@load-data="loadRevenueAnalytics"
+										/>
 
-								<!-- Products Sold Card -->
-								<ProductsSoldChart
-									:chart-data="productsSoldData"
-									:products-data="productsData"
-									:selected-product-ids="selectedProductIds"
-									:period="productsPeriod"
-									:product-colors="productColors"
-									@update:period="productsPeriod = $event"
-									@load-data="loadProductsAnalytics"
-								/>
-							</div>
+										<!-- Products Sold Card -->
+										<ProductsSoldChart
+											:chart-data="productsSoldData"
+											:products-data="productsData"
+											:selected-product-ids="selectedProductIds"
+											:period="productsPeriod"
+											:product-colors="productColors"
+											@update:period="productsPeriod = $event"
+											@load-data="loadProductsAnalytics"
+										/>
+									</div>
+								</div>
 
-							<!-- Products Table -->
-							<div :class="$style.tableSection">
-								<table :class="$style.table">
-									<thead>
-										<tr>
-											<th :class="$style.th">
-												{{ t('b2b.productName') }}
-											</th>
-											<th :class="$style.th">
-												{{ t('b2b.price') }}
-											</th>
-											<th :class="$style.th">
-												{{ t('b2b.sold') }}
-											</th>
-											<th :class="$style.th">
-												{{ t('b2b.revenue') }}
-											</th>
-											<th :class="$style.th">
-												{{ t('b2b.dynamics') }}
-											</th>
-											<th :class="$style.th">
-												{{ t('b2b.stock') }}
-											</th>
-										</tr>
-									</thead>
-									<tbody>
-										<tr
-											v-for="product in productsData"
-											:key="product.id"
-											:class="[
-												$style.tr,
-												{
-													[$style.trSelected]:
-														selectedProductIds.includes(
-															product.id,
-														),
-												},
-											]"
-											@click="toggleProduct(product.id)"
-										>
-											<td :class="$style.td">
-												<div
-													:class="$style.productCell"
-												>
-													<div
-														:class="
-															$style.productImage
-														"
-													></div>
-													<div
-														:class="
-															$style.productInfo
-														"
+								<div :class="$style.analyticsRightColumn">
+									<!-- Products Table -->
+									<div :class="$style.tableSection">
+										<div :class="$style.tableScroll">
+											<table :class="$style.table">
+												<thead>
+													<tr>
+														<th :class="$style.th">
+															{{ t('b2b.productName') }}
+														</th>
+														<th :class="$style.th">
+															{{ t('b2b.price') }}
+														</th>
+														<th :class="$style.th">
+															{{ t('b2b.sold') }}
+														</th>
+														<th :class="$style.th">
+															{{ t('b2b.revenue') }}
+														</th>
+														<th :class="$style.th">
+															{{ t('b2b.dynamics') }}
+														</th>
+														<th :class="$style.th">
+															{{ t('b2b.stock') }}
+														</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr
+														v-for="product in productsData"
+														:key="product.id"
+														:class="[
+															$style.tr,
+															{
+																[$style.trSelected]:
+																	selectedProductIds.includes(
+																		product.id,
+																	),
+															},
+														]"
+														@click="toggleProduct(product.id)"
 													>
-														<div
-															:class="
-																$style.productName
-															"
-														>
-															{{ product.name }}
-														</div>
-														<div
-															:class="
-																$style.productArticle
-															"
-														>
-															({{
-																t(
-																	'b2b.articleShort',
+														<td :class="$style.td">
+															<div
+																:class="$style.productCell"
+															>
+																<div
+																	:class="
+																		$style.productImage
+																	"
+																></div>
+																<div
+																	:class="
+																		$style.productInfo
+																	"
+																>
+																	<div
+																		:class="
+																			$style.productName
+																		"
+																	>
+																		{{ product.name }}
+																	</div>
+																	<div
+																		:class="
+																			$style.productArticle
+																		"
+																	>
+																		({{
+																			t(
+																				'b2b.articleShort',
+																			)
+																		}}
+																		{{
+																			product.article
+																		}})
+																	</div>
+																</div>
+															</div>
+														</td>
+														<td :class="$style.td">
+															{{
+																product.price.toLocaleString(
+																	'ru-RU',
 																)
 															}}
+															₽
+														</td>
+														<td :class="$style.td">
+															{{ product.sold }}
 															{{
-																product.article
-															}})
-														</div>
-													</div>
-												</div>
-											</td>
-											<td :class="$style.td">
-												{{
-													product.price.toLocaleString(
-														'ru-RU',
-													)
-												}}
-												₽
-											</td>
-											<td :class="$style.td">
-												{{ product.sold }}
-												{{
-													t('b2b.sold').split(' ')[1]
-												}}
-											</td>
-											<td :class="$style.td">
-												{{
-													product.revenue.toLocaleString(
-														'ru-RU',
-													)
-												}}
-												₽
-											</td>
-											<td :class="$style.td">
-												<span
-													:class="$style.dynamics"
-													>{{
-														product.dynamics
-													}}</span
-												>
-											</td>
-											<td :class="$style.td">
-												{{ product.stock }}
-												{{
-													t('b2b.sold').split(' ')[1]
-												}}
-											</td>
-										</tr>
-									</tbody>
-								</table>
+																t('b2b.sold').split(
+																	' ',
+																)[1]
+															}}
+														</td>
+														<td :class="$style.td">
+															{{
+																product.revenue.toLocaleString(
+																	'ru-RU',
+																)
+															}}
+															₽
+														</td>
+														<td :class="$style.td">
+															<span
+																:class="$style.dynamics"
+																>{{
+																	product.dynamics
+																}}</span
+															>
+														</td>
+														<td :class="$style.td">
+															{{ product.stock }}
+															{{
+																t('b2b.sold').split(
+																	' ',
+																)[1]
+															}}
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -407,10 +419,12 @@
 	const isDragging = ref(false);
 	const isHolding = ref(false);
 	const wasDragging = ref(false);
-	const dragStartTimer = ref<number | null>(null);
+	const isPointerDown = ref(false);
 	const dragPosition = ref({ x: 0, y: 0 });
 	const dragOffset = ref({ x: 0, y: 0 });
+	const dragStartPoint = ref({ x: 0, y: 0 });
 	const hasCustomPosition = ref(false);
+	const DRAG_THRESHOLD_PX = 6;
 
 	// Load saved position from localStorage
 	const loadSavedPosition = () => {
@@ -733,60 +747,31 @@
 	};
 
 	// Dragging functionality
+	const beginPointerTracking = (clientX: number, clientY: number) => {
+		isPointerDown.value = true;
+		dragStartPoint.value = { x: clientX, y: clientY };
+
+		document.addEventListener('mousemove', handleMouseMove);
+		document.addEventListener('mouseup', handleMouseUp);
+		document.addEventListener('touchmove', handleTouchMove);
+		document.addEventListener('touchend', handleTouchEnd);
+	};
+
 	const handleMouseDown = (e: MouseEvent) => {
-		e.preventDefault();
-
-		// Show holding indicator
-		isHolding.value = true;
-
-		// Start timer for 2 seconds
-		dragStartTimer.value = window.setTimeout(() => {
-			startDragging(e.clientX, e.clientY);
-		}, 2000);
-
-		// Add listeners to cancel timer if mouse is released early
-		document.addEventListener('mouseup', cancelDragTimer);
-		document.addEventListener('mousemove', cancelDragTimer);
+		if (e.button !== 0) return;
+		beginPointerTracking(e.clientX, e.clientY);
 	};
 
 	const handleTouchStart = (e: TouchEvent) => {
-		e.preventDefault();
-
 		const touch = e.touches[0];
 		if (!touch) return;
-
-		// Show holding indicator
-		isHolding.value = true;
-
-		// Start timer for 2 seconds
-		dragStartTimer.value = window.setTimeout(() => {
-			startDragging(touch.clientX, touch.clientY);
-		}, 2000);
-
-		// Add listeners to cancel timer if touch is released early
-		document.addEventListener('touchend', cancelDragTimer);
-		document.addEventListener('touchmove', cancelDragTimer);
-	};
-
-	const cancelDragTimer = () => {
-		if (dragStartTimer.value) {
-			clearTimeout(dragStartTimer.value);
-			dragStartTimer.value = null;
-		}
-
-		// Hide holding indicator
-		isHolding.value = false;
-
-		document.removeEventListener('mouseup', cancelDragTimer);
-		document.removeEventListener('mousemove', cancelDragTimer);
-		document.removeEventListener('touchend', cancelDragTimer);
-		document.removeEventListener('touchmove', cancelDragTimer);
+		beginPointerTracking(touch.clientX, touch.clientY);
 	};
 
 	const startDragging = (clientX: number, clientY: number) => {
 		if (!actionControlsRef.value) return;
 
-		// Hide holding indicator and start dragging
+		// Start dragging immediately
 		isHolding.value = false;
 		isDragging.value = true;
 		wasDragging.value = true;
@@ -806,15 +791,19 @@
 			y: rect.top,
 		};
 
-		// Add move and end listeners
-		document.addEventListener('mousemove', handleMouseMove);
-		document.addEventListener('mouseup', handleMouseUp);
-		document.addEventListener('touchmove', handleTouchMove);
-		document.addEventListener('touchend', handleTouchEnd);
 	};
 
 	const handleMouseMove = (e: MouseEvent) => {
-		if (!isDragging.value) return;
+		if (!isPointerDown.value && !isDragging.value) return;
+
+		if (!isDragging.value) {
+			const deltaX = e.clientX - dragStartPoint.value.x;
+			const deltaY = e.clientY - dragStartPoint.value.y;
+			const distance = Math.hypot(deltaX, deltaY);
+
+			if (distance < DRAG_THRESHOLD_PX) return;
+			startDragging(dragStartPoint.value.x, dragStartPoint.value.y);
+		}
 
 		e.preventDefault();
 
@@ -825,12 +814,21 @@
 	};
 
 	const handleTouchMove = (e: TouchEvent) => {
-		if (!isDragging.value) return;
-
-		e.preventDefault();
+		if (!isPointerDown.value && !isDragging.value) return;
 
 		const touch = e.touches[0];
 		if (!touch) return;
+
+		if (!isDragging.value) {
+			const deltaX = touch.clientX - dragStartPoint.value.x;
+			const deltaY = touch.clientY - dragStartPoint.value.y;
+			const distance = Math.hypot(deltaX, deltaY);
+
+			if (distance < DRAG_THRESHOLD_PX) return;
+			startDragging(dragStartPoint.value.x, dragStartPoint.value.y);
+		}
+
+		e.preventDefault();
 
 		dragPosition.value = {
 			x: touch.clientX - dragOffset.value.x,
@@ -838,15 +836,8 @@
 		};
 	};
 
-	const handleMouseUp = () => {
-		stopDragging();
-	};
-
-	const handleTouchEnd = () => {
-		stopDragging();
-	};
-
 	const stopDragging = () => {
+		isPointerDown.value = false;
 		isDragging.value = false;
 
 		// Save position to localStorage
@@ -862,6 +853,30 @@
 		document.removeEventListener('mouseup', handleMouseUp);
 		document.removeEventListener('touchmove', handleTouchMove);
 		document.removeEventListener('touchend', handleTouchEnd);
+	};
+
+	const stopPointerTracking = () => {
+		isPointerDown.value = false;
+		document.removeEventListener('mousemove', handleMouseMove);
+		document.removeEventListener('mouseup', handleMouseUp);
+		document.removeEventListener('touchmove', handleTouchMove);
+		document.removeEventListener('touchend', handleTouchEnd);
+	};
+
+	const handleMouseUp = () => {
+		if (isDragging.value) {
+			stopDragging();
+			return;
+		}
+		stopPointerTracking();
+	};
+
+	const handleTouchEnd = () => {
+		if (isDragging.value) {
+			stopDragging();
+			return;
+		}
+		stopPointerTracking();
 	};
 
 	// Computed style for action controls
@@ -937,15 +952,7 @@
 	});
 
 	onUnmounted(() => {
-		// Clean up any active timers and listeners
-		if (dragStartTimer.value) {
-			clearTimeout(dragStartTimer.value);
-		}
-
-		document.removeEventListener('mouseup', cancelDragTimer);
-		document.removeEventListener('mousemove', cancelDragTimer);
-		document.removeEventListener('touchend', cancelDragTimer);
-		document.removeEventListener('touchmove', cancelDragTimer);
+		// Clean up listeners
 		document.removeEventListener('mousemove', handleMouseMove);
 		document.removeEventListener('mouseup', handleMouseUp);
 		document.removeEventListener('touchmove', handleTouchMove);

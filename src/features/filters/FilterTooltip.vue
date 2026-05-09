@@ -51,7 +51,7 @@
 					<input
 						v-model="priceRange.min"
 						type="number"
-						placeholder="0"
+						:placeholder="t('filters.pricePlaceholderFrom')"
 						@input="updatePriceFilter"
 					/>
 				</div>
@@ -60,7 +60,7 @@
 					<input
 						v-model="priceRange.max"
 						type="number"
-						placeholder="50000"
+						:placeholder="t('filters.pricePlaceholderTo')"
 						@input="updatePriceFilter"
 					/>
 				</div>

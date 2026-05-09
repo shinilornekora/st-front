@@ -111,7 +111,7 @@
 						</div>
 						<div :class="$style.thumbnails">
 							<button
-								v-for="(image, index) in product.images"
+								v-for="(image, index) in displayedImages"
 								:key="index"
 								:class="[
 									$style.thumbnail,
@@ -137,16 +137,16 @@
 					>
 						<button
 							v-for="color in availableColors"
-							:key="color"
+							:key="color.key"
 							:class="[
 								$style.colorBtn,
-								selectedColor === color
+								selectedColorKey === color.key
 									? $style.colorBtnActive
 									: '',
 							]"
-							@click="selectedColor = color"
+							@click="selectedColorKey = color.key"
 						>
-							{{ color }}
+							{{ color.label }}
 						</button>
 					</div>
 
@@ -466,10 +466,33 @@
 	const shareBtnClicked = ref(false);
 	const showDiscountModal = ref(false);
 	const showDiscountStatusLine = ref(false);
-	const selectedColor = ref('');
+	const selectedColorKey = ref('');
 	const selectedSize = ref('');
-	const availableColors = ref<string[]>([]);
+	const availableColors = ref<Array<{ key: string; label: string }>>([]);
 	const availableSizes = ref<string[]>([]);
+	const colorImageMap = ref<Record<string, string[]>>({});
+	const colorKeys = [
+		'black',
+		'brown',
+		'beige',
+		'white',
+		'blue',
+		'red',
+		'gray',
+		'green',
+	] as const;
+
+	const getColorLabel = (colorKey: string) =>
+		t(
+			`filters.colorsCapitalized.${colorKey}`,
+			t(`filters.colors.${colorKey}`, colorKey),
+		);
+	const selectedColorLabel = computed(
+		() =>
+			availableColors.value.find(
+				(color) => color.key === selectedColorKey.value,
+			)?.label || '',
+	);
 
 	// Get initial product data from router state if available
 	const routerState = history.state as ProductRouterState;
@@ -518,8 +541,20 @@
 	const additionalInfo = ref<Array<{ label: string; value: string }>>([]);
 	const similarProducts = ref<Product[]>([]);
 
+	const displayedImages = computed(() => {
+		if (
+			selectedColorKey.value &&
+			colorImageMap.value[selectedColorKey.value]?.length
+		) {
+			return colorImageMap.value[selectedColorKey.value];
+		}
+		return product.value.images;
+	});
+
 	const currentImage = computed(
-		() => product.value.images[currentImageIndex.value],
+		() =>
+			displayedImages.value[currentImageIndex.value] ||
+			displayedImages.value[0],
 	);
 
 	const formatPrice = (price: number) => {
@@ -548,7 +583,7 @@
 			price: product.value.price,
 			discount: product.value.discount,
 			currency: product.value.currency,
-			selectedColor: selectedColor.value,
+			selectedColor: selectedColorLabel.value,
 		});
 	};
 
@@ -622,29 +657,72 @@
 					]);
 
 					// Extract available colors from tags
-					const colorNames = [
-						t('filters.colors.black'),
-						t('filters.colors.brown'),
-						t('filters.colors.beige'),
-						t('filters.colors.white'),
-						t('filters.colors.blue'),
-						t('filters.colors.red'),
-						t('filters.colors.gray'),
-						t('filters.colors.green'),
+					const translatedColorToKey = new Map(
+						colorKeys.map((key) => [t(`filters.colors.${key}`), key]),
+					);
+					const extractedColorKeys = [
+						...new Set(
+							product.value.tags
+								.map((tag) => {
+									if (tag.id?.startsWith('color-')) {
+										return tag.id
+											.replace('color-', '')
+											.toLowerCase();
+									}
+									const normalizedName = tag.name?.toLowerCase();
+									return translatedColorToKey.get(normalizedName);
+								})
+								.filter(
+									(
+										colorKey,
+									): colorKey is (typeof colorKeys)[number] =>
+										Boolean(
+											colorKey &&
+												colorKeys.includes(
+													colorKey as (typeof colorKeys)[number],
+												),
+										),
+								),
+						),
 					];
-					availableColors.value = product.value.tags
-						.filter((tag) =>
-							colorNames.includes(tag.name.toLowerCase()),
-						)
-						.map((tag) => tag.name);
+					availableColors.value = extractedColorKeys.map((key) => ({
+						key,
+						label: getColorLabel(key),
+					}));
+
+					// Build per-color image groups (mock returns images ordered by color)
+					if (
+						extractedColorKeys.length > 0 &&
+						product.value.images.length > extractedColorKeys.length
+					) {
+						const imagesPerColor = Math.max(
+							1,
+							Math.floor(
+								product.value.images.length /
+									extractedColorKeys.length,
+							),
+						);
+						const nextMap: Record<string, string[]> = {};
+						extractedColorKeys.forEach((colorKey, index) => {
+							const start = index * imagesPerColor;
+							const end =
+								index === extractedColorKeys.length - 1
+									? product.value.images.length
+									: start + imagesPerColor;
+							nextMap[colorKey] = product.value.images.slice(
+								start,
+								end,
+							);
+						});
+						colorImageMap.value = nextMap;
+					} else {
+						colorImageMap.value = {};
+					}
 					availableSizes.value = product.value.sizes || [];
 
 					// Set initial selected color
-					if (
-						availableColors.value.length > 0 &&
-						availableColors.value[0]
-					) {
-						selectedColor.value = availableColors.value[0];
+					if (availableColors.value.length > 0) {
+						selectedColorKey.value = availableColors.value[0].key;
 					}
 					if (
 						availableSizes.value.length > 0 &&
@@ -668,10 +746,8 @@
 								),
 						)?.name || t('mockData.materials.naturalLeather');
 					const color =
-						selectedColor.value ||
-						product.value.tags.find((tag) =>
-							colorNames.includes(tag.name),
-						)?.name ||
+						selectedColorLabel.value ||
+						availableColors.value[0]?.label ||
 						t('filters.colors.black');
 					const brand = product.value.seller.name;
 
@@ -717,6 +793,13 @@
 
 	// Initial check
 	checkFavoriteStatus();
+
+	watch(
+		() => selectedColorKey.value,
+		() => {
+			currentImageIndex.value = 0;
+		},
+	);
 
 	const toggleFavoriteStatus = async () => {
 		if (!product.value.id) return;

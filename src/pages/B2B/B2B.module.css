@@ -19,7 +19,7 @@
 /* Tabs */
 .tabsWrapper {
 	position: relative;
-	margin-bottom: 40px;
+	margin-bottom: 24px;
 }
 
 .tabs {
@@ -120,6 +120,17 @@
 	margin-bottom: 40px;
 }
 
+.analyticsLayout {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.analyticsLeftColumn,
+.analyticsRightColumn {
+	min-width: 0;
+}
+
 .statCard {
 	background: var(--background-default);
 	border: 1px solid #e5e5e5;
@@ -184,9 +195,37 @@
 	overflow: hidden;
 }
 
+.tableScroll {
+	overflow-y: auto;
+	overflow-x: auto;
+	scrollbar-width: auto;
+	scrollbar-color: #9ca3af #eef2f7;
+}
+
+.tableScroll::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+}
+
+.tableScroll::-webkit-scrollbar-track {
+	background: #eef2f7;
+	border-radius: 10px;
+}
+
+.tableScroll::-webkit-scrollbar-thumb {
+	background: #9ca3af;
+	border-radius: 10px;
+	border: 2px solid #eef2f7;
+}
+
+.tableScroll::-webkit-scrollbar-thumb:hover {
+	background: #6b7280;
+}
+
 .table {
 	width: 100%;
 	border-collapse: collapse;
+	min-width: 760px;
 }
 
 .th {
@@ -197,6 +236,9 @@
 	font-weight: 600;
 	color: var(--color-secondary);
 	border-bottom: 1px solid #e5e5e5;
+	position: sticky;
+	top: 0;
+	z-index: 3;
 }
 
 .tr {
@@ -290,6 +332,9 @@
 	font-weight: 600;
 	color: var(--color-secondary);
 	border-bottom: 1px solid #e5e5e5;
+	position: sticky;
+	top: 0;
+	z-index: 3;
 }
 
 .productsTableTr {
@@ -431,6 +476,39 @@
 	}
 }
 
+@media (min-width: 1024px) {
+	.container {
+		max-width: 1440px;
+	}
+
+	.analyticsLayout {
+		display: grid;
+		grid-template-columns: minmax(420px, 0.9fr) minmax(700px, 1.35fr);
+		gap: 24px;
+		align-items: stretch;
+	}
+
+	.analyticsLeftColumn .statsGrid {
+		grid-template-columns: 1fr;
+		margin-bottom: 0;
+	}
+
+	.analyticsRightColumn {
+		display: flex;
+	}
+
+	.analyticsRightColumn .tableSection {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+
+	.analyticsRightColumn .tableScroll {
+		flex: 1;
+		max-height: calc(100vh - 220px);
+	}
+}
+
 @media (max-width: 768px) {
 	.main {
 		padding: 80px 16px 32px;
@@ -495,6 +573,11 @@
 	.productsTableTd {
 		padding: 12px;
 		font-size: 13px;
+	}
+
+	.th,
+	.productsTableTh {
+		top: 0;
 	}
 
 	.actionControls {

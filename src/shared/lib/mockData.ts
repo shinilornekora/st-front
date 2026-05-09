@@ -272,7 +272,7 @@ export const generateProduct = (id: number): Product => {
 				id: ['all', 'new', 'women', 'men', 'sale', 'accessories'][
 					Math.floor(random(id * 8) * 6)
 				]!,
-				name: 'All',
+				name: t('filters.all'),
 			},
 		],
 		tags: [

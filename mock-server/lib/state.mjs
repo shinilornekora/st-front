@@ -62,7 +62,12 @@ const makeProduct = (id) => {
 			{ id: `material-${material.replace(/\s+/g, '-')}`, name: material },
 			{ id: 'mock', name: 'mock' },
 		],
-		images: ['https://picsum.photos/600/800?blur=1'],
+		images: [
+			`https://picsum.photos/seed/${id}-${primaryColor}-1/600/800`,
+			`https://picsum.photos/seed/${id}-${primaryColor}-2/600/800`,
+			`https://picsum.photos/seed/${id}-${secondaryColor}-1/600/800`,
+			`https://picsum.photos/seed/${id}-${secondaryColor}-2/600/800`,
+		],
 		sizes: ['39', '40', '41', '42'],
 		stockStatus: id % 8 === 0 ? 'pre_order' : 'in_stock',
 		gender,
@@ -119,7 +124,7 @@ const createUsers = () => [
 ];
 
 const createB2bProducts = () =>
-	Array.from({ length: 8 }).map((_, index) => {
+	Array.from({ length: 48 }).map((_, index) => {
 		const id = index + 1;
 		return {
 			id,

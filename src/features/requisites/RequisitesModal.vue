@@ -74,7 +74,7 @@
 								}}</label>
 								<Select
 									v-model="formData.country"
-									placeholder="Value"
+									:placeholder="t('modal.placeholders.country')"
 									:options="countryOptions"
 									:class="$style.formSelect"
 								/>
@@ -86,7 +86,7 @@
 								}}</label>
 								<Input
 									v-model="formData.name"
-									placeholder="Value"
+									:placeholder="t('modal.placeholders.requisitesName')"
 									:class="$style.formInput"
 								/>
 							</div>
@@ -97,7 +97,7 @@
 								}}</label>
 								<Input
 									v-model="formData.bik"
-									placeholder="Value"
+									:placeholder="t('modal.placeholders.bik')"
 									:class="$style.formInput"
 								/>
 							</div>
@@ -108,7 +108,7 @@
 								}}</label>
 								<Input
 									v-model="formData.account"
-									placeholder="Value"
+									:placeholder="t('modal.placeholders.accountNumber')"
 									:class="$style.formInput"
 								/>
 							</div>
@@ -119,7 +119,7 @@
 								}}</label>
 								<Input
 									v-model="formData.fullName"
-									placeholder="Value"
+									:placeholder="t('modal.placeholders.fullName')"
 									:class="$style.formInput"
 								/>
 							</div>

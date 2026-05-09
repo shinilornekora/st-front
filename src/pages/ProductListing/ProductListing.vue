@@ -96,6 +96,7 @@
 	const searchResults = ref<Product[] | null>(null);
 	const isSearching = ref(false);
 	const selectedCategory = ref<string | null>(null);
+	const ALL_CATEGORY_ID = 'all';
 	const currentPage = ref(1);
 	const itemsPerPage = 35;
 	const activeFilters = ref<any[]>([]);
@@ -255,7 +256,10 @@
 			});
 		}
 
-		if (selectedCategory.value && selectedCategory.value !== 'all') {
+		if (
+			selectedCategory.value &&
+			selectedCategory.value !== ALL_CATEGORY_ID
+		) {
 			result = result.filter(
 				(p) =>
 					p.category &&

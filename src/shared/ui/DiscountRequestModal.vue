@@ -28,10 +28,9 @@
 							<Input
 								v-model="discountAmount"
 								type="number"
-								:placeholder="t('modal.enterDiscount')"
+								:placeholder="t('modal.enterDesiredPrice')"
 								:class="$style.formInput"
 								min="1"
-								max="100"
 							/>
 						</div>
 
