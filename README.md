@@ -1,5 +1,35 @@
-# Vue 3 + TypeScript + Vite
+# st-front
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Mock API server
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+Для запуска фронта без реального backend добавлен mock server, который покрывает все контракты из `src/shared/api/*.api.ts`.
+
+### Запуск
+
+1. В одном терминале запустить mock API:
+   - `npm run mock:server`
+2. Во втором терминале запустить фронт с proxy на mock:
+   - `npm run dev:mock`
+
+По умолчанию mock server слушает `http://localhost:3100`, а `dev:mock` проксирует `/api/*` на этот адрес.
+
+### Конфигурация base URL
+
+- В клиенте API используется `VITE_API_BASE_URL` (если не задана, используется `/api`).
+- Это позволяет в сборке направить запросы на любой адрес backend/mock backend, например:
+  - `VITE_API_BASE_URL=http://localhost:3100/api npm run build`
+
+### Что реализовано
+
+Mock server реализует группы контрактов:
+
+- auth (`/auth/login`, `/auth/register`, `/auth/refresh`, `/auth/me`, `/auth/logout`, `/auth/forgot-password`)
+- products (`/products`, `/products/:id`, `/products/:id/similar`)
+- favorites (`/favorites`, `/favorites/products`, `/favorites/:productId`)
+- cart (`/cart`, `/cart/items`, `/cart/items/:itemId`)
+- orders (`/orders`)
+- seller applications (`/seller-applications`)
+- discount requests (`/discount-requests`)
+- user profile/settings (`/users/me`, `/users/me/requisites`, `/users/me/settings`)
+- admin dashboards/applications (`/admin/applications`, `/admin/applications/:id/status`, `/admin/sellers/dashboard`)
+- b2b analytics/products (`/b2b/analytics/dashboard`, `/b2b/products`, `/b2b/products/:id`)

@@ -17,5 +17,5 @@ export interface DiscountRequest {
 export const createDiscountRequest = async (
 	data: CreateDiscountRequestRequest,
 ): Promise<ApiResponse<DiscountRequest>> => {
-	return apiClient.post<DiscountRequest>('/api/discount-requests', data);
+	return apiClient.post<DiscountRequest>('/discount-requests', data);
 };

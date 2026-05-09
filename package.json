@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:mock": "VITE_API_TARGET=http://localhost:3100 vite",
     "build": "vue-tsc -b && vite build",
     "build:prod": "npm run lint:all && npm run build",
     "preview": "vite preview",
+    "mock:server": "node mock-server/server.mjs",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "lint": "eslint .",

@@ -13,5 +13,5 @@ export interface SubmitSellerApplicationRequest {
 export const submitSellerApplication = async (
 	data: SubmitSellerApplicationRequest,
 ): Promise<ApiResponse<SellerApplication>> => {
-	return apiClient.post<SellerApplication>('/api/seller-applications', data);
+	return apiClient.post<SellerApplication>('/seller-applications', data);
 };

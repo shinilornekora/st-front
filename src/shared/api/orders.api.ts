@@ -12,11 +12,11 @@ export interface CreateOrderRequest {
 }
 
 export const getOrders = async (): Promise<ApiResponse<Order[]>> => {
-	return apiClient.get<Order[]>('/api/orders');
+	return apiClient.get<Order[]>('/orders');
 };
 
 export const createOrder = async (
 	data: CreateOrderRequest,
 ): Promise<ApiResponse<Order>> => {
-	return apiClient.post<Order>('/api/orders', data);
+	return apiClient.post<Order>('/orders', data);
 };

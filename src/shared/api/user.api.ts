@@ -17,17 +17,17 @@ export interface UserSettings {
 }
 
 export const deleteAccount = async (): Promise<ApiResponse<void>> => {
-	return apiClient.delete<void>('/api/users/me');
+	return apiClient.delete<void>('/users/me');
 };
 
 export const saveRequisites = async (
 	data: Requisites,
 ): Promise<ApiResponse<Requisites>> => {
-	return apiClient.post<Requisites>('/api/users/me/requisites', data);
+	return apiClient.post<Requisites>('/users/me/requisites', data);
 };
 
 export const saveSettings = async (
 	data: UserSettings,
 ): Promise<ApiResponse<UserSettings>> => {
-	return apiClient.patch<UserSettings>('/api/users/me/settings', data);
+	return apiClient.patch<UserSettings>('/users/me/settings', data);
 };
