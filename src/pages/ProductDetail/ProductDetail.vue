@@ -149,6 +149,26 @@
 							{{ color }}
 						</button>
 					</div>
+
+					<!-- Size Selection -->
+					<div
+						v-if="availableSizes.length > 0"
+						:class="$style.sizeSelection"
+					>
+						<button
+							v-for="size in availableSizes"
+							:key="size"
+							:class="[
+								$style.sizeBtn,
+								selectedSize === size
+									? $style.sizeBtnActive
+									: '',
+							]"
+							@click="selectedSize = size"
+						>
+							{{ size }}
+						</button>
+					</div>
 				</div>
 
 				<!-- Right Column: Product Info -->
@@ -447,7 +467,9 @@
 	const showDiscountModal = ref(false);
 	const showDiscountStatusLine = ref(false);
 	const selectedColor = ref('');
+	const selectedSize = ref('');
 	const availableColors = ref<string[]>([]);
+	const availableSizes = ref<string[]>([]);
 
 	// Get initial product data from router state if available
 	const routerState = history.state as ProductRouterState;
@@ -615,6 +637,7 @@
 							colorNames.includes(tag.name.toLowerCase()),
 						)
 						.map((tag) => tag.name);
+					availableSizes.value = product.value.sizes || [];
 
 					// Set initial selected color
 					if (
@@ -622,6 +645,12 @@
 						availableColors.value[0]
 					) {
 						selectedColor.value = availableColors.value[0];
+					}
+					if (
+						availableSizes.value.length > 0 &&
+						availableSizes.value[0]
+					) {
+						selectedSize.value = availableSizes.value[0];
 					}
 
 					// Generate characteristics based on product data
@@ -983,6 +1012,40 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 12px;
+	}
+
+	.sizeSelection {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 4px;
+	}
+
+	.sizeBtn {
+		height: 41px;
+		min-width: 52px;
+		padding: 0 12px;
+		background: #fff;
+		border: 2px solid #e5e7eb;
+		border-radius: 8px;
+		font-size: 14px;
+		font-weight: 500;
+		color: var(--color-primary);
+		cursor: pointer;
+		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.sizeBtn:hover {
+		border-color: var(--color-focus);
+	}
+
+	.sizeBtnActive {
+		border-color: var(--color-focus);
+		background: #fff;
+		color: var(--color-primary);
 	}
 
 	.colorBtn {

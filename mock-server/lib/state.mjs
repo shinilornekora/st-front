@@ -5,6 +5,8 @@ const sellers = [
 	{ id: 2, name: 'Marco Tozzi' },
 	{ id: 3, name: 'Rieker' },
 ];
+const colors = ['black', 'brown', 'beige', 'white', 'blue', 'red', 'gray', 'green'];
+const materials = ['natural leather', 'suede', 'nubuck', 'textile'];
 
 const nowIso = () => new Date().toISOString();
 
@@ -25,6 +27,23 @@ const makeProduct = (id) => {
 	const seller = sellers[id % sellers.length];
 	const discount = id % 3 === 0 ? 15 : undefined;
 	const price = 3500 + id * 57;
+	const gender = id % 2 === 0 ? 'female' : 'male';
+	const isNew = id > 240;
+	const primaryColor = colors[id % colors.length];
+	const secondaryColor = colors[(id + 3) % colors.length];
+	const material = materials[id % materials.length];
+
+	const categories = [{ id: 'all', name: 'All' }];
+	categories.push({
+		id: gender === 'female' ? 'women' : 'men',
+		name: gender === 'female' ? 'Women' : 'Men',
+	});
+	if (discount) {
+		categories.push({ id: 'sale', name: 'Sale' });
+	}
+	if (isNew) {
+		categories.push({ id: 'new', name: 'New' });
+	}
 
 	return {
 		id,
@@ -36,12 +55,17 @@ const makeProduct = (id) => {
 		currency: RUB,
 		inStock: id % 8 !== 0,
 		article: `MS-${String(id).padStart(5, '0')}`,
-		category: [{ id: 'all', name: 'All' }],
-		tags: [{ id: 'mock', name: 'mock' }],
+		category: categories,
+		tags: [
+			{ id: `color-${primaryColor}`, name: primaryColor },
+			{ id: `color-${secondaryColor}`, name: secondaryColor },
+			{ id: `material-${material.replace(/\s+/g, '-')}`, name: material },
+			{ id: 'mock', name: 'mock' },
+		],
 		images: ['https://picsum.photos/600/800?blur=1'],
 		sizes: ['39', '40', '41', '42'],
 		stockStatus: id % 8 === 0 ? 'pre_order' : 'in_stock',
-		gender: id % 2 === 0 ? 'female' : 'male',
+		gender,
 		seller,
 	};
 };
