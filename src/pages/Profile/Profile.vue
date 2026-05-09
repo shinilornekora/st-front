@@ -840,7 +840,7 @@
 		resetUser();
 		setAuthenticationStatus(false);
 		isAuthenticated.value = false;
-		router.push('/');
+		router.push('/profile');
 	};
 
 	// Recently viewed products — populated from localStorage on mount

@@ -89,12 +89,20 @@
 									</div>
 
 									<LineChart
+										v-if="selectedSellerIds.length === 0"
 										:data="dashboard.revenue.chartData.data"
 										:labels="
 											dashboard.revenue.chartData.labels
 										"
 										legend-label="Stivalli"
 										color="#5fdbd1"
+									/>
+									<MultiLineChart
+										v-else
+										:datasets="revenueDatasets"
+										:labels="
+											dashboard.revenue.chartData.labels
+										"
 									/>
 								</div>
 
@@ -132,12 +140,20 @@
 									</div>
 
 									<LineChart
+										v-if="selectedSellerIds.length === 0"
 										:data="dashboard.growth.chartData.data"
 										:labels="
 											dashboard.growth.chartData.labels
 										"
 										legend-label="Stivalli"
 										color="#5fdbd1"
+									/>
+									<MultiLineChart
+										v-else
+										:datasets="growthDatasets"
+										:labels="
+											dashboard.growth.chartData.labels
+										"
 									/>
 								</div>
 							</div>
@@ -154,13 +170,20 @@
 									</thead>
 									<tbody>
 										<tr
-											v-for="seller in dashboard.sellers"
+											v-for="seller in filteredSellers"
 											:key="seller.id"
-											:class="
+											:class="[
 												seller.id % 2 === 0
 													? $style.evenRow
-													: ''
-											"
+													: '',
+												{
+													[$style.selectedRow]:
+														selectedSellerIds.includes(
+															seller.id,
+														),
+												},
+											]"
+											@click="toggleSellerSelection(seller.id)"
 										>
 											<td>{{ seller.name }}</td>
 											<td>{{ seller.revenue }}</td>
@@ -269,7 +292,7 @@
 	import { useI18n } from 'vue-i18n';
 	import { useRoute } from 'vue-router';
 	import { Header, Footer } from '../../widgets';
-	import { LineChart } from '../../shared/ui';
+	import { LineChart, MultiLineChart } from '../../shared/ui';
 	import {
 		getSellersDashboard,
 		getApplications,
@@ -297,6 +320,90 @@
 	const applicationsError = ref<string | null>(null);
 	const applications = ref<Application[]>([]);
 	const processingId = ref<number | null>(null);
+	const selectedSellerIds = ref<number[]>([]);
+	const sellerColors = ['#5fdbd1', '#f59e0b', '#8b5cf6', '#ef4444', '#10b981'];
+
+	const parseNumber = (value: string): number =>
+		Number(value.replace(/[^\d.,-]/g, '').replace(',', '.')) || 0;
+
+	const selectedSellers = computed(() => {
+		if (!dashboard.value?.sellers?.length || selectedSellerIds.value.length === 0) {
+			return [];
+		}
+
+		return dashboard.value.sellers.filter((seller) =>
+			selectedSellerIds.value.includes(seller.id),
+		);
+	});
+
+	const revenueDatasets = computed(() => {
+		if (!dashboard.value || selectedSellers.value.length === 0) {
+			return [];
+		}
+
+		const aggregate = dashboard.value.revenue.chartData.data;
+		const totalRevenue = dashboard.value.sellers.reduce(
+			(sum, seller) => sum + parseNumber(seller.revenue),
+			0,
+		);
+
+		return selectedSellers.value.map((seller, index) => {
+			const sellerRevenue = parseNumber(seller.revenue);
+			const share = totalRevenue > 0 ? sellerRevenue / totalRevenue : 0;
+
+			return {
+				label: seller.name,
+				data: aggregate.map((point) => Math.round(point * share)),
+				color: sellerColors[index % sellerColors.length],
+			};
+		});
+	});
+
+	const growthDatasets = computed(() => {
+		if (!dashboard.value || selectedSellers.value.length === 0) {
+			return [];
+		}
+
+		const aggregate = dashboard.value.growth.chartData.data;
+		const growthValues = dashboard.value.sellers.map((seller) =>
+			parseNumber(seller.growth),
+		);
+		const avgGrowth =
+			growthValues.reduce((sum, value) => sum + value, 0) /
+			(growthValues.length || 1);
+
+		return selectedSellers.value.map((seller, index) => {
+			const sellerGrowth = parseNumber(seller.growth);
+			const ratio = avgGrowth > 0 ? sellerGrowth / avgGrowth : 1;
+
+			return {
+				label: seller.name,
+				data: aggregate.map((point) =>
+					Number((point * ratio).toFixed(2)),
+				),
+				color: sellerColors[index % sellerColors.length],
+			};
+		});
+	});
+
+	// Filtered applications based on search query
+	const filteredSellers = computed(() => {
+		if (!dashboard.value?.sellers?.length) {
+			return [];
+		}
+		if (!searchQuery.value.trim()) {
+			return dashboard.value.sellers;
+		}
+
+		const query = searchQuery.value.toLowerCase().trim();
+		return dashboard.value.sellers.filter((seller) => {
+			return (
+				seller.name.toLowerCase().includes(query) ||
+				seller.revenue.toLowerCase().includes(query) ||
+				seller.growth.toLowerCase().includes(query)
+			);
+		});
+	});
 
 	// Filtered applications based on search query
 	const filteredApplications = computed(() => {
@@ -319,6 +426,16 @@
 		searchQuery.value = query;
 	};
 
+	const toggleSellerSelection = (sellerId: number) => {
+		if (selectedSellerIds.value.includes(sellerId)) {
+			selectedSellerIds.value = selectedSellerIds.value.filter(
+				(id) => id !== sellerId,
+			);
+			return;
+		}
+		selectedSellerIds.value = [...selectedSellerIds.value, sellerId];
+	};
+
 	// Load dashboard data
 	const loadDashboard = async () => {
 		loading.value = true;
@@ -327,10 +444,14 @@
 		try {
 			const response = await getSellersDashboard({
 				period: revenuePeriod.value as 'month' | 'quarter' | 'year',
+				growthPeriod: growthPeriod.value as 'month' | 'quarter' | 'year',
 			});
 
 			if (response.success && response.data) {
 				dashboard.value = response.data;
+				selectedSellerIds.value = selectedSellerIds.value.filter((id) =>
+					response.data.sellers.some((seller) => seller.id === id),
+				);
 			} else {
 				error.value = response.error || t('errors.loadFailed');
 			}
@@ -678,6 +799,10 @@
 
 	.sellersTable tbody tr:hover {
 		background: #f3f4f6;
+	}
+
+	.sellersTable tbody tr.selectedRow {
+		background: #e0f7f5 !important;
 	}
 
 	/* Applications Table */

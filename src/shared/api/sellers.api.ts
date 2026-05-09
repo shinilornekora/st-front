@@ -34,6 +34,7 @@ export interface SellersDashboard {
 
 export interface GetSellersDashboardRequest {
 	period?: 'month' | 'quarter' | 'year';
+	growthPeriod?: 'month' | 'quarter' | 'year';
 }
 
 /**
@@ -43,7 +44,9 @@ export interface GetSellersDashboardRequest {
 export const getSellersDashboard = async (
 	params: GetSellersDashboardRequest = {},
 ): Promise<ApiResponse<SellersDashboard>> => {
+	const period = params.period || 'month';
+	const growthPeriod = params.growthPeriod || period;
 	return apiClient.get<SellersDashboard>(
-		`/admin/sellers/dashboard?period=${params.period || 'month'}`,
+		`/admin/sellers/dashboard?period=${period}&growthPeriod=${growthPeriod}`,
 	);
 };
