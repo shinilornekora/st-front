@@ -16,7 +16,9 @@ export const addApplicationFx = createEffect<
 >(async (data) => {
 	const response = await submitSellerApplication(data);
 	if (!response.success || !response.data) {
-		throw new Error(response.error ?? 'Failed to submit seller application');
+		throw new Error(
+			response.error ?? 'Failed to submit seller application',
+		);
 	}
 	return response.data;
 });

@@ -4,7 +4,13 @@
  */
 
 // Auth API
-export { loginUser, registerUser, logoutUser, updateProfile } from './auth.api';
+export {
+	loginUser,
+	registerUser,
+	logoutUser,
+	updateProfile,
+	forgotPassword,
+} from './auth.api';
 export type {
 	LoginRequest,
 	RegisterRequest,
@@ -90,3 +96,12 @@ export type {
 	CreateDiscountRequestRequest,
 	DiscountRequest,
 } from './discountRequest.api';
+
+// Favorites API
+export {
+	getFavorites,
+	getFavoriteProductsApi,
+	addFavorite,
+	removeFavorite,
+	toggleFavoriteApi,
+} from './favorites.api';

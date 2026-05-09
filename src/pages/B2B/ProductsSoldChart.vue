@@ -64,24 +64,14 @@
 		emit('load-data');
 	};
 
-	// Generate mock chart data for a specific product
-	const generateProductChartData = (
-		productId: number,
-		period: string,
-	): number[] => {
-		let data = [15, 20, 25, 45, 35, 30];
-
-		if (period === 'quarter') {
-			data = [35, 50, 60, 70];
-		} else if (period === 'year') {
-			data = [80, 120, 160, 220, 280, 340];
-		}
-
-		return data.map((value) => value + productId * 3);
-	};
-
 	const productsSoldDatasets = computed(() => {
 		if (props.productsData.length === 0) return [];
+
+		const totalSold = props.productsData.reduce(
+			(sum, p) => sum + p.sold,
+			0,
+		);
+		const aggregateData = props.chartData.chartData.data;
 
 		return props.selectedProductIds
 			.map((productId, index) => {
@@ -90,12 +80,11 @@
 				);
 				if (!product) return null;
 
+				const share = totalSold > 0 ? product.sold / totalSold : 0;
+
 				return {
 					label: product.name,
-					data: generateProductChartData(
-						productId,
-						localPeriod.value,
-					),
+					data: aggregateData.map((v) => Math.round(v * share)),
 					color: props.productColors[
 						index % props.productColors.length
 					],

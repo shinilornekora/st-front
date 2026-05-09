@@ -16,6 +16,9 @@
 			@save-requisites="handleSaveRequisites"
 		/>
 
+		<!-- Edit Profile Modal -->
+		<EditProfileModal v-model="showEditProfileModal" />
+
 		<!-- Success Alert Popup with Backdrop -->
 		<SuccessAlert
 			v-model="showSuccessAlert"
@@ -459,6 +462,7 @@
 	import { Input, Button, SuccessAlert } from '../../shared/ui';
 	import { SettingsModal } from '@features/settings';
 	import { RequisitesModal } from '@features/requisites';
+	import { EditProfileModal } from '@features/editProfile';
 	import { loginUser, registerUser } from '@shared/api';
 	import {
 		deleteAccount,
@@ -514,6 +518,7 @@
 	const showSuccessAlert = ref(false);
 	const showSettingsModal = ref(false);
 	const showRequisitesModal = ref(false);
+	const showEditProfileModal = ref(false);
 
 	// Favorites count
 	const favoritesCount = ref(0);
@@ -720,12 +725,12 @@
 			if (isRegisterMode.value) {
 				// Регистрация покупателя
 				const response = await registerUser({
-						name: customerName.value,
-						phone: customerPhone.value,
-						email: customerEmail.value,
-						password: customerPassword.value,
-						role: 'CUSTOMER',
-					});
+					name: customerName.value,
+					phone: customerPhone.value,
+					email: customerEmail.value,
+					password: customerPassword.value,
+					role: 'CUSTOMER',
+				});
 
 				if (response.success && response.data) {
 					// Показываем сообщение об успешной регистрации
@@ -737,12 +742,12 @@
 			} else if (isSellerMode.value) {
 				// Регистрация продавца
 				const response = await registerUser({
-						name: sellerName.value,
-						phone: sellerPhone.value,
-						email: sellerEmail.value,
-						password: sellerPassword.value,
-						role: 'SELLER',
-					});
+					name: sellerName.value,
+					phone: sellerPhone.value,
+					email: sellerEmail.value,
+					password: sellerPassword.value,
+					role: 'SELLER',
+				});
 
 				if (response.success) {
 					// Показываем success alert для продавца
@@ -752,9 +757,9 @@
 			} else {
 				// Вход в систему
 				const response = await loginUser({
-						login: login.value,
-						password: password.value,
-					});
+					login: login.value,
+					password: password.value,
+				});
 
 				if (response.success && response.data) {
 					// Сохраняем пользователя в store
@@ -814,7 +819,7 @@
 	};
 
 	const handlePasswordRecovery = () => {
-		// Password recovery page is not yet implemented — no-op
+		router.push('/forgot-password');
 	};
 
 	const clearAllFields = () => {
@@ -843,8 +848,7 @@
 
 	// Handlers for action items
 	const handleProfileEdit = () => {
-		// Scroll to top of the profile page (user is already on /profile)
-		window.scrollTo({ top: 0, behavior: 'smooth' });
+		showEditProfileModal.value = true;
 	};
 
 	const handlePaymentMethods = () => {
@@ -859,7 +863,10 @@
 	const handleSaveRequisites = async (requisitesData: any) => {
 		try {
 			await saveRequisites(requisitesData);
-			showToast({ message: t('profile.requisitesSaved'), type: 'success' });
+			showToast({
+				message: t('profile.requisitesSaved'),
+				type: 'success',
+			});
 		} catch {
 			showToast({ message: t('profile.requisitesError'), type: 'error' });
 		}
@@ -877,16 +884,14 @@
 		try {
 			const payload: UserSettings = {
 				notifications:
-					settings.find((s) => s.id === 'notifications')
-						?.enabled ?? true,
-				email:
-					settings.find((s) => s.id === 'email')?.enabled ?? true,
+					settings.find((s) => s.id === 'notifications')?.enabled ??
+					true,
+				email: settings.find((s) => s.id === 'email')?.enabled ?? true,
 				marketing:
 					settings.find((s) => s.id === 'marketing')?.enabled ??
 					false,
 				analytics:
-					settings.find((s) => s.id === 'analytics')?.enabled ??
-					true,
+					settings.find((s) => s.id === 'analytics')?.enabled ?? true,
 			};
 			await saveSettings(payload);
 			showToast({ message: t('profile.settingsSaved'), type: 'success' });
@@ -901,7 +906,10 @@
 			await deleteAccount();
 			handleLogout();
 		} catch {
-			showToast({ message: t('profile.deleteAccountError'), type: 'error' });
+			showToast({
+				message: t('profile.deleteAccountError'),
+				type: 'error',
+			});
 		}
 	};
 

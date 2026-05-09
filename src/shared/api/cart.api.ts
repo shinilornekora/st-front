@@ -67,7 +67,9 @@ export const removeFromCart = async (
  * Очистить корзину
  * DELETE /api/cart
  */
-export const clearCart = async (): Promise<ApiResponse<{ message: string }>> => {
+export const clearCart = async (): Promise<
+	ApiResponse<{ message: string }>
+> => {
 	return apiClient.delete<{ message: string }>('/cart');
 };
 

@@ -93,3 +93,15 @@ export const updateProfile = async (
 ): Promise<ApiResponse<User>> => {
 	return apiClient.patch<User>('/auth/me', data);
 };
+
+/**
+ * API: Запрос на восстановление пароля
+ * POST /api/auth/forgot-password
+ */
+export const forgotPassword = async (
+	email: string,
+): Promise<ApiResponse<{ message: string }>> => {
+	return apiClient.post<{ message: string }>('/auth/forgot-password', {
+		email,
+	});
+};

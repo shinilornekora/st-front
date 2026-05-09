@@ -78,6 +78,7 @@
 	import { useStore } from 'effector-vue/composition';
 	import { useI18n } from 'vue-i18n';
 	import { $products, getProductsFx } from '@entities/product/product.store';
+	import { getProducts } from '@shared/api/products.api';
 	import { addItem } from '@entities/cart/cart.store';
 	import type { Product } from '@entities/product/product.types';
 	import Header from '@widgets/Header.vue';
@@ -92,6 +93,8 @@
 
 	// State
 	const searchQuery = ref('');
+	const searchResults = ref<Product[] | null>(null);
+	const isSearching = ref(false);
 	const selectedCategory = ref<string | null>(null);
 	const currentPage = ref(1);
 	const itemsPerPage = 35;
@@ -162,39 +165,18 @@
 
 	// Computed
 	const filteredProducts = computed(() => {
+		// Use search results when a search query is active, otherwise use store
+		const source =
+			searchQuery.value && searchResults.value !== null
+				? searchResults.value
+				: products.value;
+
 		// Early return if no products
-		if (!products.value || products.value.length === 0) {
+		if (!source || source.length === 0) {
 			return [];
 		}
 
-		let result = [...products.value]; // Create a copy to avoid mutations
-
-		if (searchQuery.value) {
-			const query = searchQuery.value.toLowerCase();
-			result = result.filter((p) => {
-				// Search in product name
-				if (p.name.toLowerCase().includes(query)) return true;
-
-				// Search in brand (seller name)
-				if (p.seller && p.seller.name.toLowerCase().includes(query))
-					return true;
-
-				// Search in description
-				if (p.description.toLowerCase().includes(query)) return true;
-
-				// Search in tags
-				if (
-					p.tags.some((tag) => tag.name.toLowerCase().includes(query))
-				)
-					return true;
-
-				// Search in article
-				if (p.article && p.article.toLowerCase().includes(query))
-					return true;
-
-				return false;
-			});
-		}
+		let result = [...source]; // Create a copy to avoid mutations
 
 		// Apply filters
 		if (activeFilters.value && activeFilters.value.length > 0) {
@@ -296,9 +278,26 @@
 
 	// Methods
 
-	const handleHeaderSearch = (query: string) => {
+	const handleHeaderSearch = async (query: string) => {
 		searchQuery.value = query;
 		currentPage.value = 1; // Reset to first page when searching
+
+		if (!query) {
+			searchResults.value = null;
+			return;
+		}
+
+		isSearching.value = true;
+		try {
+			const response = await getProducts({ search: query });
+			if (response.success && response.data) {
+				searchResults.value = response.data;
+			} else {
+				searchResults.value = [];
+			}
+		} finally {
+			isSearching.value = false;
+		}
 	};
 
 	const handleFilterChange = (filters: any[]) => {

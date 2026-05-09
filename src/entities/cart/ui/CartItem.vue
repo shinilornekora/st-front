@@ -108,9 +108,17 @@
 <script setup lang="ts">
 	import { ref, onMounted, watch } from 'vue';
 	import { useI18n } from 'vue-i18n';
+	import { useStore } from 'effector-vue/composition';
 	import heartIcon from '@assets/favourite.svg';
 	import filledHeartIcon from '@assets/filled_heart.svg';
-	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
+	import {
+		isProductFavorite,
+		toggleFavorite,
+		addToFavorites,
+		removeFromFavorites,
+	} from '@shared/utils/favorites';
+	import { toggleFavoriteApi } from '@shared/api/favorites.api';
+	import { $user } from '@entities/user/user.store';
 
 	const { t } = useI18n();
 
@@ -133,6 +141,7 @@
 		'product-click',
 	]);
 
+	const user = useStore($user);
 	const isFavorite = ref(false);
 
 	// Check if product is favorite on mount
@@ -150,8 +159,20 @@
 		},
 	);
 
-	const toggleHeart = () => {
-		isFavorite.value = toggleFavorite(props.id);
+	const toggleHeart = async () => {
+		if (user.value) {
+			isFavorite.value = await toggleFavoriteApi(
+				props.id,
+				isFavorite.value,
+			);
+			if (isFavorite.value) {
+				addToFavorites(props.id);
+			} else {
+				removeFromFavorites(props.id);
+			}
+		} else {
+			isFavorite.value = toggleFavorite(props.id);
+		}
 		emit('favourite');
 	};
 

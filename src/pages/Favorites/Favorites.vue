@@ -86,7 +86,29 @@
 						v-if="activeTab === 'purchases'"
 						:class="$style.tabContent"
 					>
-						<div :class="$style.emptyState">
+						<div v-if="isLoadingOrders" :class="$style.emptyState">
+							<p :class="$style.emptyText">
+								{{ t('common.loading') }}
+							</p>
+						</div>
+						<div
+							v-else-if="purchasedProducts.length > 0"
+							:class="$style.productsGrid"
+						>
+							<ProductCard
+								v-for="product in purchasedProducts"
+								:id="product.id"
+								:key="`order-${product.id}`"
+								:image="product.images[0]"
+								:title="product.name"
+								:price="product.price"
+								:discount="product.discount"
+								:product="product"
+								@click="handleProductClick(product)"
+								@add-to-cart="handleAddToCart(product)"
+							/>
+						</div>
+						<div v-else :class="$style.emptyState">
 							<p :class="$style.emptyText">
 								{{ t('favorites.noPurchases') }}
 							</p>
@@ -101,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-	import { ref, onMounted } from 'vue';
+	import { ref, computed, onMounted, watch } from 'vue';
 	import { useRouter, useRoute } from 'vue-router';
 	import { useStore } from 'effector-vue/composition';
 	import { useI18n } from 'vue-i18n';
@@ -109,6 +131,7 @@
 	import { ProductCard } from '@entities/product/ui';
 	import { addItem } from '@entities/cart/cart.store';
 	import { $products, getProductsFx } from '@entities/product/product.store';
+	import { $orders, getOrdersFx } from '@entities/order/order.store';
 	import type { Product } from '@entities/product/product.types';
 	import { getFavoriteProducts } from '@shared/utils/favorites';
 	import arrowLeftIcon from '@assets/arrow_left_long.svg';
@@ -120,6 +143,18 @@
 	const activeTab = ref<'purchases' | 'favorites'>('favorites');
 	const favoriteProducts = ref<Product[]>([]);
 	const products = useStore($products);
+	const orders = useStore($orders);
+	const isLoadingOrders = ref(false);
+
+	const purchasedProducts = computed<Product[]>(() => {
+		const seen = new Set<number>();
+		return orders.value
+			.flatMap((o) => o.items.map((i) => i.product))
+			.filter(
+				(p): p is Product =>
+					p != null && !seen.has(p.id) && !!seen.add(p.id),
+			);
+	});
 
 	onMounted(async () => {
 		// Check if tab query parameter is set
@@ -140,6 +175,27 @@
 		favoriteProducts.value = products.value.filter((product) =>
 			favoriteIds.includes(product.id),
 		) as Product[];
+
+		// Load orders if purchases tab is active
+		if (activeTab.value === 'purchases' && orders.value.length === 0) {
+			isLoadingOrders.value = true;
+			try {
+				await getOrdersFx();
+			} finally {
+				isLoadingOrders.value = false;
+			}
+		}
+	});
+
+	watch(activeTab, async (tab) => {
+		if (tab === 'purchases' && orders.value.length === 0) {
+			isLoadingOrders.value = true;
+			try {
+				await getOrdersFx();
+			} finally {
+				isLoadingOrders.value = false;
+			}
+		}
 	});
 
 	const goBack = () => {

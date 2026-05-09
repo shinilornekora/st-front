@@ -16,6 +16,7 @@ import Contacts from '@pages/Contacts/Contacts.vue';
 import Partners from '@pages/Partners/Partners.vue';
 import Offer from '@pages/Offer/Offer.vue';
 import Privacy from '@pages/Privacy/Privacy.vue';
+import ForgotPassword from '@pages/ForgotPassword/ForgotPassword.vue';
 import { $user } from '@entities/user/user.store';
 
 const routes = [
@@ -108,6 +109,11 @@ const routes = [
 		path: '/privacy',
 		name: 'Privacy',
 		component: Privacy,
+	},
+	{
+		path: '/forgot-password',
+		name: 'ForgotPassword',
+		component: ForgotPassword,
 	},
 ];
 

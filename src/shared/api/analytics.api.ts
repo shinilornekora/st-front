@@ -93,7 +93,9 @@ export const getAnalyticsDashboard = async (
  * Получить список товаров продавца
  * GET /api/b2b/products
  */
-export const getSellerProducts = async (): Promise<ApiResponse<ProductListItem[]>> => {
+export const getSellerProducts = async (): Promise<
+	ApiResponse<ProductListItem[]>
+> => {
 	return apiClient.get<ProductListItem[]>('/b2b/products');
 };
 

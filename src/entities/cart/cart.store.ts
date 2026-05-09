@@ -98,30 +98,29 @@ export const addItemFx = createEffect<CartItem, Cart>(async (item) => {
  * - авторизованный → PATCH /api/cart/items/{itemId}
  * - гость → локальное обновление
  */
-export const updateQtyFx = createEffect<
-	{ id: number; quantity: number },
-	Cart
->(async ({ id, quantity }) => {
-	if (isUserAuthenticated()) {
-		const response = await updateCartItemApi({ itemId: id, quantity });
-		if (response.success && response.data) {
-			return response.data;
+export const updateQtyFx = createEffect<{ id: number; quantity: number }, Cart>(
+	async ({ id, quantity }) => {
+		if (isUserAuthenticated()) {
+			const response = await updateCartItemApi({ itemId: id, quantity });
+			if (response.success && response.data) {
+				return response.data;
+			}
 		}
-	}
 
-	const savedCart = loadCartFromLocalStorage() ?? {
-		items: [],
-		total: 0,
-		currency: 'RUB',
-	};
-	const items = savedCart.items.map((i) =>
-		i.id === id ? { ...i, quantity } : i,
-	);
-	const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
-	const newCart: Cart = { ...savedCart, items, total };
-	saveCartToLocalStorage(newCart);
-	return newCart;
-});
+		const savedCart = loadCartFromLocalStorage() ?? {
+			items: [],
+			total: 0,
+			currency: 'RUB',
+		};
+		const items = savedCart.items.map((i) =>
+			i.id === id ? { ...i, quantity } : i,
+		);
+		const total = items.reduce((acc, i) => acc + i.price * i.quantity, 0);
+		const newCart: Cart = { ...savedCart, items, total };
+		saveCartToLocalStorage(newCart);
+		return newCart;
+	},
+);
 
 /**
  * Удалить товар:

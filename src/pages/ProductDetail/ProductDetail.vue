@@ -415,7 +415,13 @@
 		clearPreviewProduct,
 	} from '@entities/product/product.store';
 	import { isUserAuthenticated } from '@shared/utils/auth';
-	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
+	import {
+		isProductFavorite,
+		toggleFavorite,
+		addToFavorites,
+		removeFromFavorites,
+	} from '@shared/utils/favorites';
+	import { toggleFavoriteApi } from '@shared/api/favorites.api';
 	import { recordRecentlyViewed } from '@shared/utils/recentlyViewed';
 	import heartIcon from '@assets/heart_icon.svg';
 	import darkHeartIcon from '@assets/dark_heart_icon.svg';
@@ -576,22 +582,22 @@
 				if (!product.value.id || product.value.id !== productId) {
 					isLoading.value = true;
 					const productResponse = await getProductById({
-							id: productId,
-						});
+						id: productId,
+					});
 
 					if (productResponse.success && productResponse.data) {
-							product.value = productResponse.data;
-							recordRecentlyViewed(productResponse.data);
-						}
-						isLoading.value = false;
+						product.value = productResponse.data;
+						recordRecentlyViewed(productResponse.data);
+					}
+					isLoading.value = false;
 				}
 
 				// Load additional data (characteristics and similar products) asynchronously
 				// This happens in the background while basic product info is already displayed
 				const loadAdditionalData = async () => {
 					const [similarResponse] = await Promise.all([
-							getSimilarProducts({ productId }),
-						]);
+						getSimilarProducts({ productId }),
+					]);
 
 					// Extract available colors from tags
 					const colorNames = [
@@ -667,7 +673,7 @@
 
 	// Check if product is favorite on mount and when product changes
 	const checkFavoriteStatus = () => {
-		if (product.value.id && !isUserAuthenticated()) {
+		if (product.value.id) {
 			isFavorite.value = isProductFavorite(product.value.id);
 		}
 	};
@@ -683,16 +689,21 @@
 	// Initial check
 	checkFavoriteStatus();
 
-	const toggleFavoriteStatus = () => {
+	const toggleFavoriteStatus = async () => {
 		if (!product.value.id) return;
 
-		if (!isUserAuthenticated()) {
-			// Use localStorage for non-authenticated users
-			isFavorite.value = toggleFavorite(product.value.id);
+		if (isUserAuthenticated()) {
+			isFavorite.value = await toggleFavoriteApi(
+				product.value.id,
+				isFavorite.value,
+			);
+			if (isFavorite.value) {
+				addToFavorites(product.value.id);
+			} else {
+				removeFromFavorites(product.value.id);
+			}
 		} else {
-			// For authenticated users, toggle UI state
-			// Future: call POST /api/favorites/{productId}
-			isFavorite.value = !isFavorite.value;
+			isFavorite.value = toggleFavorite(product.value.id);
 		}
 	};
 

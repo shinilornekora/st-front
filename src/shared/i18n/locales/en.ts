@@ -151,7 +151,8 @@ export default {
 		requisitesError: 'Failed to save requisites',
 		settingsSaved: 'Settings saved successfully',
 		settingsError: 'Failed to save settings',
-		deleteAccountConfirm: 'Are you sure you want to delete your account? This action is irreversible.',
+		deleteAccountConfirm:
+			'Are you sure you want to delete your account? This action is irreversible.',
 		deleteAccountError: 'Failed to delete account',
 	},
 	navigation: {
@@ -405,6 +406,23 @@ export default {
 		},
 		description:
 			'Quality {gender} footwear from {brand}. Made of {material}. Perfect for everyday wear.',
+	},
+	editProfile: {
+		title: 'Edit Profile',
+		fullName: 'Full name',
+		email: 'Email',
+		phone: 'Phone',
+		saveSuccess: 'Profile updated successfully',
+		saveError: 'Failed to save profile',
+	},
+	forgotPassword: {
+		title: 'Password Recovery',
+		subtitle:
+			'Enter the email you used to register. We will send you a link to reset your password.',
+		send: 'Send',
+		sendError: 'Failed to send email. Please try again later.',
+		successText:
+			'An email with password recovery instructions has been sent to the specified address. Check your Inbox and Spam folders.',
 	},
 	modal: {
 		close: 'Close',

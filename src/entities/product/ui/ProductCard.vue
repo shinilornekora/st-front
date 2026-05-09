@@ -60,10 +60,13 @@
 <script setup lang="ts">
 	import { ref, onMounted, watch } from 'vue';
 	import { useI18n } from 'vue-i18n';
+	import { useStore } from 'effector-vue/composition';
 	import type { Product } from '@entities/product/product.types';
 	import heartIcon from '@assets/heart_icon.svg';
 	import darkHeartIcon from '@assets/dark_heart_icon.svg';
 	import { isProductFavorite, toggleFavorite } from '@shared/utils/favorites';
+	import { toggleFavoriteApi } from '@shared/api/favorites.api';
+	import { $user } from '@entities/user/user.store';
 
 	const { t } = useI18n();
 
@@ -83,6 +86,7 @@
 
 	const emit = defineEmits(['add-to-cart', 'click', 'favourite']);
 
+	const user = useStore($user);
 	const isFavorite = ref(false);
 
 	// Check if product is favorite on mount
@@ -102,9 +106,28 @@
 		},
 	);
 
-	const toggleHeart = () => {
+	const toggleHeart = async () => {
 		if (!props.id) return;
-		isFavorite.value = toggleFavorite(props.id);
+		if (user.value) {
+			// Authenticated: call API, then sync localStorage
+			isFavorite.value = await toggleFavoriteApi(
+				props.id,
+				isFavorite.value,
+			);
+			// Keep localStorage in sync for offline/guest fallback
+			if (isFavorite.value) {
+				const { addToFavorites } =
+					await import('@shared/utils/favorites');
+				addToFavorites(props.id);
+			} else {
+				const { removeFromFavorites } =
+					await import('@shared/utils/favorites');
+				removeFromFavorites(props.id);
+			}
+		} else {
+			// Guest: localStorage only
+			isFavorite.value = toggleFavorite(props.id);
+		}
 		emit('favourite', { id: props.id, isFavorite: isFavorite.value });
 	};
 

@@ -197,8 +197,8 @@
 
 			// Copy the URL to clipboard
 			await navigator.clipboard.writeText(productUrl);
-	
-				// Show status line
+
+			// Show status line
 			showStatusLine.value = true;
 			setTimeout(() => {
 				showStatusLine.value = false;
@@ -235,8 +235,7 @@
 				quantity: item.quantity,
 				price: item.price,
 			}));
-			const currency =
-				cartItems.value[0]?.currency ?? 'RUB';
+			const currency = cartItems.value[0]?.currency ?? 'RUB';
 
 			await addOrderFx({ items, currency });
 

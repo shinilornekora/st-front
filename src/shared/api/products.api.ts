@@ -4,6 +4,7 @@ import { i18n } from '@shared/i18n';
 
 export interface GetProductsRequest {
 	count?: number;
+	search?: string;
 }
 
 export interface GetProductByIdRequest {
@@ -21,8 +22,11 @@ export interface GetSimilarProductsRequest {
 export const getProducts = async (
 	params: GetProductsRequest = {},
 ): Promise<ApiResponse<Product[]>> => {
+	const searchParam = params.search
+		? `&search=${encodeURIComponent(params.search)}`
+		: '';
 	const response = await apiClient.get<{ products: Product[] }>(
-		`/products?count=${params.count || 250}`,
+		`/products?count=${params.count || 250}${searchParam}`,
 	);
 
 	if (response.success && response.data) {
