@@ -61,7 +61,7 @@
 	.select {
 		min-width: 100%;
 		padding: 7px 10px;
-		border: 1px solid var(--color-secondary);
+		border: 1px solid #e5e7eb;
 		border-radius: 4px;
 		background: var(--background-default);
 		color: var(--color-primary);

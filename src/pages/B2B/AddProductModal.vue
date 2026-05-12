@@ -47,69 +47,21 @@
 				<!-- Размеры -->
 				<div :class="$style.field">
 					<label :class="$style.label">{{ t('b2b.form.sizes') }}</label>
-					<div :class="$style.checkboxGroup">
-						<label :class="$style.checkboxLabel">
-							<input
-								v-model="formData.sizes.small"
-								type="checkbox"
-								:class="$style.checkbox"
-							/>
-							<span :class="$style.checkmark"></span>
-							<span>{{ t('b2b.form.sizeSmall') }}</span>
-						</label>
-						<label :class="$style.checkboxLabel">
-							<input
-								v-model="formData.sizes.medium"
-								type="checkbox"
-								:class="$style.checkbox"
-							/>
-							<span :class="$style.checkmark"></span>
-							<span>{{ t('b2b.form.sizeMedium') }}</span>
-						</label>
-						<label :class="$style.checkboxLabel">
-							<input
-								v-model="formData.sizes.large"
-								type="checkbox"
-								:class="$style.checkbox"
-							/>
-							<span :class="$style.checkmark"></span>
-							<span>{{ t('b2b.form.sizeLarge') }}</span>
-						</label>
-					</div>
+					<MultiSelect
+						v-model="formData.sizes"
+						:options="sizeOptions"
+						:placeholder="t('filters.selectSize')"
+					/>
 				</div>
 
 				<!-- Цвет -->
 				<div :class="$style.field">
 					<label :class="$style.label">{{ t('b2b.form.color') }}</label>
-					<div :class="$style.checkboxGroup">
-						<label :class="$style.checkboxLabel">
-							<input
-								v-model="formData.colors.white"
-								type="checkbox"
-								:class="$style.checkbox"
-							/>
-							<span :class="$style.checkmark"></span>
-							<span>{{ t('filters.colorsCapitalized.white') }}</span>
-						</label>
-						<label :class="$style.checkboxLabel">
-							<input
-								v-model="formData.colors.black"
-								type="checkbox"
-								:class="$style.checkbox"
-							/>
-							<span :class="$style.checkmark"></span>
-							<span>{{ t('filters.colorsCapitalized.black') }}</span>
-						</label>
-						<label :class="$style.checkboxLabel">
-							<input
-								v-model="formData.colors.red"
-								type="checkbox"
-								:class="$style.checkbox"
-							/>
-							<span :class="$style.checkmark"></span>
-							<span>{{ t('filters.colorsCapitalized.red') }}</span>
-						</label>
-					</div>
+					<MultiSelect
+						v-model="formData.colors"
+						:options="colorOptions"
+						:placeholder="t('filters.selectColor')"
+					/>
 				</div>
 
 				<!-- Состав -->
@@ -264,7 +216,7 @@
 	import { reactive, ref, watch, onUnmounted } from 'vue';
 	import { useRouter } from 'vue-router';
 	import { useI18n } from 'vue-i18n';
-	import { Input, Select } from '@shared/ui';
+	import { Input, Select, MultiSelect } from '@shared/ui';
 	import {
 		setPreviewProduct,
 		setPreviewFormData,
@@ -289,16 +241,8 @@
 		article: '',
 		price: '',
 		discountPrice: '',
-		sizes: {
-			small: false,
-			medium: false,
-			large: false,
-		},
-		colors: {
-			white: false,
-			black: false,
-			red: false,
-		},
+		sizes: [] as string[],
+		colors: [] as string[],
 		composition: '',
 		gender: '',
 		images: [] as File[],
@@ -354,12 +298,27 @@
 		formData.discountPrice = source?.discountPrice?.toString() || '';
 		formData.composition = source?.composition || '';
 		formData.gender = source?.gender || '';
-		formData.sizes = source?.sizes
-			? { ...source.sizes }
-			: { small: false, medium: false, large: false };
-		formData.colors = source?.colors
-			? { ...source.colors }
-			: { white: false, black: false, red: false };
+		
+		if (Array.isArray(source?.sizes)) {
+			formData.sizes = [...source.sizes];
+		} else if (source?.sizes && typeof source?.sizes === 'object') {
+			formData.sizes = Object.entries(source.sizes)
+				.filter(([, isSelected]) => Boolean(isSelected))
+				.map(([size]) => size);
+		} else {
+			formData.sizes = [];
+		}
+
+		if (Array.isArray(source?.colors)) {
+			formData.colors = [...source.colors];
+		} else if (source?.colors && typeof source?.colors === 'object') {
+			formData.colors = Object.entries(source.colors)
+				.filter(([, isSelected]) => Boolean(isSelected))
+				.map(([color]) => color);
+		} else {
+			formData.colors = [];
+		}
+
 		formData.images = Array.isArray(source?.images)
 			? [...source.images]
 			: [];
@@ -389,6 +348,32 @@
 		{ value: 'male', label: t('filters.male') },
 		{ value: 'female', label: t('filters.female') },
 		{ value: 'unisex', label: t('filters.unisex') },
+	];
+
+	const sizeOptions = [
+		{ value: '35', label: '35' },
+		{ value: '36', label: '36' },
+		{ value: '37', label: '37' },
+		{ value: '38', label: '38' },
+		{ value: '39', label: '39' },
+		{ value: '40', label: '40' },
+		{ value: '41', label: '41' },
+		{ value: '42', label: '42' },
+		{ value: '43', label: '43' },
+		{ value: '44', label: '44' },
+		{ value: '45', label: '45' },
+		{ value: '46', label: '46' },
+	];
+
+	const colorOptions = [
+		{ value: 'black', label: t('filters.colorsCapitalized.black') },
+		{ value: 'white', label: t('filters.colorsCapitalized.white') },
+		{ value: 'brown', label: t('filters.colorsCapitalized.brown') },
+		{ value: 'beige', label: t('filters.colorsCapitalized.beige') },
+		{ value: 'gray', label: t('filters.colorsCapitalized.gray') },
+		{ value: 'blue', label: t('filters.colorsCapitalized.blue') },
+		{ value: 'red', label: t('filters.colorsCapitalized.red') },
+		{ value: 'green', label: t('filters.colorsCapitalized.green') },
 	];
 
 	const handleOverlayClick = () => {
@@ -428,12 +413,8 @@
 	};
 
 	const handlePreview = () => {
-		const selectedSizes = Object.entries(formData.sizes)
-			.filter(([, isSelected]) => Boolean(isSelected))
-			.map(([size]) => size);
-		const selectedColors = Object.entries(formData.colors)
-			.filter(([, isSelected]) => Boolean(isSelected))
-			.map(([color]) => color);
+		const selectedSizes = [...formData.sizes];
+		const selectedColors = [...formData.colors];
 		const colorTags = selectedColors.map((color) => ({
 			id: `color-${color}`,
 			name: t(`filters.colors.${color}`, color),
@@ -480,8 +461,8 @@
 		// Сохраняем данные формы для возможности вернуться к редактированию
 		setPreviewFormData({
 			...formData,
-			sizes: { ...formData.sizes },
-			colors: { ...formData.colors },
+			sizes: [...formData.sizes],
+			colors: [...formData.colors],
 			images: [...formData.images],
 			additionalInfo: additionalRowsToRecord(),
 			editData: props.editData, // Сохраняем также editData если редактируем
@@ -579,71 +560,6 @@
 		font-size: 13px;
 		text-decoration: underline;
 		padding: 0;
-	}
-
-	.checkboxGroup {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-
-	.checkboxLabel {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-		cursor: pointer;
-		font-size: 14px;
-		color: var(--color-primary);
-		position: relative;
-		padding-left: 32px;
-	}
-
-	.checkbox {
-		position: absolute;
-		opacity: 0;
-		cursor: pointer;
-		height: 0;
-		width: 0;
-	}
-
-	.checkmark {
-		position: absolute;
-		left: 0;
-		height: 20px;
-		width: 20px;
-		background-color: white;
-		border: 2px solid #d1d5db;
-		border-radius: 4px;
-		transition: all 0.2s;
-	}
-
-	.checkboxLabel:hover .checkmark {
-		border-color: var(--color-accent);
-	}
-
-	.checkbox:checked ~ .checkmark {
-		background-color: var(--color-accent);
-		border-color: var(--color-accent);
-	}
-
-	.checkmark:after {
-		content: '';
-		position: absolute;
-		display: none;
-	}
-
-	.checkbox:checked ~ .checkmark:after {
-		display: block;
-	}
-
-	.checkboxLabel .checkmark:after {
-		left: 6px;
-		top: 2px;
-		width: 5px;
-		height: 10px;
-		border: solid white;
-		border-width: 0 2px 2px 0;
-		transform: rotate(45deg);
 	}
 
 	.uploadArea {

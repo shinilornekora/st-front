@@ -45,3 +45,4 @@ export { default as Pagination } from './Pagination.vue';
 export { default as StatusLine } from './StatusLine.vue';
 export { default as SuccessAlert } from './SuccessAlert.vue';
 export { default as DiscountRequestModal } from './DiscountRequestModal.vue';
+export { default as MultiSelect } from './MultiSelect.vue';
